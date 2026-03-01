@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  techStack   String[]
+  liveUrl     String?
+  repoUrl     String?
+  featured    Boolean  @default(false)
+  order       Int      @default(0)
+}
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  title       String
+  excerpt     String?
+  content     String
+  tags        String[]
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  viewCount   Int       @default(0)
+}
+
+model Lead {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  company   String?
+  message   String
+  service   String?
+  score     Int      @default(0)
+  status    String   @default("new")
+  createdAt DateTime @default(now())
+}
+
+// Career pipeline enums
+enum JobPlatform {
+  UPWORK
+  FIVERR
+  LINKEDIN
+  REMOTEOK
+  WELLFOUND
+  DIRECT
+  OTHER
+}
+
+enum JobStatus {
+  NEW
+  DRAFTING
+  APPLIED
+  INTERVIEWING
+  CLOSED
+  REJECTED
+}
+
+enum JobSource {
+  MANUAL
+  CSV
+  RSS
+}
+
+enum ProposalVariant {
+  SHORT
+  TECHNICAL
+  FRIENDLY
+  CTO_PITCH
+}
+
+enum OutreachChannel {
+  EMAIL
+  LINKEDIN
+  PLATFORM
+}
+
+// Career pipeline models
+model JobLead {
+  id           String        @id @default(cuid())
+  title        String
+  company      String
+  platform     JobPlatform
+  description  String
+  techStack    String[]
+  budgetMin    Int?
+  budgetMax    Int?
+  currency     String?
+  url          String?
+  contactEmail String?
+  contactName  String?
+  score        Int           @default(0)
+  scoreReason  String?
+  pitchAngle   String?
+  status       JobStatus     @default(NEW)
+  source       JobSource     @default(MANUAL)
+  notes        String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  proposals    Proposal[]
+  outreach     OutreachLog[]
+}
+
+model Proposal {
+  id         String           @id @default(cuid())
+  jobLeadId  String
+  jobLead    JobLead          @relation(fields: [jobLeadId], references: [id])
+  variant    ProposalVariant
+  content    String
+  approved   Boolean          @default(false)
+  sentAt     DateTime?
+  createdAt  DateTime         @default(now())
+}
+
+model OutreachLog {
+  id          String          @id @default(cuid())
+  jobLeadId   String
+  jobLead     JobLead         @relation(fields: [jobLeadId], references: [id])
+  channel     OutreachChannel
+  sentAt      DateTime
+  subject     String?
+  body        String?
+  response    String?
+  responseAt  DateTime?
+  outcome     String?
+}
+
+model PlatformStats {
+  id            String       @id @default(cuid())
+  platform      JobPlatform  @unique
+  proposalsSent Int          @default(0)
+  replies       Int          @default(0)
+  interviews    Int          @default(0)
+  wins          Int          @default(0)
+  updatedAt     DateTime     @updatedAt
+}

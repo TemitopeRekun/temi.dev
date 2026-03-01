@@ -1,0 +1,11 @@
+{
+  "name": "@temi/config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tailwind": "./tailwind.config.ts",
+    "./eslint": "./eslint.config.js",
+    "./tsconfig": "./tsconfig/base.json"
+  }
+}

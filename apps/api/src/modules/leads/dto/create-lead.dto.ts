@@ -1,0 +1,26 @@
+import { IsEmail, IsOptional, IsString, MaxLength } from "class-validator";
+
+export class CreateLeadDto {
+  @IsString()
+  @MaxLength(120)
+  name!: string;
+
+  @IsEmail()
+  @MaxLength(180)
+  email!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(160)
+  company?: string | null;
+
+  @IsString()
+  @MaxLength(2000)
+  message!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  service?: string | null;
+}
+
