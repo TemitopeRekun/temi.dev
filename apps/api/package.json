@@ -8,7 +8,12 @@
     "build": "nest build",
     "start": "node dist/main.js",
     "lint": "eslint .",
-    "test": "echo \"no tests\""
+    "test": "echo \"no tests\"",
+    "prisma:generate": "prisma generate",
+    "prisma:push": "prisma db push",
+    "prisma:migrate:dev": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
+    "prisma:studio": "prisma studio"
   },
   "dependencies": {
     "@fastify/cors": "^9.0.1",
