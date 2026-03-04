@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@temi/ui";
 
 type Lead = {
@@ -12,45 +12,36 @@ type Lead = {
   createdAt: string;
 };
 
-const SAMPLE: Lead[] = [
-  {
-    id: "1",
-    name: "Alice Johnson",
-    email: "alice@example.com",
-    service: "Web Development",
-    score: 42,
-    status: "new",
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: "2",
-    name: "Bob Smith",
-    email: "bob@example.com",
-    service: "AI Automation",
-    score: 73,
-    status: "contacted",
-    createdAt: new Date(Date.now() - 2 * 86400000).toISOString(),
-  },
-  {
-    id: "3",
-    name: "Carla Gomez",
-    email: "carla@example.com",
-    service: "Design",
-    score: 28,
-    status: "new",
-    createdAt: new Date(Date.now() - 5 * 86400000).toISOString(),
-  },
-];
+async function fetchLeads(): Promise<Lead[]> {
+  const res = await fetch("/api/admin/leads?take=50", { cache: "no-store" }).catch(() => null);
+  if (!res || !res.ok) return [];
+  const data = (await res.json()) as { items: Lead[] };
+  return data.items ?? [];
+}
 
 export default function LeadsClient() {
   const [sortDesc, setSortDesc] = useState(true);
+  const [items, setItems] = useState<Lead[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    const run = async () => {
+      setLoading(true);
+      setError(null);
+      const rows = await fetchLeads();
+      setItems(rows);
+      setLoading(false);
+      if (rows.length === 0) setError("No leads found or failed to load");
+    };
+    run().catch(() => {});
+  }, []);
   const leads = useMemo(() => {
-    const copy: Lead[] = [...SAMPLE];
+    const copy: Lead[] = [...items];
     copy.sort((a: Lead, b: Lead) =>
       sortDesc ? b.score - a.score : a.score - b.score,
     );
     return copy;
-  }, [sortDesc]);
+  }, [sortDesc, items]);
   return (
     <div className="rounded-2xl border border-(--border)/20 bg-(--surface) p-4">
       <div className="mb-3 flex items-center justify-between">
@@ -89,6 +80,12 @@ export default function LeadsClient() {
           </tbody>
         </table>
       </div>
+      {loading && <p className="py-6 text-center text-(--muted)">Loading…</p>}
+      {error && (
+        <p className="py-6 text-center text-red-400" role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

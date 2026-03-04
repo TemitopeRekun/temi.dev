@@ -2,10 +2,8 @@ import { Heading } from "../../../../../components/ui/Heading";
 import { Text } from "../../../../../components/ui/Text";
 
 function apiBaseUrl(): string {
-  const env = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL;
-  return (
-    env && env.trim().length > 0 ? env : "http://localhost:4000"
-  ) as string;
+  const env = process.env.NEXT_PUBLIC_API_BASE_URL;
+  return (env && env.trim().length > 0 ? env : "http://localhost:4000") as string;
 }
 
 type Counts = {

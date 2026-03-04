@@ -3,7 +3,6 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ProjectsService } from "./projects.service";
 import { ProjectsQueryDto } from "./dto/projects-query.dto";
 import { ProjectDto } from "./dto/project.dto";
-import { Throttle } from "@nestjs/throttler";
 
 @ApiTags("Projects")
 @Controller("api/projects")
@@ -11,7 +10,6 @@ export class ProjectsController {
   constructor(private readonly projects: ProjectsService) {}
 
   @Get()
-  @Throttle({ default: { limit: 60, ttl: 60000 } })
   @ApiOperation({ summary: "List projects (filter by tech)" })
   @ApiResponse({ status: 200, type: ProjectDto, isArray: true })
   async list(@Query() query: ProjectsQueryDto): Promise<ProjectDto[]> {
@@ -19,7 +17,6 @@ export class ProjectsController {
   }
 
   @Get(":id")
-  @Throttle({ default: { limit: 60, ttl: 60000 } })
   @ApiOperation({ summary: "Get project by id" })
   @ApiResponse({ status: 200, type: ProjectDto })
   async getById(@Param("id") id: string): Promise<ProjectDto> {

@@ -14,7 +14,7 @@ type Project = {
 };
 
 function apiBaseUrl(): string {
-  const env = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.API_BASE_URL;
+  const env = process.env.NEXT_PUBLIC_API_BASE_URL;
   return (
     env && env.trim().length > 0 ? env : "http://localhost:4000"
   ) as string;
@@ -56,7 +56,17 @@ export default function ProjectsClient() {
               <button className="rounded-md border border-(--border)/40 px-2 py-1 text-sm">
                 Edit
               </button>
-              <button className="rounded-md border border-(--border)/40 px-2 py-1 text-sm">
+              <button
+                onClick={async () => {
+                  const res = await fetch(`/api/admin/projects/${p.id}`, {
+                    method: "DELETE",
+                  }).catch(() => null);
+                  if (res && res.ok) {
+                    setItems((prev) => prev.filter((x) => x.id !== p.id));
+                  }
+                }}
+                className="rounded-md border border-(--border)/40 px-2 py-1 text-sm"
+              >
                 Delete
               </button>
             </div>

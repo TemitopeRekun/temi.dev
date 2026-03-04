@@ -13,16 +13,13 @@ import { JobLeadsModule } from "./modules/job-leads/job-leads.module";
 import { ProposalsModule } from "./modules/proposals/proposals.module";
 import { OutreachModule } from "./modules/outreach/outreach.module";
 import { CareerAnalyticsModule } from "./modules/career-analytics/career-analytics.module";
+import { AiModule } from "./modules/ai/ai.module";
+import { RagModule } from "./modules/rag/rag.module";
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60_000,
-        limit: 60,
-      },
-    ]),
+    ThrottlerModule.forRoot([{ ttl: 60_000, limit: 10 }]),
     PrismaModule,
     AuthModule,
     ProjectsModule,
@@ -33,6 +30,8 @@ import { CareerAnalyticsModule } from "./modules/career-analytics/career-analyti
     ProposalsModule,
     OutreachModule,
     CareerAnalyticsModule,
+    AiModule,
+    RagModule,
   ],
   controllers: [AppController],
   providers: [

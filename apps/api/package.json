@@ -13,11 +13,13 @@
     "prisma:push": "prisma db push",
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
-    "prisma:studio": "prisma studio"
+    "prisma:studio": "prisma studio",
+    "backfill:embeddings": "nest build && node dist/scripts/backfill-embeddings.js"
   },
   "dependencies": {
     "@fastify/cors": "^9.0.1",
     "@fastify/helmet": "^13.0.2",
+    "@google/generative-ai": "^0.24.1",
     "@nestjs/common": "^11.0.0",
     "@nestjs/config": "^3.2.3",
     "@nestjs/core": "^11.0.0",
