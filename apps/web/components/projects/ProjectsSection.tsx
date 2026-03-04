@@ -195,7 +195,7 @@ export function ProjectsSection() {
   }, [active, update]);
 
   return (
-    <Section id="projects" className="bg-(--bg)">
+    <Section id="work" className="bg-(--bg)">
       <Container>
         <RevealOnScroll>
           <div className="mb-6 flex items-end justify-between">

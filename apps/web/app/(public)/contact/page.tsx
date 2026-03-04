@@ -18,9 +18,9 @@ async function createLeadAction(
   formData: FormData,
 ): Promise<LeadState> {
   "use server";
-  const name = String(formData.get("name") ?? "");
-  const email = String(formData.get("email") ?? "");
-  const message = String(formData.get("message") ?? "");
+  const name = String(formData.get("name") ?? "").trim();
+  const email = String(formData.get("email") ?? "").trim();
+  const message = String(formData.get("message") ?? "").trim();
   const service = formData.get("service")
     ? String(formData.get("service"))
     : null;
@@ -28,7 +28,10 @@ async function createLeadAction(
     return { ok: false, error: "Please complete all required fields." };
   }
   try {
-    const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
+    const base =
+      process.env.NEXT_PUBLIC_API_BASE_URL ??
+      process.env.NEXT_PUBLIC_API_URL ??
+      "http://localhost:4000";
     const res = await fetch(`${base}/api/leads`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

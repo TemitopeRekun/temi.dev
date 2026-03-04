@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 export function HeroBackground() {
   const [isDesktop, setIsDesktop] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
+  const [videoEnabled, setVideoEnabled] = useState(true);
+  const videoSrc = process.env.NEXT_PUBLIC_HERO_VIDEO_URL ?? "/hero.mp4";
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(min-width: 1024px)");
@@ -50,15 +52,19 @@ export function HeroBackground() {
           }}
         />
       </div>
-      {isDesktop ? (
+      {isDesktop && videoEnabled ? (
         <video
           autoPlay
           muted
           loop
           playsInline
           preload="none"
-          src="/hero.mp4"
+          src={videoSrc}
           onCanPlayThrough={() => setVideoReady(true)}
+          onError={() => {
+            setVideoReady(false);
+            setVideoEnabled(false);
+          }}
           className={[
             "absolute inset-0 h-full w-full object-cover transition-opacity duration-1200",
             videoReady ? "opacity-[0.15]" : "opacity-0",
