@@ -1,5 +1,6 @@
 export * from "./components/Button";
 export * from "./components/ArrowButton";
+export * from "./components/WarmCard";
 export * from "./components/layout/Section";
 export * from "./components/layout/Container";
 export * from "./components/layout/Grid";

@@ -1,6 +1,6 @@
 import { Hero } from "../../components/home/Hero";
-import { ProjectsSection } from "../../components/projects/ProjectsSection";
-import { Container, Grid, RevealOnScroll, Section } from "@temi/ui";
+import { FeaturedCarousel } from "../../components/home/FeaturedCarousel";
+import { HomeStatsRow } from "../../components/home/HomeStatsRow";
 import { buildMetadata } from "../../lib/metadata";
 
 export const metadata = buildMetadata({
@@ -49,70 +49,48 @@ export default function HomePage() {
 
       <section
         aria-label="Expertise Marquee"
-        className="relative isolate overflow-hidden border-y border-(--border,rgba(0,0,0,0.08)) bg-(--surface)"
+        className="relative isolate overflow-hidden border-y border-(--border) bg-(--surface2)"
       >
-        <div className="whitespace-nowrap">
-          <p className="inline-block animate-[marquee_22s_linear_infinite] py-3 text-sm tracking-wide text-(--text)/70 will-change-transform">
+        <div
+          className="relative whitespace-nowrap before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:z-10 before:w-16 before:bg-linear-to-r before:from-(--surface2) before:to-transparent after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:z-10 after:w-16 after:bg-linear-to-l after:from-(--surface2) after:to-transparent"
+          style={{
+            maskImage:
+              "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
+          }}
+        >
+          <p className="inline-block animate-[marquee_22s_linear_infinite] py-4 text-sm uppercase tracking-[0.2em] text-(--muted) will-change-transform">
             <span className="mx-6">
-              Full-Stack Development · AI Automation · Mobile Engineering ·
-              NestJS · Next.js · React Native ·
+              Full-Stack Development <span className="text-(--accent)">·</span>{" "}
+              AI Automation <span className="text-(--accent)">·</span> Mobile
+              Engineering <span className="text-(--accent)">·</span> NestJS{" "}
+              <span className="text-(--accent)">·</span> Next.js{" "}
+              <span className="text-(--accent)">·</span> React Native{" "}
+              <span className="text-(--accent)">·</span>
             </span>
             <span className="mx-6">
-              Full-Stack Development · AI Automation · Mobile Engineering ·
-              NestJS · Next.js · React Native ·
+              Full-Stack Development <span className="text-(--accent)">·</span>{" "}
+              AI Automation <span className="text-(--accent)">·</span> Mobile
+              Engineering <span className="text-(--accent)">·</span> NestJS{" "}
+              <span className="text-(--accent)">·</span> Next.js{" "}
+              <span className="text-(--accent)">·</span> React Native{" "}
+              <span className="text-(--accent)">·</span>
             </span>
             <span className="mx-6">
-              Full-Stack Development · AI Automation · Mobile Engineering ·
-              NestJS · Next.js · React Native ·
+              Full-Stack Development <span className="text-(--accent)">·</span>{" "}
+              AI Automation <span className="text-(--accent)">·</span> Mobile
+              Engineering <span className="text-(--accent)">·</span> NestJS{" "}
+              <span className="text-(--accent)">·</span> Next.js{" "}
+              <span className="text-(--accent)">·</span> React Native{" "}
+              <span className="text-(--accent)">·</span>
             </span>
           </p>
         </div>
       </section>
 
-      <Section id="work" className="bg-(--bg)">
-        <Container>
-          <Grid cols={1} md={3} gap="gap-6 md:gap-8">
-            <RevealOnScroll>
-              <div className="rounded-2xl border border-(--border,rgba(0,0,0,0.08)) bg-(--surface) p-6">
-                <div className="text-3xl font-semibold text-(--text)">
-                  5+ Years
-                </div>
-                <div className="mt-1 text-sm text-(--muted)">Experience</div>
-              </div>
-            </RevealOnScroll>
-            <RevealOnScroll>
-              <div className="rounded-2xl border border-(--border,rgba(0,0,0,0.08)) bg-(--surface) p-6">
-                <div className="text-3xl font-semibold text-(--text)">
-                  20+ Projects
-                </div>
-                <div className="mt-1 text-sm text-(--muted)">Delivered</div>
-              </div>
-            </RevealOnScroll>
-            <RevealOnScroll>
-              <div className="rounded-2xl border border-(--border,rgba(0,0,0,0.08)) bg-(--surface) p-6">
-                <div className="text-3xl font-semibold text-(--text)">
-                  AI-First
-                </div>
-                <div className="mt-1 text-sm text-(--muted)">Development</div>
-              </div>
-            </RevealOnScroll>
-          </Grid>
-        </Container>
-      </Section>
-
-      <ProjectsSection />
-
-      <Section id="contact" className="bg-(--bg)">
-        <Container>
-          <RevealOnScroll>
-            <div className="rounded-2xl border border-(--border,rgba(0,0,0,0.08)) bg-(--surface) p-6 text-center">
-              <div className="text-lg text-(--muted)">
-                Ready to collaborate? Let’s build something remarkable.
-              </div>
-            </div>
-          </RevealOnScroll>
-        </Container>
-      </Section>
+      <HomeStatsRow />
+      <FeaturedCarousel />
     </main>
   );
 }

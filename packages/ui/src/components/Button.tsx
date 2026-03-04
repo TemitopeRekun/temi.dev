@@ -16,26 +16,20 @@ function variantClasses(variant: ButtonVariant): string {
   switch (variant) {
     case "primary":
       return [
-        "bg-[var(--accent)] text-[var(--bg)]",
-        "border border-transparent",
-        "hover:opacity-95",
-        "active:opacity-90"
+        "bg-[linear-gradient(135deg,var(--accent),var(--accent2))] text-white",
+        "border-0",
+        "hover:opacity-[0.92] hover:shadow-[0_0_20px_var(--accent-glow-strong)] hover:-translate-y-px",
+        "active:translate-y-0 active:opacity-[0.85]"
       ].join(" ");
     case "outline":
-      return [
-        "bg-transparent text-[var(--text)]",
-        "border border-current",
-        "hover:bg-[var(--surface)]/60",
-        "active:bg-[var(--surface)]"
-      ].join(" ");
     case "ghost":
-    default:
       return [
         "bg-transparent text-[var(--text)]",
-        "border border-transparent",
-        "hover:bg-[var(--surface)]/50",
-        "active:bg-[var(--surface)]/70"
+        "border border-[var(--border)]",
+        "hover:border-[var(--border-hover)] hover:bg-[var(--surface2)] hover:shadow-[0_0_12px_var(--accent-glow)]"
       ].join(" ");
+    default:
+      return "";
   }
 }
 
@@ -44,7 +38,7 @@ export const Button = forwardRef<HTMLButtonElement, Props>(function Button(
   ref
 ) {
   const base =
-    "inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-medium transition-colors";
+    "inline-flex items-center justify-center rounded-full px-6 py-3 text-[0.875rem] font-medium [transition:all_250ms_ease]";
   const classes = [base, variantClasses(variant), className].filter(Boolean).join(" ");
   const btn = (
     <button ref={ref} className={classes} {...rest}>
@@ -53,4 +47,3 @@ export const Button = forwardRef<HTMLButtonElement, Props>(function Button(
   );
   return magnetic ? <MagneticWrapper strength={10}>{btn}</MagneticWrapper> : btn;
 });
-

@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { Children, isValidElement, useEffect, useRef } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import type { ScrollTriggerInstance } from "gsap/ScrollTrigger";
 
 let registered = false;
 function ensureRegister() {
@@ -27,7 +26,8 @@ export function StaggerReveal({
   offsetY = 20,
 }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const triggers = useRef<ScrollTriggerInstance[]>([]);
+  type ScrollTriggerHandle = ReturnType<typeof ScrollTrigger.create>;
+  const triggers = useRef<ScrollTriggerHandle[]>([]);
 
   useEffect(() => {
     ensureRegister();

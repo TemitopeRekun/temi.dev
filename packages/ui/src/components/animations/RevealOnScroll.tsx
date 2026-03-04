@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
-import type { ScrollTriggerInstance } from "gsap/ScrollTrigger";
 
 // register plugin once in this module scope
 let registered = false;
@@ -34,7 +33,8 @@ export function RevealOnScroll({
   triggerSelector = null,
 }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const triggers = useRef<ScrollTriggerInstance[]>([]);
+  type ScrollTriggerHandle = ReturnType<typeof ScrollTrigger.create>;
+  const triggers = useRef<ScrollTriggerHandle[]>([]);
 
   useEffect(() => {
     ensureRegister();

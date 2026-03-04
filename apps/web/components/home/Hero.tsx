@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 import { registerGSAP, gsap } from "../../lib/gsap";
 import type { Route } from "next";
 import { MagneticWrapper } from "@temi/ui";
+import { HeroBackground } from "./HeroBackground";
 
 const Scene = dynamic(() => import("./Hero3D"), {
   ssr: false,
@@ -115,27 +116,25 @@ export function Hero() {
 
   return (
     <section
-      className={[
-        "relative min-h-[calc(100dvh-4rem)] md:min-h-[calc(100dvh-4rem)]",
-        "bg-(--bg) text-(--text)",
-      ]
-        .filter(Boolean)
-        .join(" ")}
+      className="relative isolate min-h-dvh overflow-hidden text-(--text)"
       aria-label="Hero"
     >
-      <div className="mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 px-4 py-10 sm:px-6 lg:grid-cols-2 lg:gap-12 lg:px-8 lg:py-14">
+      <HeroBackground />
+      <div className="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 gap-8 px-4 py-10 sm:px-6 lg:grid-cols-2 lg:gap-12 lg:px-8 lg:py-14">
         <div className="flex flex-col justify-center">
           <div
             ref={overlineRef}
             className="mb-4 text-xs uppercase tracking-[0.3em] text-(--muted)"
           >
+            <span className="mr-3 inline-block h-2 w-2 animate-[glowPulse_2s_ease-in-out_infinite] rounded-full bg-(--accent)" />
             Full-Stack · AI · Mobile
           </div>
           <h1
             ref={headlineRef}
-            className="font-(--font-syne) text-[min(14vw,7rem)] leading-[0.9] tracking-[-0.02em]"
+            className="font-(family-name:--font-fraunces) text-[min(13vw,6.5rem)] leading-[0.9] tracking-[-0.02em] lg:text-[min(10vw,7.5rem)]"
           >
-            Temitope Ogunrekun
+            <span>Temitope </span>
+            <span className="italic text-(--accent)">Ogunrekun</span>
           </h1>
           <p ref={sublineRef} className="mt-4 max-w-xl text-(--muted)">
             Software Engineer & AI Automation Expert
@@ -145,8 +144,9 @@ export function Hero() {
               <Link
                 href={{ pathname: "/" as Route, hash: "work" }}
                 className={[
-                  "inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-medium transition-colors",
-                  "bg-(--accent) text-(--bg) border border-transparent hover:opacity-95 active:opacity-90",
+                  "inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-medium text-white",
+                  "bg-linear-to-br from-(--accent) to-(--accent2) shadow-[0_0_20px_var(--accent-glow)]",
+                  "hover:-translate-y-0.5 hover:shadow-[0_0_28px_var(--accent-glow-strong)] transition-all duration-250",
                 ].join(" ")}
               >
                 View Work
@@ -156,8 +156,8 @@ export function Hero() {
               <Link
                 href={{ pathname: "/" as Route, hash: "contact" }}
                 className={[
-                  "inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-medium transition-colors",
-                  "bg-transparent text-(--text) border border-transparent hover:bg-(--surface)/50 active:bg-(--surface)/70",
+                  "inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-medium",
+                  "border border-(--border) hover:border-(--border-hover) hover:bg-(--surface2) transition-all duration-250",
                 ].join(" ")}
               >
                 Let&apos;s Talk
@@ -174,11 +174,26 @@ export function Hero() {
       </div>
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 bottom-6 flex items-center justify-center"
+        className="pointer-events-none absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2"
       >
-        <div className="h-10 w-px animate-[bounceY_1.3s_infinite] bg-(--text)/40" />
+        <span className="text-xs uppercase tracking-[0.3em] text-(--muted) opacity-60">
+          scroll
+        </span>
+        <div className="h-12 w-px animate-[bounceY_1.5s_ease-in-out_infinite] bg-linear-to-b from-(--accent)/60 to-transparent" />
       </div>
       <style jsx global>{`
+        @keyframes glowPulse {
+          0%,
+          100% {
+            opacity: 0.55;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.25);
+          }
+        }
+
         @keyframes bounceY {
           0%,
           100% {
