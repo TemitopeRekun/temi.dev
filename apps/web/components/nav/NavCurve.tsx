@@ -24,7 +24,7 @@ export function NavCurve() {
     },
     exit: {
       d: [curveStraight, curveIn],
-      transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1] },
+      transition: { duration: 1.1, ease: [0.76, 0, 0.24, 1], delay: 0.05 },
     },
   };
 

@@ -6,7 +6,7 @@ export const menuSlide = {
   },
   exit: {
     x: "calc(100% + 100px)",
-    transition: { duration: 0.95, ease: [0.76, 0, 0.24, 1], delay: 0.1 },
+    transition: { duration: 1.1, ease: [0.76, 0, 0.24, 1], delay: 0.2 },
   },
 };
 

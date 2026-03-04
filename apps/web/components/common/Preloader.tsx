@@ -27,12 +27,12 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
 
   useEffect(() => {
     if (index === words.length - 1) {
-      const t = setTimeout(onComplete, 2200);
+      const t = setTimeout(onComplete, 3700);
       return () => clearTimeout(t);
     }
     const t = setTimeout(
       () => setIndex((i) => i + 1),
-      index === 0 ? 1200 : 900,
+      index === 0 ? 2500 : 2200,
     );
     return () => clearTimeout(t);
   }, [index, onComplete]);
