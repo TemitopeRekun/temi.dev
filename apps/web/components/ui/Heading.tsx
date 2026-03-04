@@ -134,7 +134,6 @@ export function Heading({
     .join(" ");
 
   return (
-    // eslint-disable-next-line react/no-unknown-property
     <Tag ref={ref as never} className={classes}>
       {children}
     </Tag>

@@ -1,4 +1,4 @@
-import { IsEmail, IsEnum, IsInt, IsOptional, IsString, IsUrl, Max, MaxLength, Min, ValidateIf } from "class-validator";
+import { IsEmail, IsEnum, IsInt, IsOptional, IsString, IsUrl, MaxLength, Min, ValidateIf } from "class-validator";
 
 export enum JobPlatformDto {
   UPWORK = "UPWORK",

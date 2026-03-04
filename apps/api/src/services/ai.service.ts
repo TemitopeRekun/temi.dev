@@ -51,9 +51,39 @@ export class AIService {
           }),
         },
       );
-      const data = (await res.json()) as any;
-      const text: string | undefined =
-        data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      const data = (await res.json()) as unknown;
+      const text: string | undefined = (() => {
+        if (
+          data &&
+          typeof data === "object" &&
+          "candidates" in data &&
+          Array.isArray((data as { candidates?: unknown[] }).candidates)
+        ) {
+          const cand = (data as { candidates: unknown[] }).candidates[0];
+          if (
+            cand &&
+            typeof cand === "object" &&
+            "content" in cand &&
+            cand.content &&
+            typeof (cand as { content?: unknown }).content === "object" &&
+            Array.isArray(
+              (cand as { content: { parts?: unknown[] } }).content.parts,
+            )
+          ) {
+            const part = (cand as { content: { parts: unknown[] } }).content
+              .parts[0];
+            if (
+              part &&
+              typeof part === "object" &&
+              "text" in part &&
+              typeof (part as { text?: unknown }).text === "string"
+            ) {
+              return (part as { text: string }).text;
+            }
+          }
+        }
+        return undefined;
+      })();
       const output = text ?? "";
       const duration = Date.now() - start;
       // NOTE: custom implementation — minimal DB logging for AI observability

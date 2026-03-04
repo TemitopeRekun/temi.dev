@@ -3,18 +3,21 @@ import { NextRequest, NextResponse } from "next/server";
 
 function apiBaseUrl(): string {
   const env = process.env.NEXT_PUBLIC_API_BASE_URL;
-  return (env && env.trim().length > 0 ? env : "http://localhost:4000") as string;
+  return (
+    env && env.trim().length > 0 ? env : "http://localhost:4000"
+  ) as string;
 }
 
 export async function GET(
   _: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
   const c = await cookies();
   const token = c.get("admin_jwt")?.value;
   if (!token)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  const res = await fetch(`${apiBaseUrl()}/api/admin/leads/${params.id}`, {
+  const { id } = await params;
+  const res = await fetch(`${apiBaseUrl()}/api/admin/leads/${id}`, {
     cache: "no-store",
     headers: { authorization: `Bearer ${token}` },
   }).catch(() => null);
@@ -30,7 +33,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ): Promise<NextResponse> {
   const c = await cookies();
   const token = c.get("admin_jwt")?.value;
@@ -42,7 +45,8 @@ export async function PATCH(
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
-  const res = await fetch(`${apiBaseUrl()}/api/admin/leads/${params.id}`, {
+  const { id } = await params;
+  const res = await fetch(`${apiBaseUrl()}/api/admin/leads/${id}`, {
     method: "PATCH",
     headers: {
       "content-type": "application/json",

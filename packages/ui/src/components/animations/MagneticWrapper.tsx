@@ -1,9 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useMemo, useRef } from "react";
 import gsap from "gsap";
-import type { QuickToFunc } from "gsap";
+type QuickTo = (value: number) => void;
 
 type Props = {
   children: ReactNode;
@@ -26,7 +25,7 @@ export function MagneticWrapper({
 }: Props) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const innerRef = useRef<HTMLDivElement | null>(null);
-  const quickTo = useRef<{ x: QuickToFunc; y: QuickToFunc } | null>(null);
+  const quickTo = useRef<{ x: QuickTo; y: QuickTo } | null>(null);
   const cleanupFns = useRef<Array<() => void>>([]);
 
   const style = useMemo<CSSProperties>(() => ({ display: "inline-block" }), []);

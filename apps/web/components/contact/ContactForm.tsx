@@ -1,11 +1,8 @@
 "use client";
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useEffect } from "react";
 import { StaggerReveal } from "@temi/ui";
 
-export type LeadState =
-  | { ok: true }
-  | { ok: false; error: string }
-  | null;
+export type LeadState = { ok: true } | { ok: false; error: string } | null;
 
 type Props = {
   action: (prev: LeadState, data: FormData) => Promise<LeadState>;
@@ -17,9 +14,8 @@ export function ContactForm({ action, defaultService }: Props) {
     action,
     null,
   );
-  const [visible, setVisible] = useState(false);
   useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 50);
+    const t = setTimeout(() => {}, 50);
     return () => clearTimeout(t);
   }, []);
 
@@ -91,8 +87,12 @@ export function ContactForm({ action, defaultService }: Props) {
         data-visible={Boolean(state)}
         className={[
           "mt-4 rounded-xl border border-(--border,rgba(0,0,0,0.08)) p-3 text-sm transition-all",
-          !state ? "opacity-0 translate-y-1 pointer-events-none" : "opacity-100 translate-y-0",
-          state?.ok ? "bg-(--surface) text-(--text)" : "bg-(--surface) text-red-500",
+          !state
+            ? "opacity-0 translate-y-1 pointer-events-none"
+            : "opacity-100 translate-y-0",
+          state?.ok
+            ? "bg-(--surface) text-(--text)"
+            : "bg-(--surface) text-red-500",
         ].join(" ")}
       >
         {state?.ok && "Thanks! Your message has been received."}
@@ -101,10 +101,11 @@ export function ContactForm({ action, defaultService }: Props) {
 
       <style jsx>{`
         div[data-visible="true"] {
-          transition: opacity 0.3s ease, transform 0.3s ease;
+          transition:
+            opacity 0.3s ease,
+            transform 0.3s ease;
         }
       `}</style>
     </div>
   );
 }
-

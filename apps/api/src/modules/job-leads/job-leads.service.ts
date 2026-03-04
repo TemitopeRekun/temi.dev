@@ -5,7 +5,7 @@ import {
   JobPlatformDto,
   JobSourceDto,
 } from "./dto/create-job-lead.dto";
-import { ListJobLeadsQuery, JobStatusDto } from "./dto/list-job-leads.query";
+import { ListJobLeadsQuery } from "./dto/list-job-leads.query";
 import { UpdateJobLeadDto } from "./dto/update-job-lead.dto";
 import { CsvImportDto } from "./dto/csv-import.dto";
 import { AIService } from "../../services/ai.service";

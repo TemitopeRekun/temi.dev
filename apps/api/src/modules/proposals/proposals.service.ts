@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
-import { GenerateProposalDto, ProposalVariantDto } from "./dto/generate-proposal.dto";
+import { GenerateProposalDto } from "./dto/generate-proposal.dto";
 import { UpdateProposalDto } from "./dto/update-proposal.dto";
 import { AIService } from "../../services/ai.service";
 
