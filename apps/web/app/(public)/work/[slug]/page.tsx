@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { Container, RevealOnScroll, Section } from "@temi/ui";
+import { AnimatedText } from "../../../../components/common/AnimatedText";
 import { projects } from "../../../../lib/projects";
 import { buildMetadata } from "../../../../lib/metadata";
 
@@ -38,7 +39,11 @@ export default async function WorkDetailPage({
       <Section className="bg-(--bg)">
         <Container>
           <RevealOnScroll>
-            <h1 className="mb-2 text-3xl font-semibold">{project.title}</h1>
+            <h1 className="sr-only">{project.title}</h1>
+            <AnimatedText
+              phrase={project.title}
+              className="mb-2 text-3xl font-semibold text-(--text)"
+            />
           </RevealOnScroll>
           <p className="text-(--muted)">
             Placeholder detail page for <strong>{project.slug}</strong>. Content coming soon.

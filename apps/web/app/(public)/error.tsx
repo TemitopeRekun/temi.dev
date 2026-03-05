@@ -1,4 +1,5 @@
 "use client";
+import { AnimatedText } from "../../components/common/AnimatedText";
 export default function ErrorPublic(props: {
   error: Error & { digest?: string };
   reset: () => void;
@@ -6,7 +7,11 @@ export default function ErrorPublic(props: {
   return (
     <div className="px-4 py-16 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-md text-center">
-        <h1 className="text-2xl font-semibold text-(--text)">Page error</h1>
+        <h1 className="sr-only">Page error</h1>
+        <AnimatedText
+          phrase="Page error"
+          className="text-2xl font-semibold text-(--text)"
+        />
         <p className="mt-2 text-(--muted)">
           We couldn’t load this page. Please try again.
         </p>

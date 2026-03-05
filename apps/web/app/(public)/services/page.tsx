@@ -1,6 +1,7 @@
 import type { Route } from "next";
 import type { ReactNode } from "react";
 import Link from "next/link";
+import { AnimatedText } from "../../../components/common/AnimatedText";
 import { Container, RevealOnScroll, Section, StaggerReveal } from "@temi/ui";
 import { TiltCard } from "../../../components/services/TiltCard";
 import { buildMetadata } from "../../../lib/metadata";
@@ -87,7 +88,11 @@ export default function ServicesPage() {
       <Section>
         <Container>
           <RevealOnScroll>
-            <h1 className="text-3xl font-semibold text-(--text)">Services</h1>
+            <h1 className="sr-only">Services</h1>
+            <AnimatedText
+              phrase="Services"
+              className="text-3xl font-semibold text-(--text)"
+            />
           </RevealOnScroll>
           <StaggerReveal className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
             {SERVICES.map((s) => (

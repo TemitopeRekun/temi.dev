@@ -1,5 +1,6 @@
 import { Container, RevealOnScroll, Section, StaggerReveal } from "@temi/ui";
 import { AboutHero } from "../../../components/about/AboutHero";
+import { AnimatedText } from "../../../components/common/AnimatedText";
 import { ParallaxImage } from "../../../components/about/ParallaxImage";
 import { DownloadCvButton } from "../../../components/common/DownloadCvButton";
 import { buildMetadata } from "../../../lib/metadata";
@@ -43,7 +44,11 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
             <RevealOnScroll>
               <div>
-                <h2 className="text-2xl font-semibold text-(--text)">My Story</h2>
+                <h2 className="sr-only">My Story</h2>
+                <AnimatedText
+                  phrase="My Story"
+                  className="text-2xl font-semibold text-(--text)"
+                />
                 <p className="mt-4 text-(--muted)">
                   I value pragmatic engineering: reliable systems, clean APIs, and a strong UX.
                   My work spans full-stack web, AI automation, and mobile, with a focus on
@@ -73,7 +78,11 @@ export default function AboutPage() {
         <Container>
           <div className="mb-8">
             <RevealOnScroll>
-              <h2 className="text-2xl font-semibold text-(--text)">Timeline</h2>
+              <h2 className="sr-only">Timeline</h2>
+              <AnimatedText
+                phrase="Timeline"
+                className="text-2xl font-semibold text-(--text)"
+              />
             </RevealOnScroll>
           </div>
           <ul className="relative grid grid-cols-1 gap-6">
@@ -109,7 +118,11 @@ export default function AboutPage() {
         <Container>
           <div className="mb-6">
             <RevealOnScroll>
-              <h2 className="text-2xl font-semibold text-(--text)">Tech Stack</h2>
+              <h2 className="sr-only">Tech Stack</h2>
+              <AnimatedText
+                phrase="Tech Stack"
+                className="text-2xl font-semibold text-(--text)"
+              />
             </RevealOnScroll>
           </div>
           <StaggerReveal className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">

@@ -65,7 +65,7 @@ export function FullscreenNav() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.9 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed right-8 top-1/2 -translate-y-1/2 z-[200] w-14 h-14 md:w-20 md:h-20 rounded-full bg-(--text) flex flex-col items-center justify-center gap-[6px] mix-blend-difference"
+            className="fixed right-8 top-1/2 -translate-y-1/2 z-200 w-14 h-14 md:w-20 md:h-20 rounded-full bg-(--text) flex flex-col items-center justify-center gap-[6px] mix-blend-difference"
           >
             <motion.span
               animate={isOpen ? { rotate: 45, y: 5 } : { rotate: 0, y: 0 }}
@@ -89,7 +89,7 @@ export function FullscreenNav() {
             initial="initial"
             animate="enter"
             exit="exit"
-            className="fixed top-0 right-0 h-screen w-[min(420px,90vw)] bg-(--bg) z-[150] flex flex-col justify-between py-20 px-12 overflow-visible"
+            className="fixed top-0 right-0 h-screen w-[min(420px,90vw)] bg-(--bg) z-150 flex flex-col justify-between py-20 px-12 overflow-visible"
           >
             {/* Bezier SVG left edge */}
             <NavCurve />
@@ -139,7 +139,7 @@ export function FullscreenNav() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
             onClick={() => setIsOpen(false)}
-            className="fixed inset-0 z-[140] bg-black/20 backdrop-blur-[2px]"
+            className="fixed inset-0 z-140 bg-black/20 backdrop-blur-[2px]"
           />
         )}
       </AnimatePresence>

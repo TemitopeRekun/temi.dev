@@ -8,7 +8,7 @@ const slideUp = {
   initial: { y: 0 },
   exit: {
     y: "-100%",
-    transition: { duration: 0.9, ease: [0.76, 0, 0.24, 1], delay: 1.2 },
+    transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.2 },
   },
 };
 
@@ -27,12 +27,12 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
 
   useEffect(() => {
     if (index === words.length - 1) {
-      const t = setTimeout(onComplete, 3700);
+      const t = setTimeout(onComplete, 3300);
       return () => clearTimeout(t);
     }
     const t = setTimeout(
       () => setIndex((i) => i + 1),
-      index === 0 ? 2500 : 2200,
+      index === 0 ? 2500 : 2300,
     );
     return () => clearTimeout(t);
   }, [index, onComplete]);
@@ -60,7 +60,7 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
       variants={slideUp}
       initial="initial"
       exit="exit"
-      className="fixed inset-0 z-[9999] overflow-hidden flex items-center justify-center bg-(--bg)"
+      className="fixed inset-0 z-9999 overflow-hidden flex items-center justify-center bg-(--bg)"
     >
       {dim.w > 0 && (
         <>

@@ -4,6 +4,7 @@ import {
   ContactForm,
   type LeadState,
 } from "../../../components/contact/ContactForm";
+import { AnimatedText } from "../../../components/common/AnimatedText";
 import { buildMetadata } from "../../../lib/metadata";
 
 export const metadata = buildMetadata({
@@ -62,9 +63,11 @@ export default async function ContactPage(props: {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
             <RevealOnScroll>
               <div>
-                <h1 className="text-3xl font-semibold text-(--text)">
-                  Let’s talk
-                </h1>
+                <h1 className="sr-only">Let’s talk</h1>
+                <AnimatedText
+                  phrase="Let’s talk"
+                  className="text-3xl font-semibold text-(--text)"
+                />
                 <p className="mt-3 text-(--muted)">
                   Share a bit about your goals. I’ll reply within 1–2 business
                   days.
@@ -114,3 +117,4 @@ export default async function ContactPage(props: {
     </main>
   );
 }
+

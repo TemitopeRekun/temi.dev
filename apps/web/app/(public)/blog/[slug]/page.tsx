@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
 import { Container, RevealOnScroll, Section } from "@temi/ui";
+import { AnimatedText } from "../../../../components/common/AnimatedText";
 import { posts } from "../../../../lib/blog";
 import { buildMetadata } from "../../../../lib/metadata";
 
@@ -43,9 +44,11 @@ export default async function BlogDetailPage({
           ) : (
             <article className="prose prose-invert max-w-none">
               <RevealOnScroll>
-                <h1 className="mb-3 text-3xl font-semibold text-(--text)">
-                  {post.title}
-                </h1>
+                <h1 className="sr-only">{post.title}</h1>
+                <AnimatedText
+                  phrase={post.title}
+                  className="mb-3 text-3xl font-semibold text-(--text)"
+                />
               </RevealOnScroll>
               <div className="relative mb-6 aspect-16/10 overflow-hidden rounded-2xl border border-(--border)">
                 <Image
@@ -73,4 +76,3 @@ export default async function BlogDetailPage({
     </main>
   );
 }
-

@@ -1,4 +1,5 @@
 "use client";
+import { AnimatedText } from "../components/common/AnimatedText";
 export default function Error(props: {
   error: Error & { digest?: string };
   reset: () => void;
@@ -6,7 +7,11 @@ export default function Error(props: {
   return (
     <div className="px-4 py-16 sm:py-20 lg:py-28">
       <div className="mx-auto max-w-md text-center">
-        <h1 className="text-2xl font-semibold text-(--text)">Something went wrong</h1>
+        <h1 className="sr-only">Something went wrong</h1>
+        <AnimatedText
+          phrase="Something went wrong"
+          className="text-2xl font-semibold text-(--text)"
+        />
         <p className="mt-2 text-(--muted)">
           An unexpected error occurred. You can try again.
         </p>
@@ -21,4 +26,3 @@ export default function Error(props: {
     </div>
   );
 }
-

@@ -1,4 +1,4 @@
-import { Heading } from "../../../../../components/ui/Heading";
+import { AnimatedText } from "../../../../../components/common/AnimatedText";
 import { Text } from "../../../../../components/ui/Text";
 
 function apiBaseUrl(): string {
@@ -38,9 +38,11 @@ export default async function DashboardPage() {
   const counts: Counts = await getCounts();
   return (
     <div className="space-y-6">
-      <Heading size="h2" as="h1">
-        Overview
-      </Heading>
+      <h1 className="sr-only">Overview</h1>
+      <AnimatedText
+        phrase="Overview"
+        className="tracking-tight text-[var(--text)] text-4xl sm:text-5xl lg:text-6xl leading-tight"
+      />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card title="Total Projects" value={counts.totalProjects.toString()} />
         <Card title="Total Blog Posts" value={counts.totalPosts.toString()} />

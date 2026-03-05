@@ -1,4 +1,5 @@
 import { Container, RevealOnScroll, Section } from "@temi/ui";
+import { AnimatedText } from "../../../components/common/AnimatedText";
 import { WorkList } from "../../../components/projects/WorkList";
 import { buildMetadata } from "../../../lib/metadata";
 
@@ -16,7 +17,11 @@ export default function WorkPage() {
       <Section className="bg-(--bg)">
         <Container>
           <RevealOnScroll>
-            <h1 className="mb-6 text-3xl font-semibold">Work</h1>
+            <h1 className="sr-only">Work</h1>
+            <AnimatedText
+              phrase="Work"
+              className="mb-6 text-3xl font-semibold text-(--text)"
+            />
           </RevealOnScroll>
           <WorkList />
         </Container>

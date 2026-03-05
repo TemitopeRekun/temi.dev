@@ -2,6 +2,7 @@ import type { Route } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Container, RevealOnScroll, Section, StaggerReveal } from "@temi/ui";
+import { AnimatedText } from "../../../components/common/AnimatedText";
 import { posts } from "../../../lib/blog";
 import { buildMetadata } from "../../../lib/metadata";
 
@@ -21,7 +22,11 @@ export default function BlogPage() {
       <Section>
         <Container>
           <RevealOnScroll>
-            <h1 className="text-3xl font-semibold text-(--text)">Blog</h1>
+            <h1 className="sr-only">Blog</h1>
+            <AnimatedText
+              phrase="Blog"
+              className="text-3xl font-semibold text-(--text)"
+            />
           </RevealOnScroll>
           <StaggerReveal className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-3">
             {items.map((p) => (

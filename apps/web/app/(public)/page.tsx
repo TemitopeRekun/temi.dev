@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container, RevealOnScroll, Section } from "@temi/ui";
+import { AnimatedText } from "../../components/common/AnimatedText";
 import { AboutHero } from "../../components/about/AboutHero";
 import {
   ContactForm,
@@ -141,7 +142,11 @@ export default function HomePage() {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
             <RevealOnScroll>
               <div>
-                <h2 className="text-3xl font-semibold text-(--text)">Let’s talk</h2>
+                <h2 className="sr-only">Let’s talk</h2>
+                <AnimatedText
+                  phrase="Let’s talk"
+                  className="text-3xl font-semibold text-(--text)"
+                />
                 <p className="mt-3 text-(--muted)">
                   Share a bit about your goals. I’ll reply within 1–2 business
                   days.
@@ -168,3 +173,4 @@ export default function HomePage() {
     </main>
   );
 }
+
