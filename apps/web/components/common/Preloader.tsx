@@ -1,18 +1,26 @@
 "use client";
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 
-const words = ["Hello", "Temitope", "Builder", "Developer", "Creator", "Welcome"];
+const words = [
+  "Hello",
+  "Temitope",
+  "Builder",
+  "Developer",
+  "Creator",
+  "Welcome",
+];
+const easing: [number, number, number, number] = [0.76, 0, 0.24, 1];
 
-const slideUp = {
+const slideUp: Variants = {
   initial: { y: 0 },
   exit: {
     y: "-100%",
-    transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.2 },
+    transition: { duration: 0.8, ease: easing, delay: 0.2 },
   },
 };
 
-const opacity = {
+const opacity: Variants = {
   initial: { opacity: 0 },
   enter: { opacity: 0.75, transition: { duration: 1, delay: 0.2 } },
 };
@@ -44,14 +52,14 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
     dim.h
   } 0 ${dim.h} L0 0`;
 
-  const curve = {
+  const curve: Variants = {
     initial: {
       d: initialPath,
-      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1] },
+      transition: { duration: 0.7, ease: easing },
     },
     exit: {
       d: targetPath,
-      transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1], delay: 0.3 },
+      transition: { duration: 0.7, ease: easing, delay: 0.3 },
     },
   };
 
