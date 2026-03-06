@@ -1,11 +1,12 @@
 import { AboutHero } from "../../components/about/AboutHero";
 import { Hero } from "../../components/home/Hero";
+import { MarqueeSlider } from "../../components/home/MarqueeSlider";
 import { HomeStatsRow } from "../../components/home/HomeStatsRow";
 import { ProjectsSection } from "../../components/projects/ProjectsSection";
 import { buildMetadata } from "../../lib/metadata";
 
 export const metadata = buildMetadata({
-  title: "Temitope Ogunrekun â€” Full-Stack Â· AI Â· Mobile",
+  title: "Temitope Ogunrekun — Full-Stack · AI · Mobile",
   description:
     "Software Engineer & AI Automation Expert. Building AI-first web and mobile products with Next.js, NestJS, and R3F.",
   path: "/",
@@ -47,49 +48,7 @@ export default function HomePage() {
         }}
       />
       <Hero />
-
-      <section
-        aria-label="Expertise Marquee"
-        className="relative isolate overflow-hidden border-y border-(--border) bg-(--surface2)"
-      >
-        <div
-          className="relative whitespace-nowrap before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:z-10 before:w-16 before:bg-linear-to-r before:from-(--surface2) before:to-transparent after:pointer-events-none after:absolute after:inset-y-0 after:right-0 after:z-10 after:w-16 after:bg-linear-to-l after:from-(--surface2) after:to-transparent"
-          style={{
-            maskImage:
-              "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
-            WebkitMaskImage:
-              "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
-          }}
-        >
-          <p className="inline-block animate-[marquee_22s_linear_infinite] py-4 text-sm uppercase tracking-[0.2em] text-(--muted) will-change-transform">
-            <span className="mx-6">
-              Full-Stack Development <span className="text-(--accent)">Â·</span>{" "}
-              AI Automation <span className="text-(--accent)">Â·</span> Mobile
-              Engineering <span className="text-(--accent)">Â·</span> NestJS{" "}
-              <span className="text-(--accent)">Â·</span> Next.js{" "}
-              <span className="text-(--accent)">Â·</span> React Native{" "}
-              <span className="text-(--accent)">Â·</span>
-            </span>
-            <span className="mx-6">
-              Full-Stack Development <span className="text-(--accent)">Â·</span>{" "}
-              AI Automation <span className="text-(--accent)">Â·</span> Mobile
-              Engineering <span className="text-(--accent)">Â·</span> NestJS{" "}
-              <span className="text-(--accent)">Â·</span> Next.js{" "}
-              <span className="text-(--accent)">Â·</span> React Native{" "}
-              <span className="text-(--accent)">Â·</span>
-            </span>
-            <span className="mx-6">
-              Full-Stack Development <span className="text-(--accent)">Â·</span>{" "}
-              AI Automation <span className="text-(--accent)">Â·</span> Mobile
-              Engineering <span className="text-(--accent)">Â·</span> NestJS{" "}
-              <span className="text-(--accent)">Â·</span> Next.js{" "}
-              <span className="text-(--accent)">Â·</span> React Native{" "}
-              <span className="text-(--accent)">Â·</span>
-            </span>
-          </p>
-        </div>
-      </section>
-
+      <MarqueeSlider />
       <HomeStatsRow />
       <AboutHero />
       <ProjectsSection />

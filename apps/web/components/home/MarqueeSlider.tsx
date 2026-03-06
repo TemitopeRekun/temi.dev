@@ -8,7 +8,7 @@ interface Props {
 }
 
 export function MarqueeSlider({
-  text = "Full-Stack Developer — AI Engineer — SaaS Builder — ",
+  text = "Full-Stack Development · AI Automation · Mobile Engineering · NestJS · Next.js · React Native · ",
 }: Props) {
   const firstText = useRef<HTMLParagraphElement>(null);
   const secondText = useRef<HTMLParagraphElement>(null);
@@ -16,6 +16,9 @@ export function MarqueeSlider({
   const xPercent = useRef(0);
   const direction = useRef(-1);
   const rafId = useRef(0);
+
+  // Repeat text to ensure it covers wide screens
+  const content = text.repeat(4);
 
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -51,18 +54,21 @@ export function MarqueeSlider({
 
   return (
     <div className="relative overflow-hidden py-4 border-y border-(--border)">
-      <div ref={slider} className="flex whitespace-nowrap will-change-transform">
+      <div
+        ref={slider}
+        className="relative flex whitespace-nowrap will-change-transform"
+      >
         <p
           ref={firstText}
           className="font-(--font-syne) text-[clamp(1.5rem,5vw,4rem)] font-light pr-8 text-(--text)/30"
         >
-          {text}
+          {content}
         </p>
         <p
           ref={secondText}
           className="absolute left-full font-(--font-syne) text-[clamp(1.5rem,5vw,4rem)] font-light pr-8 text-(--text)/30"
         >
-          {text}
+          {content}
         </p>
       </div>
     </div>
