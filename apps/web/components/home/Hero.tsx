@@ -52,7 +52,7 @@ export function Hero() {
 
       const ctx = gsap.context(() => {
         const introTl = gsap.timeline({
-          defaults: { ease: "power3.out", duration: 0.8 },
+          defaults: { ease: "power2.out", duration: 0.75 },
         });
 
         introTl
@@ -72,7 +72,8 @@ export function Hero() {
             start: "top top",
             end: "+=240%",
             pin: true,
-            scrub: 1,
+            scrub: 1.15,
+            anticipatePin: 1,
             onUpdate: (self) => {
               const nextProgress = Number(self.progress.toFixed(3));
               if (Math.abs(nextProgress - latestProgress) < 0.01) return;
@@ -83,19 +84,19 @@ export function Hero() {
         });
 
         scrollTl
-          .to(headlinePart1, { xPercent: -24, autoAlpha: 0 }, 0.1)
+          .to(headlinePart1, { xPercent: -18, autoAlpha: 0 }, 0.1)
           .to(
             headlinePart2,
-            { xPercent: 36, scale: 1.38, yPercent: -8, autoAlpha: 0 },
+            { xPercent: 28, scale: 1.22, yPercent: -6, autoAlpha: 0 },
             0.1,
           )
-          .to(subline, { scale: 1.2, yPercent: -10, autoAlpha: 0 }, 0.15)
+          .to(subline, { scale: 1.1, yPercent: -8, autoAlpha: 0 }, 0.15)
           .to(
             chips,
-            { scale: 1.25, xPercent: 5, yPercent: -14, autoAlpha: 0 },
+            { scale: 1.15, xPercent: 3, yPercent: -10, autoAlpha: 0 },
             0.18,
           )
-          .to(ctas, { yPercent: 116, autoAlpha: 0 }, 0.22)
+          .to(ctas, { yPercent: 96, autoAlpha: 0 }, 0.22)
           .to(scrollHint, { autoAlpha: 0 }, 0.12)
           .to(overline, { autoAlpha: 0 }, 0.1);
       });
@@ -121,7 +122,7 @@ export function Hero() {
       >
         <div
           ref={overlineRef}
-          className="mb-6 text-xs uppercase tracking-[0.3em] text-(--muted)"
+          className="mb-6 text-xs uppercase tracking-[0.3em] text-(--muted) hero-muted-contrast"
         >
           <span className="mr-3 inline-block h-2 w-2 animate-[glowPulse_2s_ease-in-out_infinite] rounded-full bg-(--accent)" />
           Full-Stack · AI · Mobile
@@ -129,7 +130,7 @@ export function Hero() {
 
         <h1
           ref={headlineRef}
-          className="font-(family-name:--font-fraunces) text-[min(13vw,6.5rem)] leading-[0.9] tracking-[-0.02em] lg:text-[min(10vw,8.5rem)]"
+          className="font-(family-name:--font-fraunces) text-[min(13vw,6.5rem)] leading-[0.9] tracking-[-0.02em] lg:text-[min(10vw,8.5rem)] hero-text-contrast"
         >
           <span ref={headlinePart1Ref} className="inline-block">
             Temitope{" "}
@@ -144,7 +145,7 @@ export function Hero() {
 
         <p
           ref={sublineRef}
-          className="mt-8 max-w-2xl text-lg sm:text-xl text-(--muted) font-light"
+          className="mt-8 max-w-2xl text-lg sm:text-xl text-(--muted) font-light hero-muted-contrast"
         >
           Software Engineer & AI Automation Expert
         </p>
@@ -207,6 +208,16 @@ export function Hero() {
       </div>
 
       <style jsx global>{`
+        .hero-text-contrast {
+          text-shadow: 0 2px 18px
+            color-mix(in oklab, var(--hero-ink-strong) 70%, transparent);
+        }
+
+        .hero-muted-contrast {
+          text-shadow: 0 1px 12px
+            color-mix(in oklab, var(--hero-ink) 60%, transparent);
+        }
+
         @keyframes glowPulse {
           0%,
           100% {

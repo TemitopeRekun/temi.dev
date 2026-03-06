@@ -31,7 +31,7 @@ function FloatingShape({
 
   return (
     <Float
-      speed={1.5}
+      speed={1.2}
       rotationIntensity={1}
       floatIntensity={2}
       floatingRange={[-0.2, 0.2]}
@@ -48,10 +48,13 @@ function SceneContent({ scrollProgress }: SceneContentProps) {
   const groupRef = useRef<Group | null>(null);
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
-  const primaryColor = isDark ? "#C8F557" : "#1A1A1A";
-  const secondaryColor = isDark ? "#ffffff" : "#000000";
+  const primaryColor = isDark ? "#C8F557" : "#F07C3A";
+  const secondaryColor = isDark ? "#ffffff" : "#8A3B1B";
+  const sparkleCount = isDark ? 110 : 70;
+  const sparkleOpacity = isDark ? 0.5 : 0.28;
+  const sparkleSize = isDark ? 2 : 1.4;
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     const g = groupRef.current;
     if (!g) return;
 
@@ -63,13 +66,15 @@ function SceneContent({ scrollProgress }: SceneContentProps) {
     const my = state.pointer.y;
 
     // Lerp towards mouse position for subtle parallax
-    g.rotation.y = mx * 0.05;
-    g.rotation.x = -my * 0.05;
+    const targetRotY = mx * 0.12;
+    const targetRotX = -my * 0.12;
+    g.rotation.y = MathUtils.damp(g.rotation.y, targetRotY, 6, delta);
+    g.rotation.x = MathUtils.damp(g.rotation.x, targetRotX, 6, delta);
 
     // Scroll effect: move camera/group forward
     // We move the group towards the camera to simulate flying through
-    const targetZ = progression * 5;
-    g.position.z = MathUtils.lerp(g.position.z, targetZ, 0.1);
+    const targetZ = progression * 4.5;
+    g.position.z = MathUtils.damp(g.position.z, targetZ, 4, delta);
   });
 
   return (
@@ -82,14 +87,14 @@ function SceneContent({ scrollProgress }: SceneContentProps) {
         factor={4}
         saturation={0}
         fade
-        speed={1}
+        speed={0.6}
       />
       <Sparkles
-        count={100}
+        count={sparkleCount}
         scale={12}
-        size={2}
+        size={sparkleSize}
         speed={0.4}
-        opacity={0.5}
+        opacity={sparkleOpacity}
         color={primaryColor}
       />
 

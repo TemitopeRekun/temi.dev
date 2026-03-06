@@ -33,11 +33,12 @@ export function HeroBackground({ scrollProgress = 0 }: HeroBackgroundProps) {
         const ctx = gsap.context(() => {
           gsap.to(video, {
             currentTime: video.duration,
+            ease: "none",
             scrollTrigger: {
               trigger: "section[aria-label='Hero']",
               start: "top top",
               end: "+=240%",
-              scrub: true,
+              scrub: 1.15,
             },
           });
         });
@@ -107,6 +108,7 @@ export function HeroBackground({ scrollProgress = 0 }: HeroBackgroundProps) {
       )}
 
       {/* Cinematic Overlays */}
+      <div className="hero-contrast-veil absolute inset-0 z-1 pointer-events-none" />
       <div className="hero-cinematic-overlay absolute inset-0 z-1 pointer-events-none" />
       <div
         className="absolute inset-x-0 bottom-0 h-48 z-1 pointer-events-none"
@@ -116,6 +118,21 @@ export function HeroBackground({ scrollProgress = 0 }: HeroBackgroundProps) {
       />
 
       <style jsx global>{`
+        .hero-contrast-veil {
+          background:
+            radial-gradient(
+              ellipse 60% 42% at 50% 35%,
+              color-mix(in oklab, var(--hero-ink-strong) 60%, transparent),
+              transparent 62%
+            ),
+            linear-gradient(
+              180deg,
+              color-mix(in oklab, var(--hero-ink) 75%, transparent) 0%,
+              transparent 40%,
+              color-mix(in oklab, var(--hero-ink-strong) 80%, transparent) 100%
+            );
+        }
+
         .hero-cinematic-overlay {
           background:
             linear-gradient(

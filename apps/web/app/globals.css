@@ -13,6 +13,8 @@
   --accent-glow: rgba(240, 124, 58, 0.18);
   --accent-glow-strong: rgba(240, 124, 58, 0.32);
   --glass-bg: rgba(255, 244, 230, 0.65);
+  --hero-ink: rgba(21, 17, 14, 0.45);
+  --hero-ink-strong: rgba(21, 17, 14, 0.65);
 }
 
 .dark {
@@ -28,6 +30,8 @@
   --accent-glow: rgba(240, 124, 58, 0.22);
   --accent-glow-strong: rgba(240, 124, 58, 0.40);
   --glass-bg: rgba(20, 18, 16, 0.70);
+  --hero-ink: rgba(12, 11, 10, 0.25);
+  --hero-ink-strong: rgba(12, 11, 10, 0.45);
 }
 
 html,
