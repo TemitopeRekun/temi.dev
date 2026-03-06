@@ -1,7 +1,6 @@
 "use client";
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
 
 type Props = {
   text: string;
@@ -10,7 +9,7 @@ type Props = {
   delay?: number;
   duration?: number;
   stagger?: number;
-  trigger?: string;
+  trigger?: string; // Kept for compatibility
   enabled?: boolean;
 };
 
@@ -19,96 +18,89 @@ export function TextReveal({
   className = "",
   type = "words",
   delay = 0,
-  duration = 0.8,
+  duration = 0.5,
   stagger = 0.02,
-  trigger,
   enabled = true,
 }: Props) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const container = useRef(null);
+  const isInView = useInView(container, { once: true, margin: "-10%" });
 
-  useEffect(() => {
-    if (!enabled) return;
-    gsap.registerPlugin(ScrollTrigger);
-    const container = containerRef.current;
-    if (!container) return;
+  if (!enabled) return <span className={className}>{text}</span>;
 
-    const ctx = gsap.context(() => {
-      const elements = container.querySelectorAll(".reveal-unit");
+  const slideUp = {
+    initial: {
+      y: "100%",
+    },
+    open: (i: number) => ({
+      y: "0%",
+      transition: {
+        duration,
+        delay: delay + (type === "chars" ? stagger * i : stagger * i),
+      },
+    }),
+    closed: {
+      y: "100%",
+      transition: { duration },
+    },
+  };
 
-      gsap.set(elements, {
-        y: "120%",
-        opacity: 0,
-        rotateX: 45,
-        transformOrigin: "top left",
-        visibility: "visible", // Make visible for GSAP to handle
-      });
-
-      ScrollTrigger.create({
-        trigger: trigger || container,
-        start: "top 85%", // Start a bit earlier to ensure visibility
-        onEnter: () => {
-          gsap.to(elements, {
-            y: "0%",
-            opacity: 1,
-            rotateX: 0,
-            duration,
-            stagger: type === "chars" ? stagger : stagger * 2,
-            ease: "power3.out",
-            delay,
-            overwrite: "auto",
-          });
-        },
-        once: true,
-      });
-    }, container);
-
-    return () => ctx.revert();
-  }, [text, delay, duration, stagger, trigger, type]);
-
-  const words = text.split(" ");
-
+  // If type is words, we split by space and animate each word
   if (type === "words") {
+    const words = text.split(" ");
     return (
-      <div
-        ref={containerRef}
+      <span
+        ref={container}
         className={`flex flex-wrap gap-x-[0.25em] ${className}`}
       >
+        <span className="sr-only">{text}</span>
         {words.map((word, i) => (
-          <span
-            key={i}
-            className="inline-block overflow-hidden pb-[0.1em] -mb-[0.1em]"
-          >
-            <span
-              className="reveal-unit inline-block will-change-transform opacity-0"
-              style={{ visibility: "hidden" }} // Hide initially to prevent FOUC
+          <span key={i} className="inline-flex overflow-hidden relative">
+            <motion.span
+              variants={slideUp}
+              custom={i}
+              initial="initial"
+              animate={isInView ? "open" : "closed"}
+              className="inline-block"
             >
               {word}
-            </span>
+            </motion.span>
           </span>
         ))}
-      </div>
+      </span>
     );
   }
 
+  // If type is chars, we split into words first to preserve word grouping/wrapping,
+  // then animate characters within words
+  const words = text.split(" ");
+  let charIndex = 0;
+
   return (
-    <div ref={containerRef} className={`inline-block ${className}`}>
+    <span ref={container} className={`inline-block ${className}`}>
+      <span className="sr-only">{text}</span>
       {words.map((word, i) => (
         <span key={i} className="inline-block whitespace-nowrap mr-[0.25em]">
-          {word.split("").map((char, j) => (
-            <span
-              key={j}
-              className="inline-block overflow-hidden pb-[0.1em] -mb-[0.1em]"
-            >
+          {word.split("").map((char, j) => {
+            const currentDelayIndex = charIndex++;
+            return (
               <span
-                className="reveal-unit inline-block will-change-transform opacity-0"
-                style={{ visibility: "hidden" }} // Hide initially to prevent FOUC
+                key={j}
+                className="inline-block overflow-hidden pb-[0.1em] -mb-[0.1em]"
               >
-                {char}
+                <motion.span
+                  variants={slideUp}
+                  custom={currentDelayIndex}
+                  initial="initial"
+                  animate={isInView ? "open" : "closed"}
+                  className="inline-block"
+                >
+                  {char}
+                </motion.span>
               </span>
-            </span>
-          ))}
+            );
+          })}
         </span>
       ))}
-    </div>
+    </span>
   );
 }

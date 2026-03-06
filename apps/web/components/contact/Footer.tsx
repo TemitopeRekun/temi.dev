@@ -4,6 +4,8 @@ import { useScroll, useTransform, useSpring, motion } from "framer-motion";
 import { AnimatedText } from "../common/AnimatedText";
 import { RoundedButton } from "../common/RoundedButton";
 import { MagneticWrapper } from "@temi/ui";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { ContactForm, type LeadState } from "./ContactForm";
 
 const SOCIALS = [
@@ -80,6 +82,15 @@ export function Footer({ action, defaultService = null }: Props) {
               fill: "var(--bg)",
             }}
           />
+          {/* This path creates the soft shadow effect just below the curve's edge */}
+          <motion.path
+            d={curveStroke}
+            fill="none"
+            stroke="black"
+            strokeWidth="20"
+            className="opacity-20"
+            style={{ filter: "blur(10px)" }}
+          />
           <motion.path
             d={curveStroke}
             fill="none"
@@ -93,7 +104,6 @@ export function Footer({ action, defaultService = null }: Props) {
       <motion.div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-(--accent)/25 blur-3xl" />
-        <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
       </motion.div>
 
       <motion.div
@@ -149,7 +159,7 @@ export function Footer({ action, defaultService = null }: Props) {
 
         <div className="my-10 sm:mt-12 flex flex-col gap-8">
           <div className="max-w-xl text-white/70 text-sm sm:text-base">
-            <AnimatedText phrase="Tell me about your product, your timeline, and the problem you want to solve. I'll respond with a clear plan and next steps." />
+            <AnimatedText phrase="Whether you need a full-stack overhaul, an AI integration, or a mobile app—let's discuss how I can help you achieve your goals. Tell me about your product, and I'll respond with a clear plan." />
           </div>
 
           <div className="flex flex-wrap gap-4">
@@ -165,8 +175,17 @@ export function Footer({ action, defaultService = null }: Props) {
               className="border-white/20 text-white"
               onClick={() => setShowBrief(true)}
             >
-              Available for work
+              Start a Project
             </RoundedButton>
+            <MagneticWrapper>
+              <Link
+                href="/services"
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10"
+              >
+                View Services
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </MagneticWrapper>
           </div>
         </div>
 

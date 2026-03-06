@@ -7,11 +7,20 @@ import { MagneticWrapper } from "@temi/ui";
 import Link from "next/link";
 import type { Route } from "next";
 import { TextReveal } from "../common/TextReveal";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 export function AboutHero() {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const clipRef = useRef<HTMLHeadingElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
+
+  // Parallax effect for the button
+  const { scrollYProgress } = useScroll({
+    target: contentRef,
+    offset: ["start end", "end start"],
+  });
+  
+  const buttonY = useTransform(scrollYProgress, [0, 1], [0, -50]);
 
   useEffect(() => {
     let cleanup: (() => void) | null = null;
@@ -30,22 +39,8 @@ export function AboutHero() {
           clipPath: "inset(0 100% 0 0)",
         });
 
-        // Initial reveal animation
-        gsap.fromTo(
-          content,
-          { y: 40, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 1,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: wrap,
-              start: "top 80%",
-            },
-          },
-        );
-
+        // NOTE: We removed the fade-in animation for content to let TextReveal handle it
+        
         clip.style.willChange = "clip-path";
         tl = gsap.timeline({
           scrollTrigger: {
@@ -53,6 +48,7 @@ export function AboutHero() {
             start: "top center",
             end: "bottom center",
             scrub: 1,
+            // markers: true,
           },
         });
         tl.to(clip, {
@@ -118,7 +114,7 @@ export function AboutHero() {
             </div>
           </div>
 
-          <div ref={contentRef} className="space-y-8">
+          <div ref={contentRef} className="space-y-8 relative">
             <h2 className="text-3xl sm:text-4xl font-light leading-tight">
               A{" "}
               <span className="font-serif italic text-(--accent)">
@@ -139,7 +135,7 @@ export function AboutHero() {
               />
             </div>
 
-            <div className="pt-4">
+            <motion.div style={{ y: buttonY }} className="pt-4">
               <MagneticWrapper>
                 <Link
                   href={"/about" as Route}
@@ -151,7 +147,7 @@ export function AboutHero() {
                   </span>
                 </Link>
               </MagneticWrapper>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

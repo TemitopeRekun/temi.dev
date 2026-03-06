@@ -166,7 +166,7 @@ export function Hero() {
 
         <h1
           ref={headlineRef}
-          className="font-(family-name:--font-fraunces) text-[min(13vw,6.5rem)] leading-[0.9] tracking-[-0.02em] lg:text-[min(10vw,8.5rem)] hero-text-contrast"
+          className="font-(family-name:--font-fraunces) text-[min(11vw,5.5rem)] sm:text-[min(10vw,8.5rem)] leading-[0.9] tracking-[-0.02em] hero-text-contrast flex flex-wrap justify-center gap-x-3 gap-y-2 sm:gap-x-4"
         >
           <span ref={headlinePart1Ref} className="inline-block">
             <TextReveal
@@ -179,7 +179,7 @@ export function Hero() {
           </span>
           <span
             ref={headlinePart2Ref}
-            className="italic text-(--accent) inline-block ml-2 sm:ml-4"
+            className="italic text-(--accent) inline-block"
           >
             <TextReveal
               text="Ogunrekun"
@@ -191,7 +191,7 @@ export function Hero() {
           </span>
         </h1>
 
-        <div ref={sublineWrapperRef} className="mt-8">
+        <div ref={sublineWrapperRef} className="mt-6">
           <p
             ref={sublineRef}
             className="max-w-2xl text-lg sm:text-xl text-(--muted) font-light hero-muted-contrast"
@@ -200,7 +200,7 @@ export function Hero() {
           </p>
         </div>
 
-        <div ref={chipsWrapperRef} className="mt-8">
+        <div ref={chipsWrapperRef} className="mt-6">
           <div
             ref={chipsRef}
             className="flex max-w-3xl flex-wrap justify-center gap-3 text-[0.65rem] uppercase tracking-[0.18em] text-(--muted)"
@@ -218,7 +218,7 @@ export function Hero() {
           </div>
         </div>
 
-        <div ref={ctasWrapperRef} className="mt-10">
+        <div ref={ctasWrapperRef} className="mt-8">
           <div
             ref={ctasRef}
             className="flex flex-wrap items-center justify-center gap-4"

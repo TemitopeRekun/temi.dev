@@ -6,7 +6,6 @@ import { ProjectsSection } from "../../components/projects/ProjectsSection";
 import { HomeServices } from "../../components/home/HomeServices";
 import { Testimonials } from "../../components/home/Testimonials";
 import { HomeBlog } from "../../components/home/HomeBlog";
-import { CTASection } from "../../components/home/CTASection";
 import { GlobalBackground } from "../../components/common/GlobalBackground";
 import { buildMetadata } from "../../lib/metadata";
 
@@ -61,7 +60,6 @@ export default function HomePage() {
       <ProjectsSection />
       <Testimonials />
       <HomeBlog />
-      <CTASection />
     </main>
   );
 }
