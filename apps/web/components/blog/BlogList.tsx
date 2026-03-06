@@ -27,7 +27,7 @@ export function BlogList({ posts }: Props) {
   });
 
   return (
-    <Section className="py-24">
+    <Section className="py-16 md:py-24">
       <Container>
         <div className="mb-12 flex flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-md">
@@ -44,7 +44,7 @@ export function BlogList({ posts }: Props) {
                 placeholder="Search articles..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-full border border-(--border) bg-(--bg) px-5 py-2.5 text-sm text-(--text) placeholder:text-(--muted) focus:border-(--accent) focus:outline-none focus:ring-1 focus:ring-(--accent)"
+                className="w-full rounded-full border border-(--border) bg-(--bg) px-5 py-2.5 text-base md:text-sm text-(--text) placeholder:text-(--muted) focus:border-(--accent) focus:outline-none focus:ring-1 focus:ring-(--accent)"
               />
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -96,6 +96,7 @@ export function BlogList({ posts }: Props) {
                     alt={p.title}
                     width={800}
                     height={500}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="absolute top-4 right-4 rounded-full bg-black/50 px-3 py-1 text-xs font-medium text-white backdrop-blur-md">

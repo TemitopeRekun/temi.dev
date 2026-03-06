@@ -16,10 +16,20 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
-  await app.register(helmet);
-  await app.register(cors, {
-    origin: ["http://localhost:3000", "https://temi.dev"],
+  app.enableCors({
+    origin: [
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "https://temi.dev",
+      "https://www.temi.dev",
+      "http://localhost:3001",
+      "http://127.0.0.1:3001",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    credentials: true,
   });
+
+  await app.register(helmet);
 
   app.useGlobalPipes(
     new ValidationPipe({

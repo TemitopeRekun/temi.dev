@@ -7,4 +7,5 @@ export class BlogDetailDto {
   tags!: string[];
   publishedAt!: Date | null;
   viewCount!: number;
+  likeCount!: number;
 }

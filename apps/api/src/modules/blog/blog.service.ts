@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from "@nestjs/common";
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { BlogListQueryDto } from "./dto/blog-list-query.dto";
 import { BlogListResponseDto } from "./dto/blog-list-response.dto";
@@ -7,9 +11,15 @@ import { CreateBlogPostDto } from "./dto/create-blog-post.dto";
 import { UpdateBlogPostDto } from "./dto/update-blog-post.dto";
 import { AiService } from "../ai/ai.service";
 
+import { CreateCommentDto } from "./dto/create-comment.dto";
+import { CommentDto } from "./dto/comment.dto";
+
 @Injectable()
 export class BlogService {
-  constructor(private readonly prisma: PrismaService, private readonly ai?: AiService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly ai?: AiService,
+  ) {}
 
   async list(query: BlogListQueryDto): Promise<BlogListResponseDto> {
     const take = query.take ?? 10;
@@ -26,6 +36,7 @@ export class BlogService {
         tags: true,
         publishedAt: true,
         viewCount: true,
+        likeCount: true,
       },
     });
     let nextCursor: string | undefined;
@@ -48,6 +59,7 @@ export class BlogService {
         tags: true,
         publishedAt: true,
         viewCount: true,
+        likeCount: true,
       },
     });
     if (!post) throw new NotFoundException("Post not found");
@@ -55,12 +67,68 @@ export class BlogService {
   }
 
   async incrementView(slug: string): Promise<void> {
-    const updated = await this.prisma.blogPost.update({
-      where: { slug },
-      data: { viewCount: { increment: 1 } },
-      select: { id: true },
-    }).catch(() => null);
+    const updated = await this.prisma.blogPost
+      .update({
+        where: { slug },
+        data: { viewCount: { increment: 1 } },
+        select: { id: true },
+      })
+      .catch(() => null);
     if (!updated) throw new NotFoundException("Post not found");
+  }
+
+  async incrementLike(slug: string): Promise<void> {
+    const updated = await this.prisma.blogPost
+      .update({
+        where: { slug },
+        data: { likeCount: { increment: 1 } },
+        select: { id: true },
+      })
+      .catch(() => null);
+    if (!updated) throw new NotFoundException("Post not found");
+  }
+
+  async addComment(slug: string, dto: CreateCommentDto): Promise<CommentDto> {
+    const post = await this.prisma.blogPost.findUnique({
+      where: { slug },
+      select: { id: true },
+    });
+    if (!post) throw new NotFoundException("Post not found");
+
+    const comment = await this.prisma.comment.create({
+      data: {
+        content: dto.content,
+        author: dto.author ?? "Anonymous",
+        postId: post.id,
+      },
+      select: {
+        id: true,
+        content: true,
+        author: true,
+        createdAt: true,
+      },
+    });
+    return comment;
+  }
+
+  async getComments(slug: string): Promise<CommentDto[]> {
+    const post = await this.prisma.blogPost.findUnique({
+      where: { slug },
+      select: { id: true },
+    });
+    if (!post) throw new NotFoundException("Post not found");
+
+    const comments = await this.prisma.comment.findMany({
+      where: { postId: post.id },
+      orderBy: { createdAt: "desc" },
+      select: {
+        id: true,
+        content: true,
+        author: true,
+        createdAt: true,
+      },
+    });
+    return comments;
   }
 
   async adminListAll(): Promise<Array<unknown>> {
@@ -103,13 +171,18 @@ export class BlogService {
       const emb = await this.ai.generateEmbedding(created.content);
       if (emb.length > 0) {
         const vec = `'[${emb.map((v) => (Number.isFinite(v) ? v.toFixed(6) : 0)).join(", ")}]'::vector`;
-        await this.prisma.$executeRawUnsafe(`UPDATE "BlogPost" SET embedding = ${vec} WHERE id = '${created.id}'`);
+        await this.prisma.$executeRawUnsafe(
+          `UPDATE "BlogPost" SET embedding = ${vec} WHERE id = '${created.id}'`,
+        );
       }
     }
     return { id: created.id };
   }
 
-  async adminUpdate(id: string, dto: UpdateBlogPostDto): Promise<{ id: string }> {
+  async adminUpdate(
+    id: string,
+    dto: UpdateBlogPostDto,
+  ): Promise<{ id: string }> {
     const prev = await this.prisma.blogPost.findUnique({
       where: { id },
       select: { id: true, content: true, published: true },
@@ -128,22 +201,30 @@ export class BlogService {
       },
       select: { id: true, content: true, published: true },
     });
-    const contentChanged = dto.content !== undefined && dto.content !== prev.content;
-    if (this.ai && (contentChanged || (dto.published !== undefined && dto.published))) {
+    const contentChanged =
+      dto.content !== undefined && dto.content !== prev.content;
+    if (
+      this.ai &&
+      (contentChanged || (dto.published !== undefined && dto.published))
+    ) {
       const emb = await this.ai.generateEmbedding(updated.content);
       if (emb.length > 0) {
         const vec = `'[${emb.map((v) => (Number.isFinite(v) ? v.toFixed(6) : 0)).join(", ")}]'::vector`;
-        await this.prisma.$executeRawUnsafe(`UPDATE "BlogPost" SET embedding = ${vec} WHERE id = '${updated.id}'`);
+        await this.prisma.$executeRawUnsafe(
+          `UPDATE "BlogPost" SET embedding = ${vec} WHERE id = '${updated.id}'`,
+        );
       }
     }
     return { id };
   }
 
   async adminRemove(id: string): Promise<{ id: string }> {
-    const deleted = await this.prisma.blogPost.delete({
-      where: { id },
-      select: { id: true },
-    }).catch(() => null);
+    const deleted = await this.prisma.blogPost
+      .delete({
+        where: { id },
+        select: { id: true },
+      })
+      .catch(() => null);
     if (!deleted) throw new NotFoundException("Post not found");
     return { id };
   }

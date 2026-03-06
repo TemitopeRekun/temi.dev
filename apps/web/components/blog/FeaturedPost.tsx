@@ -12,11 +12,11 @@ type Props = {
 
 export function FeaturedPost({ post }: Props) {
   return (
-    <Section className="pb-10 pt-32 md:pb-20 md:pt-40">
+    <Section className="pb-12 pt-24 md:pb-20 md:pt-40">
       <Container>
         <RevealOnScroll>
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-24">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-(--border)/20 shadow-2xl">
+          <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-24">
+            <div className="relative aspect-video md:aspect-[4/3] overflow-hidden rounded-2xl border border-(--border)/20 shadow-2xl">
               <Image
                 src={post.image}
                 alt={post.title}

@@ -11,7 +11,9 @@ export class AiService {
   private readonly embeddingModel: string;
   private readonly generationModel: string;
   private readonly genAI: GoogleGenerativeAI | null;
-  private readonly prismaLike: { aiRequestLog: { create(args: unknown): Promise<unknown> } };
+  private readonly prismaLike: {
+    aiRequestLog: { create(args: unknown): Promise<unknown> };
+  };
 
   constructor(
     private readonly config: ConfigService,
@@ -21,9 +23,11 @@ export class AiService {
     this.embeddingModel =
       this.config.get<string>("GEMINI_EMBEDDING_MODEL") ?? "text-embedding-004";
     this.generationModel =
-      this.config.get<string>("GEMINI_MODEL") ?? "gemini-2.0-flash";
+      this.config.get<string>("GEMINI_MODEL") ?? "gemini-2.5-flash";
     this.genAI = this.apiKey ? new GoogleGenerativeAI(this.apiKey) : null;
-    this.prismaLike = this.prisma as unknown as { aiRequestLog: { create(args: unknown): Promise<unknown> } };
+    this.prismaLike = this.prisma as unknown as {
+      aiRequestLog: { create(args: unknown): Promise<unknown> };
+    };
   }
 
   async generateEmbedding(text: string): Promise<number[]> {
@@ -43,7 +47,10 @@ export class AiService {
         data: {
           model: this.embeddingModel,
           input: text.slice(0, 2000),
-          output: `dims=${out.length}; sample=[${out.slice(0, 8).map((v) => v.toFixed(6)).join(", ")}]`,
+          output: `dims=${out.length}; sample=[${out
+            .slice(0, 8)
+            .map((v) => v.toFixed(6))
+            .join(", ")}]`,
           durationMs: duration,
         },
       } as unknown);
@@ -58,11 +65,22 @@ export class AiService {
     try {
       const model = this.genAI.getGenerativeModel({
         model: this.generationModel,
-        systemInstruction: context,
       });
+
+      const fullPrompt = `Based on the following context, answer the user's question.
+If the context doesn't contain the answer, say you don't know. Format your response using Markdown (e.g., paragraphs, lists, bolding).
+
+Context:
+---
+${context}
+---
+
+Question: ${prompt}
+`;
+
       const started = Date.now();
       const res = await model.generateContent({
-        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
         generationConfig: { maxOutputTokens: 1024 },
       });
       const text = res.response?.text?.() ?? "";
@@ -71,14 +89,21 @@ export class AiService {
       await this.prismaLike.aiRequestLog.create({
         data: {
           model: this.generationModel,
-          input: [context, prompt].map((t) => t.slice(0, 1000)).join("\n---\n"),
+          input: fullPrompt.slice(0, 4000),
           output: text.slice(0, 4000),
           durationMs: duration,
         },
       } as unknown);
       return text;
-    } catch {
-      return "";
+    } catch (error) {
+      console.error("AI Generation Error:", error);
+      if (error instanceof Error) {
+        // Pass the underlying error message to the client for better debugging.
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException(
+        "An unknown error occurred while generating the AI response.",
+      );
     }
   }
 
@@ -106,15 +131,14 @@ export class AiService {
       LIMIT ${Math.max(1, Math.min(50, limit))}
     `;
     try {
-      const rows =
-        await this.prisma.$queryRawUnsafe<
-          Array<{
-            id: string;
-            title: string;
-            content: string;
-            similarity: number;
-          }>
-        >(sql);
+      const rows = await this.prisma.$queryRawUnsafe<
+        Array<{
+          id: string;
+          title: string;
+          content: string;
+          similarity: number;
+        }>
+      >(sql);
       return rows ?? [];
     } catch {
       const fallback:

@@ -20,7 +20,7 @@ export function Newsletter() {
   };
 
   return (
-    <Section className="bg-(--surface) py-24 border-y border-(--border)/10">
+    <Section className="bg-(--surface) py-16 md:py-24 border-y border-(--border)/10">
       <Container>
         <RevealOnScroll>
           <div className="mx-auto max-w-2xl text-center">
@@ -43,7 +43,7 @@ export function Newsletter() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 rounded-full border border-(--border) bg-(--bg) px-6 py-3 text-(--text) placeholder:text-(--muted)/50 focus:border-(--accent) focus:outline-none focus:ring-1 focus:ring-(--accent)"
+                className="flex-1 rounded-full border border-(--border) bg-(--bg) px-6 py-3 text-base md:text-sm text-(--text) placeholder:text-(--muted)/50 focus:border-(--accent) focus:outline-none focus:ring-1 focus:ring-(--accent)"
               />
               <Button
                 type="submit"

@@ -1,5 +1,5 @@
 "use client";
-import { AnimatedText } from "../../../../components/common/AnimatedText";
+import { AnimatedText } from "../../../components/common/AnimatedText";
 export default function ErrorAdmin(props: {
   error: Error & { digest?: string };
   reset: () => void;

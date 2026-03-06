@@ -80,7 +80,7 @@ export function AskAI() {
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 placeholder="Ask about my tech stack, philosophy, or specific articles..."
-                className="w-full rounded-2xl border border-(--border) bg-(--bg) p-4 pr-12 text-(--text) shadow-sm transition-all focus:border-(--accent) focus:outline-none focus:ring-1 focus:ring-(--accent)"
+                className="w-full rounded-2xl border border-(--border) bg-(--bg) p-4 pr-12 text-base md:text-sm text-(--text) shadow-sm transition-all focus:border-(--accent) focus:outline-none focus:ring-1 focus:ring-(--accent)"
                 disabled={loading}
               />
               <button
