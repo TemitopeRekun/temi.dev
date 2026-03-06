@@ -2,7 +2,8 @@ import type { Route } from "next";
 import { FeaturedPost } from "../../../components/blog/FeaturedPost";
 import { BlogList } from "../../../components/blog/BlogList";
 import { Newsletter } from "../../../components/blog/Newsletter";
-import { posts } from "../../../lib/blog";
+import { AskAI } from "../../../components/blog/AskAI";
+import { getPosts } from "../../../lib/blog";
 import { buildMetadata } from "../../../lib/metadata";
 
 export const metadata = buildMetadata({
@@ -13,7 +14,9 @@ export const metadata = buildMetadata({
   type: "website",
 });
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const posts = await getPosts();
+
   if (posts.length === 0) {
     return (
       <main className="flex min-h-[50vh] flex-col items-center justify-center pt-32 text-center">
@@ -32,6 +35,7 @@ export default function BlogPage() {
     <main>
       <FeaturedPost post={featured} />
       <BlogList posts={list} />
+      <AskAI />
       <Newsletter />
     </main>
   );

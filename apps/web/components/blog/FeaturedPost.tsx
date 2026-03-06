@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Container, RevealOnScroll, Section, Button } from "@temi/ui";
 import { AnimatedText } from "../common/AnimatedText";
-import { BlogPost } from "../../lib/blog";
+import type { BlogPost } from "../../lib/blog";
 
 type Props = {
   post: BlogPost;

@@ -1,3 +1,6 @@
+-- CreateExtension
+CREATE EXTENSION IF NOT EXISTS vector;
+
 -- CreateEnum
 CREATE TYPE "JobPlatform" AS ENUM ('UPWORK', 'FIVERR', 'LINKEDIN', 'REMOTEOK', 'WELLFOUND', 'DIRECT', 'OTHER');
 
@@ -33,6 +36,8 @@ CREATE TABLE "Project" (
     "repoUrl" TEXT,
     "featured" BOOLEAN NOT NULL DEFAULT false,
     "order" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Project_pkey" PRIMARY KEY ("id")
 );
@@ -48,6 +53,8 @@ CREATE TABLE "BlogPost" (
     "published" BOOLEAN NOT NULL DEFAULT false,
     "publishedAt" TIMESTAMP(3),
     "viewCount" INTEGER NOT NULL DEFAULT 0,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "BlogPost_pkey" PRIMARY KEY ("id")
 );
