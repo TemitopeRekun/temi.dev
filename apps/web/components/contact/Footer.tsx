@@ -26,15 +26,36 @@ export function Footer({ action, defaultService = null }: Props) {
     offset: ["start end", "end end"],
   });
 
-  const yRaw = useTransform(scrollYProgress, [0, 1], [-500, 0]);
+  const yRaw = useTransform(scrollYProgress, [0, 1], [-220, 0]);
   const xRaw = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const rotateRaw = useTransform(scrollYProgress, [0, 1], [120, 90]);
-  const curveRaw = useTransform(scrollYProgress, [0, 0.4], [0, 1]);
+  const curveRaw = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const curveYRaw = useTransform(scrollYProgress, [0, 1], [18, 0]);
+  const curveOpacityRaw = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
 
   const y = useSpring(yRaw, { stiffness: 80, damping: 20 });
   const x = useSpring(xRaw, { stiffness: 80, damping: 20 });
   const rotate = useSpring(rotateRaw, { stiffness: 80, damping: 20 });
   const curve = useSpring(curveRaw, { stiffness: 120, damping: 24 });
+  const curveY = useSpring(curveYRaw, { stiffness: 120, damping: 26 });
+  const curveOpacity = useSpring(curveOpacityRaw, { stiffness: 120, damping: 26 });
+
+  const curveFill = useTransform(
+    curve,
+    [0, 1],
+    [
+      "M0,60 Q720,190 1440,60 L1440,0 L0,0 Z",
+      "M0,40 Q720,40 1440,40 L1440,0 L0,0 Z",
+    ],
+  );
+  const curveStroke = useTransform(
+    curve,
+    [0, 1],
+    [
+      "M0,60 Q720,190 1440,60",
+      "M0,40 Q720,40 1440,40",
+    ],
+  );
 
   useEffect(() => {
     if (!showBrief) return;
@@ -49,112 +70,110 @@ export function Footer({ action, defaultService = null }: Props) {
     <motion.footer
       ref={container}
       id="contact"
-      className="relative mt-32 overflow-hidden rounded-t-3xl text-white"
+      className="relative mt-32 overflow-hidden rounded-t-3xl text-white isolate"
       style={{
-        y,
         backgroundColor: "color-mix(in oklab, var(--text) 15%, #000 85%)",
       }}
     >
       <motion.div
-        style={{ scaleY: curve, originY: 0 }}
-        className="pointer-events-none absolute inset-x-0 top-0 h-24"
+        style={{ y: curveY, opacity: curveOpacity }}
+        className="pointer-events-none absolute inset-x-0 top-0 h-36 z-10"
       >
         <svg
-          className="absolute inset-x-0 top-0 h-full w-full"
-          viewBox="0 0 1440 120"
+          className="absolute inset-x-0 top-0 h-full w-full block"
+          viewBox="0 0 1440 200"
           preserveAspectRatio="none"
         >
-          <path
-            d="M0,90 C240,10 480,10 720,90 C960,170 1200,170 1440,90 L1440,0 L0,0 Z"
-            fill="var(--bg)"
+          <motion.path
+            d={curveFill}
+            style={{
+              fill: "var(--bg)",
+            }}
           />
-          <path
-            d="M0,90 C240,10 480,10 720,90 C960,170 1200,170 1440,90"
+          <motion.path
+            d={curveStroke}
             fill="none"
-            stroke="currentColor"
+            stroke="color-mix(in oklab, var(--bg) 80%, var(--text) 20%)"
             strokeWidth="2"
-            className="mix-blend-difference opacity-70"
+            className="opacity-70"
           />
         </svg>
-        <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-white/20 to-transparent" />
       </motion.div>
 
-      <div className="pointer-events-none absolute inset-0">
+      <motion.div className="pointer-events-none absolute inset-0">
         <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
         <div className="absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-(--accent)/25 blur-3xl" />
         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-      </div>
+      </motion.div>
 
-      <div className="relative mx-auto max-w-7xl px-6 py-20 sm:px-10">
-        <div className="flex flex-col gap-10">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
-            <div className="max-w-2xl">
-              <p className="text-white/60 uppercase tracking-[0.25em] text-xs mb-4">
-                Contact
-              </p>
-              <h2 className="font-(--font-syne) text-[clamp(3rem,9vw,7rem)] font-light leading-none">
+      <motion.div style={{ y }} className="relative mx-auto max-w-7xl px-6 py-20 sm:px-10">
+        <div className="border-b border-white/10 pb-12 sm:pb-16 relative">
+          <div className="flex flex-col gap-6">
+            <p className="text-white/60 uppercase tracking-[0.25em] text-xs">
+              Contact
+            </p>
+            <div className="flex items-center gap-4 sm:gap-6">
+              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center text-white/80 text-sm">
+                TO
+              </div>
+              <h2 className="font-(--font-syne) text-[clamp(2.8rem,8vw,6rem)] font-light leading-none">
                 Let's work
               </h2>
-              <h2 className="font-(--font-syne) text-[clamp(3rem,9vw,7rem)] font-light leading-none">
-                together
-              </h2>
             </div>
-            <motion.svg
-              style={{ rotate }}
-              width="12"
-              height="12"
-              viewBox="0 0 9 9"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="mb-4 self-start sm:self-auto opacity-70"
+            <h2 className="font-(--font-syne) text-[clamp(2.8rem,8vw,6rem)] font-light leading-none">
+              together
+            </h2>
+          </div>
+
+          <motion.div
+            style={{ x }}
+            className="mt-6 sm:mt-8 lg:mt-0 lg:absolute lg:right-0 lg:bottom-0 lg:translate-y-1/2"
+          >
+            <RoundedButton
+              accentColor="rgba(255,255,255,0.85)"
+              className="border-white/30 text-white shadow-[0_10px_30px_rgba(255,255,255,0.18)] w-44 h-44 sm:w-48 sm:h-48 rounded-full"
+              onClick={() => setShowBrief(true)}
             >
-              <path
-                d="M8 8.5C8.27614 8.5 8.5 8.27614 8.5 8L8.5 3.5C8.5 3.22386 8.27614 3 8 3C7.72386 3 7.5 3.22386 7.5 3.5V7.5H3.5C3.22386 7.5 3 7.72386 3 8C3 8.27614 3.22386 8.5 3.5 8.5L8 8.5ZM0.646447 1.35355L7.64645 8.35355L8.35355 7.64645L1.35355 0.646447L0.646447 1.35355Z"
-                fill="currentColor"
-              />
-            </motion.svg>
+              Get in touch
+            </RoundedButton>
+          </motion.div>
+
+          <motion.svg
+            style={{ rotate }}
+            width="14"
+            height="14"
+            viewBox="0 0 9 9"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="absolute -right-2 sm:-right-6 top-6 opacity-70"
+          >
+            <path
+              d="M8 8.5C8.27614 8.5 8.5 8.27614 8.5 8L8.5 3.5C8.5 3.22386 8.27614 3 8 3C7.72386 3 7.5 3.22386 7.5 3.5V7.5H3.5C3.22386 7.5 3 7.72386 3 8C3 8.27614 3.22386 8.5 3.5 8.5L8 8.5ZM0.646447 1.35355L7.64645 8.35355L8.35355 7.64645L1.35355 0.646447L0.646447 1.35355Z"
+              fill="currentColor"
+            />
+          </motion.svg>
+        </div>
+
+        <div className="mt-10 sm:mt-12 flex flex-col gap-8">
+          <div className="max-w-xl text-white/70 text-sm sm:text-base">
+            <AnimatedText phrase="Tell me about your product, your timeline, and the problem you want to solve. I'll respond with a clear plan and next steps." />
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
-            <div className="max-w-xl text-white/70 text-sm sm:text-base">
-              <AnimatedText phrase="Tell me about your product, your timeline, and the problem you want to solve. I'll respond with a clear plan and next steps." />
-            </div>
-            <motion.div style={{ x }} className="shrink-0">
-              <RoundedButton
-                accentColor="rgba(255,255,255,0.8)"
-                className="border-white/30 text-white shadow-[0_10px_30px_rgba(255,255,255,0.18)]"
-                onClick={() => setShowBrief(true)}
-              >
-                Get in touch
-              </RoundedButton>
-            </motion.div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
-              <p className="text-white/60 text-xs uppercase tracking-[0.2em] mb-3">
-                Email
-              </p>
-              <RoundedButton
-                accentColor="rgba(255,255,255,0.12)"
-                className="border-white/20 text-white w-full justify-center"
-                href="mailto:hello@temi.dev"
-              >
-                hello@temi.dev
-              </RoundedButton>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm">
-              <p className="text-white/60 text-xs uppercase tracking-[0.2em] mb-3">
-                Availability
-              </p>
-              <RoundedButton
-                accentColor="rgba(255,255,255,0.12)"
-                className="border-white/20 text-white w-full justify-center"
-                onClick={() => setShowBrief(true)}
-              >
-                Available for work
-              </RoundedButton>
-            </div>
+          <div className="flex flex-wrap gap-4">
+            <RoundedButton
+              accentColor="rgba(255,255,255,0.12)"
+              className="border-white/20 text-white"
+              href="mailto:hello@temi.dev"
+            >
+              hello@temi.dev
+            </RoundedButton>
+            <RoundedButton
+              accentColor="rgba(255,255,255,0.12)"
+              className="border-white/20 text-white"
+              onClick={() => setShowBrief(true)}
+            >
+              Available for work
+            </RoundedButton>
           </div>
         </div>
 
@@ -184,10 +203,10 @@ export function Footer({ action, defaultService = null }: Props) {
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {showBrief && (
-        <div
+        <motion.div
           className="fixed inset-0 z-50 flex items-center justify-center px-4"
           role="dialog"
           aria-modal="true"
@@ -221,7 +240,7 @@ export function Footer({ action, defaultService = null }: Props) {
               <ContactForm action={action} defaultService={defaultService} />
             </div>
           </div>
-        </div>
+        </motion.div>
       )}
     </motion.footer>
   );
