@@ -86,7 +86,7 @@ export function HomeBlog() {
               {posts.map((post) => (
                 <div
                   key={post.slug}
-                  className="min-w-[calc(100%-24px)] shrink-0 snap-start sm:min-w-[300px] md:min-w-[350px]"
+                  className="min-w-[260px] shrink-0 snap-start sm:min-w-[300px] md:min-w-[350px]"
                 >
                   <Link
                     href={`/blog/${post.slug}`}

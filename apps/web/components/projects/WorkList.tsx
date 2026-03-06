@@ -1,11 +1,65 @@
 "use client";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
 import type { Route } from "next";
-import { projects, type Project } from "../../lib/projects";
+import {
+  projects,
+  type Project,
+  type ProjectCategory,
+} from "../../lib/projects";
 import { gsap } from "../../lib/gsap";
 import { motion } from "framer-motion";
+
+type Filter = "All" | ProjectCategory;
+const FILTERS: Filter[] = ["All", "Frontend", "Backend", "AI", "Mobile"];
+
+function useSlidingIndicator(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+  activeBtnRef: React.RefObject<HTMLButtonElement | null>,
+) {
+  const xTo = useRef<((v: number) => void) | null>(null);
+  const wTo = useRef<((v: number) => void) | null>(null);
+  const indicatorRef = useRef<HTMLSpanElement | null>(null);
+
+  const setIndicatorRef = useCallback((el: HTMLSpanElement | null) => {
+    indicatorRef.current = el;
+  }, []);
+
+  const update = useCallback(() => {
+    const container = containerRef.current;
+    const btn = activeBtnRef.current;
+    const indicator = indicatorRef.current;
+    if (!container || !btn || !indicator) return;
+    const cRect = container.getBoundingClientRect();
+    const bRect = btn.getBoundingClientRect();
+    const left = bRect.left - cRect.left;
+    const width = bRect.width;
+    if (!xTo.current || !wTo.current) {
+      xTo.current = gsap.quickTo(indicator, "x", {
+        duration: 0.4,
+        ease: "power3.out",
+      });
+      wTo.current = gsap.quickTo(indicator, "width", {
+        duration: 0.4,
+        ease: "power3.out",
+      });
+    }
+    xTo.current?.(left);
+    wTo.current?.(width);
+  }, [activeBtnRef, containerRef]);
+
+  useEffect(() => {
+    const onResize = () => update();
+    window.addEventListener("resize", onResize);
+    update();
+    return () => {
+      window.removeEventListener("resize", onResize);
+    };
+  }, [update]);
+
+  return { setIndicatorRef, update };
+}
 
 const scaleAnim = {
   initial: { scale: 0, x: "-50%", y: "-50%" },
@@ -24,6 +78,23 @@ const scaleAnim = {
 };
 
 export function WorkList() {
+  const [active, setActive] = useState<Filter>("All");
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const activeBtnRef = useRef<HTMLButtonElement | null>(null);
+  const { setIndicatorRef, update } = useSlidingIndicator(
+    containerRef,
+    activeBtnRef,
+  );
+
+  const filtered = useMemo(() => {
+    if (active === "All") return projects;
+    return projects.filter((p) => p.category === active);
+  }, [active]);
+
+  useEffect(() => {
+    update();
+  }, [active, update]);
+
   const [modal, setModal] = useState({ active: false, index: 0 });
 
   const modalEl = useRef<HTMLDivElement>(null);
@@ -83,8 +154,41 @@ export function WorkList() {
       className="relative px-4 sm:px-6 lg:px-8"
       onMouseMove={(e) => moveAll(e.clientX, e.clientY)}
     >
+      <div className="mb-12 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 no-scrollbar">
+        <div
+          ref={containerRef}
+          className="relative inline-flex rounded-full border border-(--border,rgba(0,0,0,0.08)) bg-(--surface) p-1 min-w-max"
+        >
+          <span
+            ref={setIndicatorRef}
+            className="pointer-events-none absolute inset-y-1 left-0 z-0 rounded-full bg-(--bg)"
+            style={{ width: 0, transform: "translateX(0px)" }}
+          />
+          {FILTERS.map((f) => {
+            const isActive = active === f;
+            const setRef = (el: HTMLButtonElement | null) => {
+              if (isActive) activeBtnRef.current = el;
+            };
+            return (
+              <button
+                key={f}
+                ref={setRef}
+                type="button"
+                onClick={() => setActive(f)}
+                className={[
+                  "relative z-10 rounded-full px-3.5 py-1.5 text-sm transition-colors",
+                  isActive ? "text-(--text)" : "text-(--muted)",
+                ].join(" ")}
+              >
+                {f}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       <div className="mx-auto max-w-7xl divide-y divide-(--border)">
-        {projects.map((p: Project, i: number) => (
+        {filtered.map((p: Project, i: number) => (
           <Link
             key={p.slug}
             href={`/work/${p.slug}` as Route}

@@ -93,7 +93,7 @@ function TimelineItem({
       </div>
 
       {/* Content Side */}
-      <div className="pl-20 md:pl-0 md:px-12 md:w-1/2 pt-1 md:pt-0">
+      <div className="pl-20 md:px-12 md:w-1/2 pt-1 md:pt-0">
         <RevealOnScroll>
           <div className={`relative ${!isEven ? "md:text-right" : ""}`}>
             <span className="text-sm font-medium text-(--accent) uppercase tracking-wider mb-2 block">

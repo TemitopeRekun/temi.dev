@@ -22,14 +22,30 @@ type Props = {
 export function Footer({ action, defaultService = null }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const [showBrief, setShowBrief] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 640);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: container,
     offset: ["start end", "end end"],
   });
 
-  const yRaw = useTransform(scrollYProgress, [0, 1], [-300, 0]);
-  const xRaw = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const yRaw = useTransform(
+    scrollYProgress,
+    [0, 1],
+    isMobile ? [-150, 0] : [-300, 0],
+  );
+  const xRaw = useTransform(
+    scrollYProgress,
+    [0, 1],
+    isMobile ? [0, 0] : [0, 100],
+  );
   const rotateRaw = useTransform(scrollYProgress, [0, 1], [120, 90]);
   const curveRaw = useTransform(scrollYProgress, [0, 1], [0, 1]);
 
@@ -65,12 +81,12 @@ export function Footer({ action, defaultService = null }: Props) {
     <motion.footer
       ref={container}
       id="contact"
-      className="relative mt-32 overflow-hidden text-white isolate"
+      className="relative mt-16 sm:mt-32 overflow-hidden text-white isolate"
       style={{
         backgroundColor: "color-mix(in oklab, var(--text) 15%, #000 85%)",
       }}
     >
-      <motion.div className="pointer-events-none absolute inset-x-0 top-0 h-[250px] z-10">
+      <motion.div className="pointer-events-none absolute inset-x-0 top-0 h-[100px] sm:h-[250px] z-10">
         <svg
           className="absolute inset-x-0 top-0 h-full w-full block"
           viewBox="0 0 1440 250"
@@ -108,15 +124,15 @@ export function Footer({ action, defaultService = null }: Props) {
 
       <motion.div
         style={{ y }}
-        className="relative mx-auto max-w-7xl px-6 py-10 sm:px-10"
+        className="relative mx-auto max-w-7xl px-4 pb-10 pt-24 sm:px-10 sm:pt-60"
       >
         <div className="border-b border-white/10 pb-12 sm:pb-16 relative">
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4 sm:gap-6">
             <p className="text-white/60 uppercase tracking-[0.25em] text-xs">
               Contact
             </p>
             <div className="flex items-center gap-4 sm:gap-6">
-              <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-full overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center text-white/80 text-sm">
+              <div className="h-14 w-14 sm:h-20 sm:w-20 rounded-full overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center text-white/80 text-xs sm:text-sm">
                 TO
               </div>
               <h2 className="font-(--font-syne) text-[clamp(2.8rem,8vw,6rem)] font-light leading-none">
@@ -130,11 +146,11 @@ export function Footer({ action, defaultService = null }: Props) {
 
           <motion.div
             style={{ x }}
-            className="mt-6 sm:mt-8 lg:mt-0 lg:absolute lg:right-0 lg:bottom-0 lg:translate-y-1/2"
+            className="mt-8 sm:mt-8 lg:mt-0 lg:absolute lg:right-0 lg:bottom-0 lg:translate-y-1/2 flex justify-center lg:block"
           >
             <RoundedButton
               accentColor="rgba(255,255,255,0.85)"
-              className="border-white/30 text-white shadow-[0_10px_30px_rgba(255,255,255,0.18)] w-44 h-44 sm:w-48 sm:h-48 rounded-full"
+              className="border-white/30 text-white shadow-[0_10px_30px_rgba(255,255,255,0.18)] w-28 h-28 sm:w-48 sm:h-48 rounded-full"
               onClick={() => setShowBrief(true)}
             >
               Get in touch
@@ -148,7 +164,7 @@ export function Footer({ action, defaultService = null }: Props) {
             viewBox="0 0 9 9"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className="absolute -right-2 sm:-right-6 top-6 opacity-70"
+            className="absolute right-0 sm:-right-6 top-6 opacity-70"
           >
             <path
               d="M8 8.5C8.27614 8.5 8.5 8.27614 8.5 8L8.5 3.5C8.5 3.22386 8.27614 3 8 3C7.72386 3 7.5 3.22386 7.5 3.5V7.5H3.5C3.22386 7.5 3 7.72386 3 8C3 8.27614 3.22386 8.5 3.5 8.5L8 8.5ZM0.646447 1.35355L7.64645 8.35355L8.35355 7.64645L1.35355 0.646447L0.646447 1.35355Z"
@@ -189,8 +205,8 @@ export function Footer({ action, defaultService = null }: Props) {
           </div>
         </div>
 
-        <div className="flex flex-col sm:flex-row sm:justify-between gap-6 pt-8 border-t border-white/10 text-sm text-white/60">
-          <div className="flex flex-wrap gap-10">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-8 pt-8 border-t border-white/10 text-sm text-white/60">
+          <div className="flex flex-wrap gap-8 sm:gap-10">
             <span>
               <p className="text-white/80 mb-1 font-medium">Version</p>
               <p>2026 (c) Edition</p>
@@ -200,7 +216,7 @@ export function Footer({ action, defaultService = null }: Props) {
               <p>Lagos, NG</p>
             </span>
           </div>
-          <div className="flex flex-wrap gap-6 items-center">
+          <div className="flex flex-wrap items-center justify-start gap-6 sm:justify-end">
             {SOCIALS.map((s) => (
               <MagneticWrapper key={s.label}>
                 <a

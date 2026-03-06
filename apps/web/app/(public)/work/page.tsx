@@ -22,6 +22,10 @@ export default function WorkPage() {
               phrase="Work"
               className="mb-6 text-3xl font-semibold text-(--text)"
             />
+            <p className="mb-12 max-w-2xl text-lg text-(--muted)">
+              A selection of projects that showcase my passion for building
+              high-quality, scalable web and mobile applications.
+            </p>
           </RevealOnScroll>
           <WorkList />
         </Container>

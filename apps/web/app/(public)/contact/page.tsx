@@ -1,9 +1,7 @@
 import Link from "next/link";
 import { Container, RevealOnScroll, Section } from "@temi/ui";
-import {
-  ContactForm,
-  type LeadState,
-} from "../../../components/contact/ContactForm";
+import { ContactForm } from "../../../components/contact/ContactForm";
+import { createLeadAction } from "../../../actions/create-lead";
 import { AnimatedText } from "../../../components/common/AnimatedText";
 import { buildMetadata } from "../../../lib/metadata";
 
@@ -13,40 +11,6 @@ export const metadata = buildMetadata({
   path: "/contact",
   image: "https://picsum.photos/1200/630?seed=contact-og",
 });
-
-async function createLeadAction(
-  _prev: LeadState,
-  formData: FormData,
-): Promise<LeadState> {
-  "use server";
-  const name = String(formData.get("name") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
-  const message = String(formData.get("message") ?? "").trim();
-  const service = formData.get("service")
-    ? String(formData.get("service"))
-    : null;
-  if (!name || !email || !message) {
-    return { ok: false, error: "Please complete all required fields." };
-  }
-  try {
-    const base =
-      process.env.NEXT_PUBLIC_API_BASE_URL ??
-      process.env.NEXT_PUBLIC_API_URL ??
-      "http://localhost:4000";
-    const res = await fetch(`${base}/api/leads`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, message, service }),
-      cache: "no-store",
-    });
-    if (!res.ok) {
-      return { ok: false, error: "Failed to submit. Please try again." };
-    }
-    return { ok: true };
-  } catch {
-    return { ok: false, error: "Network error. Please try again later." };
-  }
-}
 
 export default async function ContactPage(props: {
   searchParams?: Promise<Record<string, string | string[]>>;
@@ -103,18 +67,16 @@ export default async function ContactPage(props: {
                 </div>
               </div>
             </RevealOnScroll>
-            <RevealOnScroll>
-              <div className="rounded-2xl border border-(--border,rgba(0,0,0,0.08)) bg-(--surface) p-6">
-                <ContactForm
-                  action={createLeadAction}
-                  defaultService={serviceParam}
-                />
-              </div>
-            </RevealOnScroll>
+
+            <div>
+              <ContactForm
+                action={createLeadAction}
+                defaultService={serviceParam}
+              />
+            </div>
           </div>
         </Container>
       </Section>
     </main>
   );
 }
-
