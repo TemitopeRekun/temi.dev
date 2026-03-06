@@ -78,7 +78,7 @@ export async function getPosts(): Promise<BlogPost[]> {
     if (!res.ok) return posts;
     const data = await res.json();
     if (!data.items || !Array.isArray(data.items)) return posts;
-    
+
     // Map API response to BlogPost type
     return data.items.map((item: any) => ({
       id: item.id,
@@ -89,7 +89,7 @@ export async function getPosts(): Promise<BlogPost[]> {
       image: item.image || `https://picsum.photos/1200/800?seed=${item.slug}`,
       readTime: Math.ceil((item.content?.length || 1000) / 1000), // Rough estimate
       content: item.content,
-      publishedAt: item.publishedAt
+      publishedAt: item.publishedAt,
     }));
   } catch (error) {
     console.error("Failed to fetch posts:", error);
@@ -97,29 +97,31 @@ export async function getPosts(): Promise<BlogPost[]> {
   }
 }
 
-export async function getPostBySlug(slug: string): Promise<BlogPost | undefined> {
+export async function getPostBySlug(
+  slug: string,
+): Promise<BlogPost | undefined> {
   // Try fetching all posts and finding the one (simplest for now without dedicated slug endpoint)
   // Or if backend has slug endpoint:
   try {
-    const res = await fetch(`${API_URL}/api/blog/slug/${slug}`, {
-       next: { revalidate: 60 },
+    const res = await fetch(`${API_URL}/api/blog/${slug}`, {
+      next: { revalidate: 60 },
     });
     if (res.ok) {
-        const item = await res.json();
-        return {
-            id: item.id,
-            slug: item.slug,
-            title: item.title,
-            tag: item.tags?.[0] || "Tech",
-            excerpt: item.excerpt || "",
-            image: item.image || `https://picsum.photos/1200/800?seed=${item.slug}`,
-            readTime: Math.ceil((item.content?.length || 1000) / 1000),
-            content: item.content,
-            publishedAt: item.publishedAt
-        };
+      const item = await res.json();
+      return {
+        id: item.id,
+        slug: item.slug,
+        title: item.title,
+        tag: item.tags?.[0] || "Tech",
+        excerpt: item.excerpt || "",
+        image: item.image || `https://picsum.photos/1200/800?seed=${item.slug}`,
+        readTime: Math.ceil((item.content?.length || 1000) / 1000),
+        content: item.content,
+        publishedAt: item.publishedAt,
+      };
     }
   } catch {}
 
   // Fallback to static list
-  return posts.find(p => p.slug === slug);
+  return posts.find((p) => p.slug === slug);
 }

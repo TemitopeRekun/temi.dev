@@ -20,7 +20,14 @@ export function AskAI() {
     setAnswer(null);
 
     try {
-      const base = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+      const base =
+        process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+
+      // Basic validation for API URL
+      if (!base) {
+        throw new Error("API configuration missing");
+      }
+
       const res = await fetch(`${base}/api/rag/ask-website`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -28,14 +35,23 @@ export function AskAI() {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to get AI response");
+        // Try to get error message from response
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || "Failed to get AI response");
       }
 
       const data = await res.json();
+      if (!data.answer) {
+        throw new Error("No answer received from AI");
+      }
       setAnswer(data.answer);
     } catch (err) {
       console.error(err);
-      setError("AI service is currently unavailable. Please try again later.");
+      setError(
+        err instanceof Error
+          ? err.message
+          : "AI service is currently unavailable. Please try again later.",
+      );
     } finally {
       setLoading(false);
     }
@@ -52,7 +68,7 @@ export function AskAI() {
                 Ask AI
               </span>
             </div>
-            
+
             <AnimatedText
               phrase="Chat with my digital brain"
               className="mb-8 text-center text-2xl font-bold text-(--text) md:text-3xl"
@@ -86,7 +102,9 @@ export function AskAI() {
                   <Sparkles className="h-4 w-4" />
                   AI Response
                 </div>
-                <p className="text-lg leading-relaxed text-(--text)">{answer}</p>
+                <p className="text-lg leading-relaxed text-(--text)">
+                  {answer}
+                </p>
               </div>
             )}
 
