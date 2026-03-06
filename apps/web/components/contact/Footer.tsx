@@ -28,7 +28,7 @@ export function Footer({ action, defaultService = null }: Props) {
     offset: ["start end", "end end"],
   });
 
-  const yRaw = useTransform(scrollYProgress, [0, 1], [-500, 0]);
+  const yRaw = useTransform(scrollYProgress, [0, 1], [-300, 0]);
   const xRaw = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const rotateRaw = useTransform(scrollYProgress, [0, 1], [120, 90]);
   const curveRaw = useTransform(scrollYProgress, [0, 1], [0, 1]);
@@ -42,14 +42,14 @@ export function Footer({ action, defaultService = null }: Props) {
     curve,
     [0, 1],
     [
-      "M0,0 Q720,600 1440,0 L1440,0 L0,0 Z",
+      "M0,0 Q720,250 1440,0 L1440,0 L0,0 Z",
       "M0,0 Q720,0 1440,0 L1440,0 L0,0 Z",
     ],
   );
   const curveStroke = useTransform(
     curve,
     [0, 1],
-    ["M0,0 Q720,600 1440,0", "M0,0 Q720,0 1440,0"],
+    ["M0,0 Q720,250 1440,0", "M0,0 Q720,0 1440,0"],
   );
 
   useEffect(() => {
@@ -70,10 +70,10 @@ export function Footer({ action, defaultService = null }: Props) {
         backgroundColor: "color-mix(in oklab, var(--text) 15%, #000 85%)",
       }}
     >
-      <motion.div className="pointer-events-none absolute inset-x-0 top-0 h-[600px] z-10">
+      <motion.div className="pointer-events-none absolute inset-x-0 top-0 h-[250px] z-10">
         <svg
           className="absolute inset-x-0 top-0 h-full w-full block"
-          viewBox="0 0 1440 600"
+          viewBox="0 0 1440 250"
           preserveAspectRatio="none"
         >
           <motion.path
@@ -108,7 +108,7 @@ export function Footer({ action, defaultService = null }: Props) {
 
       <motion.div
         style={{ y }}
-        className="relative mx-auto max-w-7xl px-6 py-20 sm:px-10"
+        className="relative mx-auto max-w-7xl px-6 py-10 sm:px-10"
       >
         <div className="border-b border-white/10 pb-12 sm:pb-16 relative">
           <div className="flex flex-col gap-6">

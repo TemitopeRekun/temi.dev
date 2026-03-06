@@ -9,7 +9,7 @@ import type { Route } from "next";
 import { TextReveal } from "../common/TextReveal";
 import { motion, useScroll, useTransform } from "framer-motion";
 
-export function AboutHero() {
+export function AboutHero({ hideLink = false }: { hideLink?: boolean }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const clipRef = useRef<HTMLHeadingElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -135,19 +135,21 @@ export function AboutHero() {
               />
             </div>
 
-            <motion.div style={{ y: buttonY }} className="pt-4">
-              <MagneticWrapper>
-                <Link
-                  href={"/about" as Route}
-                  className="inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-(--text) hover:text-(--accent) transition-colors"
-                >
-                  More about my journey
-                  <span className="inline-block transition-transform group-hover:translate-x-1">
-                    →
-                  </span>
-                </Link>
-              </MagneticWrapper>
-            </motion.div>
+            {!hideLink && (
+              <motion.div style={{ y: buttonY }} className="pt-4">
+                <MagneticWrapper>
+                  <Link
+                    href={"/about" as Route}
+                    className="inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-(--text) hover:text-(--accent) transition-colors"
+                  >
+                    More about my journey
+                    <span className="inline-block transition-transform group-hover:translate-x-1">
+                      →
+                    </span>
+                  </Link>
+                </MagneticWrapper>
+              </motion.div>
+            )}
           </div>
         </div>
       </div>
