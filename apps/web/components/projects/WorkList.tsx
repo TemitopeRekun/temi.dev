@@ -1,107 +1,110 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Route } from "next";
 import { projects, type Project } from "../../lib/projects";
-import { gsap, registerGSAP } from "../../lib/gsap";
+import { gsap } from "../../lib/gsap";
+import { motion } from "framer-motion";
+
+const scaleAnim = {
+  initial: { scale: 0, x: "-50%", y: "-50%" },
+  enter: {
+    scale: 1,
+    x: "-50%",
+    y: "-50%",
+    transition: { duration: 0.4, ease: [0.76, 0, 0.24, 1] },
+  },
+  closed: {
+    scale: 0,
+    x: "-50%",
+    y: "-50%",
+    transition: { duration: 0.4, ease: [0.32, 0, 0.67, 0] },
+  },
+};
 
 export function WorkList() {
-  const overlayRef = useRef<HTMLDivElement | null>(null);
-  const imgRef = useRef<HTMLImageElement | null>(null);
-  const xTo = useRef<((v: number) => void) | null>(null);
-  const yTo = useRef<((v: number) => void) | null>(null);
-  const oTo = useRef<((v: number) => void) | null>(null);
+  const [modal, setModal] = useState({ active: false, index: 0 });
+
+  const modalEl = useRef<HTMLDivElement>(null);
+  const cursorEl = useRef<HTMLDivElement>(null);
+  const cursorLblEl = useRef<HTMLDivElement>(null);
+
+  const xModal = useRef<gsap.QuickToFunc | null>(null);
+  const yModal = useRef<gsap.QuickToFunc | null>(null);
+  const xCur = useRef<gsap.QuickToFunc | null>(null);
+  const yCur = useRef<gsap.QuickToFunc | null>(null);
+  const xLbl = useRef<gsap.QuickToFunc | null>(null);
+  const yLbl = useRef<gsap.QuickToFunc | null>(null);
 
   useEffect(() => {
-    void registerGSAP();
-    const overlay = overlayRef.current;
-    if (!overlay) return;
-    overlay.style.willChange = "transform, opacity";
-    xTo.current = gsap.quickTo(overlay, "x", {
-      duration: 0.24,
-      ease: "power3.out",
+    xModal.current = gsap.quickTo(modalEl.current, "left", {
+      duration: 0.8,
+      ease: "power3",
     });
-    yTo.current = gsap.quickTo(overlay, "y", {
-      duration: 0.24,
-      ease: "power3.out",
+    yModal.current = gsap.quickTo(modalEl.current, "top", {
+      duration: 0.8,
+      ease: "power3",
     });
-    oTo.current = gsap.quickTo(overlay, "opacity", {
-      duration: 0.18,
-      ease: "power2.out",
+    xCur.current = gsap.quickTo(cursorEl.current, "left", {
+      duration: 0.5,
+      ease: "power3",
     });
-    return () => {
-      overlay.style.willChange = "";
-    };
+    yCur.current = gsap.quickTo(cursorEl.current, "top", {
+      duration: 0.5,
+      ease: "power3",
+    });
+    xLbl.current = gsap.quickTo(cursorLblEl.current, "left", {
+      duration: 0.45,
+      ease: "power3",
+    });
+    yLbl.current = gsap.quickTo(cursorLblEl.current, "top", {
+      duration: 0.45,
+      ease: "power3",
+    });
   }, []);
 
-  const rows = useMemo<Array<Project & { index: number }>>(() => {
-    return projects.map((p: Project, i: number) => ({ ...p, index: i + 1 }));
-  }, []);
+  const moveAll = (x: number, y: number) => {
+    xModal.current?.(x);
+    yModal.current?.(y);
+    xCur.current?.(x);
+    yCur.current?.(y);
+    xLbl.current?.(x);
+    yLbl.current?.(y);
+  };
 
-  const handleEnter = (src: string) => {
-    const overlay = overlayRef.current;
-    const img = imgRef.current;
-    if (!overlay || !img) return;
-    img.src = src;
-    oTo.current?.(1);
-  };
-  const handleMove = (e: React.MouseEvent) => {
-    const overlay = overlayRef.current;
-    if (!overlay) return;
-    const x = e.clientX + 12;
-    const y = e.clientY + 12;
-    xTo.current?.(x);
-    yTo.current?.(y);
-  };
-  const handleLeave = () => {
-    oTo.current?.(0);
+  const manage = (active: boolean, index: number, x: number, y: number) => {
+    moveAll(x, y);
+    setModal({ active, index });
   };
 
   return (
-    <div className="relative">
-      <div
-        ref={overlayRef}
-        className="pointer-events-none fixed left-0 top-0 z-30 -translate-x-1/2 -translate-y-1/2 opacity-0"
-        aria-hidden
-      >
-        <div className="overflow-hidden rounded-xl border border-(--border,rgba(0,0,0,0.08)) shadow-sm">
-          <Image
-            ref={imgRef}
-            src={rows[0]?.image ?? "https://picsum.photos/seed/preview/800/600"}
-            alt=""
-            width={320}
-            height={220}
-            className="h-[220px] w-[320px] object-cover"
-            sizes="320px"
-            priority={false}
-          />
-        </div>
-      </div>
-
-      <div className="divide-y divide-(--border,rgba(0,0,0,0.08))">
-        {rows.map((p) => (
+    <section
+      className="relative px-4 sm:px-6 lg:px-8"
+      onMouseMove={(e) => moveAll(e.clientX, e.clientY)}
+    >
+      <div className="mx-auto max-w-7xl divide-y divide-(--border)">
+        {projects.map((p: Project, i: number) => (
           <Link
             key={p.slug}
             href={`/work/${p.slug}` as Route}
-            className="group flex items-center justify-between gap-6 py-5 transition-colors hover:bg-(--surface)/40"
-            onMouseEnter={() => handleEnter(p.image)}
-            onMouseMove={handleMove}
-            onMouseLeave={handleLeave}
+            onMouseEnter={(e) => manage(true, i, e.clientX, e.clientY)}
+            onMouseLeave={(e) => manage(false, i, e.clientX, e.clientY)}
+            className="group flex items-center justify-between gap-6 py-6 sm:py-8 md:cursor-none"
           >
             <div className="flex items-baseline gap-6">
-              <div className="min-w-14 text-sm tabular-nums text-(--muted)">
-                {String(p.index).padStart(2, "0")}
-              </div>
+              <span className="text-sm tabular-nums text-(--muted) min-w-[2rem]">
+                {String(i + 1).padStart(2, "0")}
+              </span>
               <div>
-                <div className="text-xl font-semibold tracking-tight group-hover:underline">
+                <h3 className="font-(--font-syne) text-2xl sm:text-3xl font-light tracking-tight group-hover:-translate-x-2 group-hover:opacity-50 transition-all duration-500">
                   {p.title}
-                </div>
-                <div className="mt-1 flex flex-wrap gap-2">
-                  {p.tags.map((t: string) => (
+                </h3>
+                <div className="mt-1.5 flex flex-wrap gap-2">
+                  {p.tags.map((t) => (
                     <span
                       key={t}
-                      className="rounded-full border border-(--border,rgba(0,0,0,0.08)) bg-(--surface) px-2 py-0.5 text-xs text-(--muted)"
+                      className="text-xs text-(--muted) border border-(--border) rounded-full px-2 py-0.5"
                     >
                       {t}
                     </span>
@@ -109,10 +112,66 @@ export function WorkList() {
                 </div>
               </div>
             </div>
-            <div className="text-sm text-(--muted)">{p.year}</div>
+            <div className="text-sm text-(--muted) group-hover:translate-x-2 group-hover:opacity-50 transition-all duration-500 shrink-0">
+              {p.year}
+            </div>
           </Link>
         ))}
       </div>
-    </div>
+
+      <motion.div
+        ref={modalEl}
+        variants={scaleAnim}
+        initial="initial"
+        animate={modal.active ? "enter" : "closed"}
+        className="hidden md:block fixed z-50 pointer-events-none w-[340px] h-[230px] overflow-hidden rounded-2xl border border-(--border) bg-(--surface)/20 backdrop-blur-md shadow-2xl"
+        style={{ top: "50%", left: "50%" }}
+      >
+        <div className="absolute inset-0 bg-white/10" />
+        <div
+          className="relative w-full transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
+          style={{
+            top: `${modal.index * -100}%`,
+            height: `${projects.length * 100}%`,
+          }}
+        >
+          {projects.map((p, i) => (
+            <div
+              key={i}
+              className="relative w-full"
+              style={{ height: `${100 / projects.length}%` }}
+            >
+              <Image
+                fill
+                alt={p.title}
+                src={p.image}
+                className="object-cover"
+                sizes="340px"
+              />
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      <motion.div
+        ref={cursorEl}
+        variants={scaleAnim}
+        initial="initial"
+        animate={modal.active ? "enter" : "closed"}
+        className="hidden md:block fixed z-50 pointer-events-none w-16 h-16 rounded-full bg-(--accent)"
+        style={{ top: "50%", left: "50%" }}
+      />
+
+      <motion.div
+        ref={cursorLblEl}
+        variants={scaleAnim}
+        initial="initial"
+        animate={modal.active ? "enter" : "closed"}
+        className="hidden md:flex fixed z-50 pointer-events-none w-16 h-16 rounded-full items-center justify-center text-white text-xs font-medium"
+        style={{ top: "50%", left: "50%" }}
+      >
+        View
+      </motion.div>
+    </section>
   );
 }

@@ -73,7 +73,7 @@ export function ContactForm({ action, defaultService }: Props) {
               disabled={pending}
               className={[
                 "inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-medium transition-colors",
-                "bg-(--accent) text-(--bg) border border-transparent",
+                "bg-(--accent) text-white border border-transparent",
                 pending ? "opacity-70" : "hover:opacity-95 active:opacity-90",
               ].join(" ")}
             >

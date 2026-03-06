@@ -2,14 +2,7 @@
 import { useEffect, useState } from "react";
 import { motion, type Variants } from "framer-motion";
 
-const words = [
-  "Hello",
-  "Temitope",
-  "Builder",
-  "Developer",
-  "Creator",
-  "Welcome",
-];
+const words = ["Hello", "Temitope", "Builder", "Developer", "Creator", "Welcome"];
 const easing: [number, number, number, number] = [0.76, 0, 0.24, 1];
 
 const slideUp: Variants = {
