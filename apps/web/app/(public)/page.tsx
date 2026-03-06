@@ -3,6 +3,11 @@ import { Hero } from "../../components/home/Hero";
 import { MarqueeSlider } from "../../components/home/MarqueeSlider";
 import { HomeStatsRow } from "../../components/home/HomeStatsRow";
 import { ProjectsSection } from "../../components/projects/ProjectsSection";
+import { HomeServices } from "../../components/home/HomeServices";
+import { Testimonials } from "../../components/home/Testimonials";
+import { HomeBlog } from "../../components/home/HomeBlog";
+import { CTASection } from "../../components/home/CTASection";
+import { GlobalBackground } from "../../components/common/GlobalBackground";
 import { buildMetadata } from "../../lib/metadata";
 
 export const metadata = buildMetadata({
@@ -47,11 +52,16 @@ export default function HomePage() {
           }),
         }}
       />
+      <GlobalBackground />
       <Hero />
       <MarqueeSlider />
       <HomeStatsRow />
       <AboutHero />
+      <HomeServices />
       <ProjectsSection />
+      <Testimonials />
+      <HomeBlog />
+      <CTASection />
     </main>
   );
 }

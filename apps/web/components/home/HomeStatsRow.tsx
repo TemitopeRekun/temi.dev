@@ -1,10 +1,12 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Container, Grid, RevealOnScroll, WarmCard } from "@temi/ui";
+import { Briefcase, Code2, Cpu } from "lucide-react";
+import { TextReveal } from "../common/TextReveal";
 
 const NUMERIC_STATS = [
-  { value: 5, suffix: "+", label: "Years Experience" },
-  { value: 20, suffix: "+", label: "Projects Delivered" },
+  { value: 5, suffix: "+", label: "Years Experience", icon: Briefcase },
+  { value: 20, suffix: "+", label: "Projects Delivered", icon: Code2 },
 ] as const;
 
 export function HomeStatsRow() {
@@ -48,41 +50,44 @@ export function HomeStatsRow() {
     <section
       ref={sectionRef}
       id="stats"
-      className="bg-(--bg) py-16 sm:py-20 lg:py-28"
+      className="relative z-10 py-16 sm:py-24 border-y border-(--border)/50 bg-(--surface)/30 backdrop-blur-sm"
     >
       <Container>
-        <Grid cols={1} md={3} gap="gap-6 md:gap-8">
+        <Grid cols={1} md={3} gap="gap-8 md:gap-12" className="divide-y md:divide-y-0 md:divide-x divide-(--border)/50">
           <RevealOnScroll>
-            <WarmCard className="rounded-2xl">
-              <div className="text-5xl font-(family-name:--font-fraunces) font-semibold text-(--accent)">
+            <div className="flex flex-col items-center justify-center p-6 text-center md:items-start md:text-left">
+              <Briefcase className="mb-6 h-10 w-10 text-(--accent) opacity-80" />
+              <div className="text-6xl font-(family-name:--font-fraunces) font-bold tracking-tight text-(--text)">
                 {counts[0]}
-                {NUMERIC_STATS[0].suffix}
+                <span className="text-(--accent)">{NUMERIC_STATS[0].suffix}</span>
               </div>
-              <div className="mt-1 text-sm text-(--muted)">
-                {NUMERIC_STATS[0].label}
+              <div className="mt-3 text-sm font-medium uppercase tracking-[0.15em] text-(--muted)">
+                <TextReveal text={NUMERIC_STATS[0].label} type="chars" delay={0.3} />
               </div>
-            </WarmCard>
+            </div>
           </RevealOnScroll>
-          <RevealOnScroll>
-            <WarmCard className="rounded-2xl">
-              <div className="text-5xl font-(family-name:--font-fraunces) font-semibold text-(--accent)">
+          <RevealOnScroll delay={0.1}>
+            <div className="flex flex-col items-center justify-center p-6 text-center md:items-start md:text-left">
+              <Code2 className="mb-6 h-10 w-10 text-(--accent) opacity-80" />
+              <div className="text-6xl font-(family-name:--font-fraunces) font-bold tracking-tight text-(--text)">
                 {counts[1]}
-                {NUMERIC_STATS[1].suffix}
+                <span className="text-(--accent)">{NUMERIC_STATS[1].suffix}</span>
               </div>
-              <div className="mt-1 text-sm text-(--muted)">
-                {NUMERIC_STATS[1].label}
+              <div className="mt-3 text-sm font-medium uppercase tracking-[0.15em] text-(--muted)">
+                <TextReveal text={NUMERIC_STATS[1].label} type="chars" delay={0.4} />
               </div>
-            </WarmCard>
+            </div>
           </RevealOnScroll>
-          <RevealOnScroll>
-            <WarmCard className="rounded-2xl">
-              <div className="text-5xl font-(family-name:--font-fraunces) font-semibold text-(--accent)">
-                AI-First
+          <RevealOnScroll delay={0.2}>
+            <div className="flex flex-col items-center justify-center p-6 text-center md:items-start md:text-left">
+              <Cpu className="mb-6 h-10 w-10 text-(--accent) opacity-80" />
+              <div className="text-6xl font-(family-name:--font-fraunces) font-bold tracking-tight text-(--text)">
+                <TextReveal text="AI" type="chars" delay={0.4} />
               </div>
-              <div className="mt-1 text-sm text-(--muted)">
-                Development Approach
+              <div className="mt-3 text-sm font-medium uppercase tracking-[0.15em] text-(--muted)">
+                <TextReveal text="First Approach" type="chars" delay={0.5} />
               </div>
-            </WarmCard>
+            </div>
           </RevealOnScroll>
         </Grid>
       </Container>

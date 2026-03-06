@@ -29,11 +29,17 @@ export function MarqueeSlider({
         scrub: 0.25,
         start: 0,
         end: window.innerHeight,
-        onUpdate: (e) => {
-          direction.current = e.direction * -1;
-        },
       },
       x: "-500px",
+    });
+
+    ScrollTrigger.create({
+      trigger: document.documentElement,
+      start: "top top",
+      end: "bottom bottom",
+      onUpdate: (self) => {
+        direction.current = self.direction * -1;
+      },
     });
 
     const animate = () => {
@@ -53,20 +59,20 @@ export function MarqueeSlider({
   }, []);
 
   return (
-    <div className="relative overflow-hidden py-4 border-y border-(--border)">
+    <div className="relative overflow-hidden py-10 sm:py-16 border-y border-(--border)/50 bg-(--surface)/30 backdrop-blur-sm">
       <div
         ref={slider}
         className="relative flex whitespace-nowrap will-change-transform"
       >
         <p
           ref={firstText}
-          className="font-(--font-syne) text-[clamp(1.5rem,5vw,4rem)] font-light pr-8 text-(--text)/30"
+          className="shrink-0 font-(--font-syne) text-[clamp(2.5rem,6vw,5rem)] font-bold pr-12 text-transparent [-webkit-text-stroke:1px_var(--muted)] opacity-40"
         >
           {content}
         </p>
         <p
           ref={secondText}
-          className="absolute left-full font-(--font-syne) text-[clamp(1.5rem,5vw,4rem)] font-light pr-8 text-(--text)/30"
+          className="shrink-0 font-(--font-syne) text-[clamp(2.5rem,6vw,5rem)] font-bold pr-12 text-transparent [-webkit-text-stroke:1px_var(--muted)] opacity-40"
         >
           {content}
         </p>

@@ -10,6 +10,8 @@ import {
   type ProjectCategory,
 } from "../../lib/projects";
 import { gsap, registerGSAP } from "../../lib/gsap";
+import { TextReveal } from "../common/TextReveal";
+
 type Filter = "All" | ProjectCategory;
 const FILTERS: Filter[] = ["All", "Frontend", "Backend", "AI", "Mobile"];
 
@@ -195,21 +197,30 @@ export function ProjectsSection() {
   }, [active, update]);
 
   return (
-    <Section id="work" className="bg-(--bg)">
-      <Container>
+    <Section id="work" className="relative bg-(--bg) py-24 lg:py-32">
+       {/* Distinct background for projects section */}
+       <div className="absolute inset-0 z-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.05] dark:bg-[radial-gradient(#ffffff_1px,transparent_1px)] dark:opacity-[0.03]" />
+      <Container className="relative z-10">
         <RevealOnScroll>
-          <div className="mb-6 flex items-end justify-between">
-            <h2 className="text-2xl font-semibold">Selected Projects</h2>
+          <div className="mb-12 flex items-end justify-between">
+            <div>
+              <div className="mb-2 text-sm font-medium uppercase tracking-[0.2em] text-(--accent)">
+                <TextReveal text="Selected Works" type="chars" />
+              </div>
+              <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+                <TextReveal text="Recent Projects" type="chars" delay={0.2} />
+              </h2>
+            </div>
             <Link
               href={"/work" as Route}
-              className="text-sm text-(--text) underline-offset-4 hover:underline"
+              className="hidden text-sm font-medium text-(--text) underline-offset-4 hover:underline sm:block"
             >
               View all work →
             </Link>
           </div>
         </RevealOnScroll>
 
-        <div className="mb-6">
+        <div className="mb-12">
           <div
             ref={containerRef}
             className="relative inline-flex rounded-full border border-(--border,rgba(0,0,0,0.08)) bg-(--surface) p-1"
