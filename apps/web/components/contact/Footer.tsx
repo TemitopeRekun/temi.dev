@@ -26,35 +26,28 @@ export function Footer({ action, defaultService = null }: Props) {
     offset: ["start end", "end end"],
   });
 
-  const yRaw = useTransform(scrollYProgress, [0, 1], [-220, 0]);
+  const yRaw = useTransform(scrollYProgress, [0, 1], [-500, 0]);
   const xRaw = useTransform(scrollYProgress, [0, 1], [0, 100]);
   const rotateRaw = useTransform(scrollYProgress, [0, 1], [120, 90]);
   const curveRaw = useTransform(scrollYProgress, [0, 1], [0, 1]);
-  const curveYRaw = useTransform(scrollYProgress, [0, 1], [18, 0]);
-  const curveOpacityRaw = useTransform(scrollYProgress, [0, 0.2], [0, 1]);
 
   const y = useSpring(yRaw, { stiffness: 80, damping: 20 });
   const x = useSpring(xRaw, { stiffness: 80, damping: 20 });
   const rotate = useSpring(rotateRaw, { stiffness: 80, damping: 20 });
   const curve = useSpring(curveRaw, { stiffness: 120, damping: 24 });
-  const curveY = useSpring(curveYRaw, { stiffness: 120, damping: 26 });
-  const curveOpacity = useSpring(curveOpacityRaw, { stiffness: 120, damping: 26 });
 
   const curveFill = useTransform(
     curve,
     [0, 1],
     [
-      "M0,60 Q720,190 1440,60 L1440,0 L0,0 Z",
-      "M0,40 Q720,40 1440,40 L1440,0 L0,0 Z",
+      "M0,0 Q720,600 1440,0 L1440,0 L0,0 Z",
+      "M0,0 Q720,0 1440,0 L1440,0 L0,0 Z",
     ],
   );
   const curveStroke = useTransform(
     curve,
     [0, 1],
-    [
-      "M0,60 Q720,190 1440,60",
-      "M0,40 Q720,40 1440,40",
-    ],
+    ["M0,0 Q720,600 1440,0", "M0,0 Q720,0 1440,0"],
   );
 
   useEffect(() => {
@@ -70,18 +63,15 @@ export function Footer({ action, defaultService = null }: Props) {
     <motion.footer
       ref={container}
       id="contact"
-      className="relative mt-32 overflow-hidden rounded-t-3xl text-white isolate"
+      className="relative mt-32 overflow-hidden text-white isolate"
       style={{
         backgroundColor: "color-mix(in oklab, var(--text) 15%, #000 85%)",
       }}
     >
-      <motion.div
-        style={{ y: curveY, opacity: curveOpacity }}
-        className="pointer-events-none absolute inset-x-0 top-0 h-36 z-10"
-      >
+      <motion.div className="pointer-events-none absolute inset-x-0 top-0 h-[600px] z-10">
         <svg
           className="absolute inset-x-0 top-0 h-full w-full block"
-          viewBox="0 0 1440 200"
+          viewBox="0 0 1440 600"
           preserveAspectRatio="none"
         >
           <motion.path
@@ -106,7 +96,10 @@ export function Footer({ action, defaultService = null }: Props) {
         <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
       </motion.div>
 
-      <motion.div style={{ y }} className="relative mx-auto max-w-7xl px-6 py-20 sm:px-10">
+      <motion.div
+        style={{ y }}
+        className="relative mx-auto max-w-7xl px-6 py-20 sm:px-10"
+      >
         <div className="border-b border-white/10 pb-12 sm:pb-16 relative">
           <div className="flex flex-col gap-6">
             <p className="text-white/60 uppercase tracking-[0.25em] text-xs">
@@ -154,7 +147,7 @@ export function Footer({ action, defaultService = null }: Props) {
           </motion.svg>
         </div>
 
-        <div className="mt-10 sm:mt-12 flex flex-col gap-8">
+        <div className="my-10 sm:mt-12 flex flex-col gap-8">
           <div className="max-w-xl text-white/70 text-sm sm:text-base">
             <AnimatedText phrase="Tell me about your product, your timeline, and the problem you want to solve. I'll respond with a clear plan and next steps." />
           </div>
