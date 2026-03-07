@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { ThemeProvider } from "../providers/ThemeProvider";
 import { LenisProvider } from "../providers/LenisProvider";
 import { PreloaderWrapper } from "../providers/PreloaderWrapper";
+import { QueryProvider } from "../providers/QueryProvider";
 import { DM_Mono, Syne } from "next/font/google";
 
 const syne = Syne({
@@ -27,7 +28,9 @@ export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
       >
         <ThemeProvider>
           <LenisProvider>
-            <PreloaderWrapper>{props.children}</PreloaderWrapper>
+            <QueryProvider>
+              <PreloaderWrapper>{props.children}</PreloaderWrapper>
+            </QueryProvider>
           </LenisProvider>
         </ThemeProvider>
       </body>

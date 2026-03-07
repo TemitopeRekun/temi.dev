@@ -10,6 +10,18 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
+        protocol: "http",
+        hostname: "localhost",
+      },
+      {
+        protocol: "https",
+        hostname: "temi.dev",
+      },
+      {
+        protocol: "https",
+        hostname: "www.temi.dev",
+      },
+      {
         protocol: "https",
         hostname: "picsum.photos",
       },

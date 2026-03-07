@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { GenerateProposalDto } from "./dto/generate-proposal.dto";
 import { UpdateProposalDto } from "./dto/update-proposal.dto";
-import { AIService } from "../../services/ai.service";
+import { AiService } from "../ai/ai.service";
 
 type PrismaLike = {
   proposal: {
@@ -23,7 +23,7 @@ type PrismaLike = {
 export class ProposalsService {
   private readonly prismaLike: PrismaLike;
 
-  constructor(private readonly prisma: PrismaService, private readonly ai: AIService) {
+  constructor(private readonly prisma: PrismaService, private readonly ai: AiService) {
     this.prismaLike = this.prisma as unknown as PrismaLike;
   }
 

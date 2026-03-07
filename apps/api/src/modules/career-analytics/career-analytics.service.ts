@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
-import { AIService } from "../../services/ai.service";
+import { AiService } from "../ai/ai.service";
 
 type PrismaLike = {
   jobLead: {
@@ -15,7 +15,7 @@ type PrismaLike = {
 export class CareerAnalyticsService {
   private readonly prismaLike: PrismaLike;
 
-  constructor(private readonly prisma: PrismaService, private readonly ai: AIService) {
+  constructor(private readonly prisma: PrismaService, private readonly ai: AiService) {
     this.prismaLike = this.prisma as unknown as PrismaLike;
   }
 

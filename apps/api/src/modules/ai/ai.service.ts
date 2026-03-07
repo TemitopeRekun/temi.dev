@@ -2,6 +2,8 @@ import { Injectable, BadRequestException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../../prisma/prisma.service";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { readFile } from "fs/promises";
+import { resolve } from "path";
 
 type TableName = "BlogPost" | "Project";
 
@@ -23,7 +25,7 @@ export class AiService {
     this.embeddingModel =
       this.config.get<string>("GEMINI_EMBEDDING_MODEL") ?? "text-embedding-004";
     this.generationModel =
-      this.config.get<string>("GEMINI_MODEL") ?? "gemini-2.5-flash";
+      this.config.get<string>("GEMINI_MODEL") ?? "gemini-1.5-flash";
     this.genAI = this.apiKey ? new GoogleGenerativeAI(this.apiKey) : null;
     this.prismaLike = this.prisma as unknown as {
       aiRequestLog: { create(args: unknown): Promise<unknown> };
@@ -61,13 +63,7 @@ export class AiService {
   }
 
   async generateCompletion(prompt: string, context: string): Promise<string> {
-    if (!this.genAI) throw new BadRequestException("GEMINI_API_KEY missing");
-    try {
-      const model = this.genAI.getGenerativeModel({
-        model: this.generationModel,
-      });
-
-      const fullPrompt = `Based on the following context, answer the user's question.
+    const fullPrompt = `Based on the following context, answer the user's question.
 If the context doesn't contain the answer, say you don't know. Format your response using Markdown (e.g., paragraphs, lists, bolding).
 
 Context:
@@ -77,11 +73,208 @@ ${context}
 
 Question: ${prompt}
 `;
+    return this.callGemini(fullPrompt);
+  }
 
+  async generateDigitalBrainResponse(
+    question: string,
+    context: string,
+  ): Promise<string> {
+    const fullPrompt = `You are Temitope's Digital Brain, an AI assistant representing Temitope Ogunrekun (a Senior Full-Stack Engineer).
+Answer the user's question based on the provided context (which includes my blog posts and projects).
+If the context is relevant, use it to provide specific details.
+If the context is empty or irrelevant, use your general knowledge to answer helpfuly, but clarify that this is general advice not specific to my writing.
+Maintain a professional, technical, and encouraging tone.
+Format your response using Markdown.
+
+Context:
+---
+${context}
+---
+
+Question: ${question}
+`;
+    return this.callGemini(fullPrompt);
+  }
+
+  async generateBlogPost(topic: string): Promise<{
+    title: string;
+    slug: string;
+    excerpt: string;
+    content: string;
+    tags: string[];
+    imagePrompt: string;
+  }> {
+    const prompt = `Write a comprehensive technical blog post about "${topic}".
+The post should be engaging, easy to understand for developers, and SEO-friendly.
+Include code snippets where relevant (in markdown).
+Return a valid JSON object with the following fields:
+- title: A catchy title.
+- slug: A URL-friendly kebab-case string based on the title.
+- excerpt: A short summary (1-2 sentences) for SEO.
+- content: The full blog post body in Markdown format.
+- tags: An array of 3-5 relevant tags.
+- imagePrompt: A descriptive prompt for an AI image generator to create a header image for this post.
+
+Do not wrap the JSON in markdown code blocks. Just return the raw JSON.`;
+
+    const raw = await this.callGemini(prompt, {
+      responseMimeType: "application/json",
+    });
+
+    try {
+      const json = JSON.parse(raw);
+      return {
+        title: json.title || topic,
+        slug: json.slug || topic.toLowerCase().replace(/\s+/g, "-"),
+        excerpt: json.excerpt || "",
+        content: json.content || "",
+        tags: json.tags || [],
+        imagePrompt: json.imagePrompt || `Abstract tech illustration of ${topic}`,
+      };
+    } catch {
+      throw new BadRequestException("Failed to generate blog post JSON");
+    }
+  }
+
+  async getTrendingTopics(): Promise<string[]> {
+    const prompt = `List 5 trending software engineering topics or technologies that are currently popular or rising.
+Focus on practical, interesting subjects for a tech blog.
+Return a valid JSON array of strings (e.g., ["Topic 1", "Topic 2"]).`;
+
+    const raw = await this.callGemini(prompt, {
+      responseMimeType: "application/json",
+    });
+
+    try {
+      const json = JSON.parse(raw);
+      return Array.isArray(json) ? json : [];
+    } catch {
+      return ["React Server Components", "AI Engineering", "TypeScript Best Practices", "Next.js Performance", "Rust for Web Dev"];
+    }
+  }
+
+  async scoreLead(
+    description: string,
+    techStack: string[],
+    skills: string[],
+  ): Promise<{ score: number; reason: string; pitchAngle: string }> {
+    const prompt = [
+      "You are an assistant scoring job leads for Temitope.",
+      "Evaluate fit between job description and skills.",
+      `Job Description:\n${description}`,
+      `Job Tech Stack: ${techStack.join(", ")}`,
+      `Temitope's Skills: ${skills.join(", ")}`,
+      "Return JSON with fields: score (0-100), reason (short), pitchAngle (short).",
+    ].join("\n\n");
+
+    const raw = await this.callGemini(prompt, {
+      responseMimeType: "application/json",
+    });
+
+    try {
+      const json = JSON.parse(raw) as Partial<{
+        score: number;
+        reason: string;
+        pitchAngle: string;
+      }>;
+      return {
+        score: Math.max(0, Math.min(100, Math.round(json.score ?? 0))),
+        reason: json.reason ?? "",
+        pitchAngle: json.pitchAngle ?? "",
+      };
+    } catch {
+      const base = description.length > 500 ? 60 : 40;
+      return {
+        score: base,
+        reason: "Heuristic fallback",
+        pitchAngle: "General value alignment",
+      };
+    }
+  }
+
+  async generateProposal(
+    jobDescription: string,
+    variant: string,
+    projects: Array<{
+      title: string;
+      description: string;
+      techStack: string[];
+    }>,
+  ): Promise<string> {
+    const projectsText = projects
+      .map((p) => `- ${p.title}: ${p.description} [${p.techStack.join(", ")}]`)
+      .join("\n");
+    const path = resolve(
+      process.cwd(),
+      "../../packages/ai/prompts/proposal.txt",
+    );
+    const tmpl = await readFile(path, "utf8").catch(() => "");
+    const prompt = tmpl
+      ? tmpl
+          .replace("{{variant}}", variant)
+          .replace("{{jobDescription}}", jobDescription)
+          .replace("{{projects}}", projectsText)
+      : [
+          "Generate a concise proposal tailored to the job description.",
+          `Variant: ${variant}`,
+          `Job Description:\n${jobDescription}`,
+          "Use Temitope's background:",
+          projectsText,
+          "Tone: professional, clear value, short paragraphs, include relevant achievements.",
+        ].join("\n\n");
+
+    return this.callGemini(prompt);
+  }
+
+  async generateWeeklyInsights(stats: unknown): Promise<string> {
+    const path = resolve(
+      process.cwd(),
+      "../../packages/ai/prompts/weekly-insights.txt",
+    );
+    const tmpl = await readFile(path, "utf8").catch(() => "");
+    const prompt = tmpl
+      ? tmpl.replace("{{stats}}", JSON.stringify(stats, null, 2))
+      : [
+          "You are a career pipeline analyst.",
+          "Given the following weekly stats JSON, produce a short, actionable summary (bullets).",
+          JSON.stringify(stats, null, 2),
+        ].join("\n\n");
+    return this.callGemini(prompt);
+  }
+
+  async generateLeadReply(
+    leadMessage: string,
+    context?: string,
+  ): Promise<string> {
+    const prompt = [
+      "You are Temitope Ogunrekun, a professional software engineer.",
+      "Write a polite, concise, and helpful email reply to this inquiry.",
+      `Inquiry: "${leadMessage}"`,
+      context ? `Context: ${context}` : "",
+      "Tone: Friendly but professional. Invite a call or further discussion if relevant.",
+    ].join("\n\n");
+    return this.callGemini(prompt);
+  }
+
+  private async callGemini(
+    prompt: string,
+    config: { responseMimeType?: string } = {},
+  ): Promise<string> {
+    if (!this.genAI) throw new BadRequestException("GEMINI_API_KEY missing");
+    try {
+      const model = this.genAI.getGenerativeModel({
+        model: this.generationModel,
+      });
       const started = Date.now();
       const res = await model.generateContent({
-        contents: [{ role: "user", parts: [{ text: fullPrompt }] }],
-        generationConfig: { maxOutputTokens: 1024 },
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: {
+          maxOutputTokens: 1024,
+          ...(config.responseMimeType
+            ? { responseMimeType: config.responseMimeType }
+            : {}),
+        },
       });
       const text = res.response?.text?.() ?? "";
       const duration = Date.now() - started;
@@ -89,7 +282,7 @@ Question: ${prompt}
       await this.prismaLike.aiRequestLog.create({
         data: {
           model: this.generationModel,
-          input: fullPrompt.slice(0, 4000),
+          input: prompt.slice(0, 4000),
           output: text.slice(0, 4000),
           durationMs: duration,
         },
@@ -98,7 +291,6 @@ Question: ${prompt}
     } catch (error) {
       console.error("AI Generation Error:", error);
       if (error instanceof Error) {
-        // Pass the underlying error message to the client for better debugging.
         throw new BadRequestException(error.message);
       }
       throw new BadRequestException(

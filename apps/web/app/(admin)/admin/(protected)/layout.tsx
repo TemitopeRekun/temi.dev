@@ -26,6 +26,7 @@ export default async function AdminProtectedLayout(
             <SidebarLink href="/admin/dashboard" label="Dashboard Overview" />
             <SidebarLink href="/admin/projects" label="Projects" />
             <SidebarLink href="/admin/blog" label="Blog Posts" />
+            <SidebarLink href="/admin/job-leads" label="Job Leads" />
             <SidebarLink href="/admin/leads" label="Leads" />
             <SidebarLink href="/admin/settings" label="Settings" />
           </nav>

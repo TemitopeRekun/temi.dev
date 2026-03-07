@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Container, Section, RevealOnScroll } from "@temi/ui";
 import { Sparkles, Send, Loader2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 import { AnimatedText } from "../common/AnimatedText";
 
 export function AskAI() {
@@ -70,16 +71,21 @@ export function AskAI() {
             </div>
 
             <AnimatedText
-              phrase="Chat with my digital brain"
-              className="mb-8 text-center text-2xl font-bold text-(--text) md:text-3xl"
+              phrase="Ask my Digital Brain"
+              className="mb-4 text-center text-2xl font-bold text-(--text) md:text-3xl"
             />
+            
+            <p className="mb-8 text-center text-(--muted) text-sm md:text-base">
+              I've trained this AI on my blog posts and projects. You can ask about my specific work, 
+              or general software engineering questions, career advice, and technical concepts.
+            </p>
 
             <form onSubmit={handleSubmit} className="relative mb-8">
               <input
                 type="text"
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
-                placeholder="Ask about my tech stack, philosophy, or specific articles..."
+                placeholder="How do I become a senior engineer? What is RAG? Tell me about your stack..."
                 className="w-full rounded-2xl border border-(--border) bg-(--bg) p-4 pr-12 text-base md:text-sm text-(--text) shadow-sm transition-all focus:border-(--accent) focus:outline-none focus:ring-1 focus:ring-(--accent)"
                 disabled={loading}
               />
@@ -102,9 +108,9 @@ export function AskAI() {
                   <Sparkles className="h-4 w-4" />
                   AI Response
                 </div>
-                <p className="text-lg leading-relaxed text-(--text)">
-                  {answer}
-                </p>
+                <div className="prose prose-invert prose-sm max-w-none text-(--text)">
+                  <ReactMarkdown>{answer}</ReactMarkdown>
+                </div>
               </div>
             )}
 

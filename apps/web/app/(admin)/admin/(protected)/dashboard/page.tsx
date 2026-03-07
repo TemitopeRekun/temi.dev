@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { AnimatedText } from "../../../../../components/common/AnimatedText";
 import { Text } from "../../../../../components/ui/Text";
 
@@ -9,33 +10,35 @@ function apiBaseUrl(): string {
 type Counts = {
   totalProjects: number;
   totalPosts: number;
-  totalLeads: number | null;
-  newLeads7d: number | null;
+  totalLeads: number;
+  newLeads7d: number;
+  totalJobLeads: number;
 };
 
-async function getCounts(): Promise<Counts> {
+async function getCounts(token: string): Promise<Counts> {
   const base = apiBaseUrl();
-  const [projectsRes, blogRes] = await Promise.all([
-    fetch(`${base}/api/projects`, { cache: "no-store" }).catch(() => null),
-    fetch(`${base}/api/blog?take=100`, { cache: "no-store" }).catch(() => null),
-  ]);
-  const projects =
-    projectsRes && projectsRes.ok
-      ? ((await projectsRes.json()) as unknown[])
-      : [];
-  const blog =
-    blogRes && blogRes.ok
-      ? ((await blogRes.json()) as { items: unknown[] }).items
-      : [];
-  const totalProjects = Array.isArray(projects) ? projects.length : 0;
-  const totalPosts = Array.isArray(blog) ? blog.length : 0;
-  const totalLeads: number | null = null;
-  const newLeads7d: number | null = null;
-  return { totalProjects, totalPosts, totalLeads, newLeads7d };
+  const res = await fetch(`${base}/api/admin/dashboard/stats`, {
+    headers: { Authorization: `Bearer ${token}` },
+    cache: "no-store",
+  }).catch(() => null);
+
+  if (!res || !res.ok) {
+    return {
+      totalProjects: 0,
+      totalPosts: 0,
+      totalLeads: 0,
+      newLeads7d: 0,
+      totalJobLeads: 0,
+    };
+  }
+  return res.json();
 }
 
 export default async function DashboardPage() {
-  const counts: Counts = await getCounts();
+  const c = await cookies();
+  const token = c.get("admin_jwt")?.value ?? "";
+  const counts = await getCounts(token);
+
   return (
     <div className="space-y-6">
       <h1 className="sr-only">Overview</h1>
@@ -46,18 +49,9 @@ export default async function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card title="Total Projects" value={counts.totalProjects.toString()} />
         <Card title="Total Blog Posts" value={counts.totalPosts.toString()} />
-        <Card
-          title="Total Leads"
-          value={
-            counts.totalLeads !== null ? counts.totalLeads.toString() : "—"
-          }
-        />
-        <Card
-          title="New Leads (7d)"
-          value={
-            counts.newLeads7d !== null ? counts.newLeads7d.toString() : "—"
-          }
-        />
+        <Card title="Total Leads" value={counts.totalLeads.toString()} />
+        <Card title="Job Leads" value={counts.totalJobLeads.toString()} />
+        <Card title="New Leads (7d)" value={counts.newLeads7d.toString()} />
       </div>
     </div>
   );

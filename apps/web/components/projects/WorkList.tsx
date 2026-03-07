@@ -67,13 +67,13 @@ const scaleAnim = {
     scale: 1,
     x: "-50%",
     y: "-50%",
-    transition: { duration: 0.4, ease: [0.76, 0, 0.24, 1] },
+    transition: { duration: 0.4, ease: [0.76, 0, 0.24, 1] as const },
   },
   closed: {
     scale: 0,
     x: "-50%",
     y: "-50%",
-    transition: { duration: 0.4, ease: [0.32, 0, 0.67, 0] },
+    transition: { duration: 0.4, ease: [0.32, 0, 0.67, 0] as const },
   },
 };
 
@@ -161,7 +161,7 @@ export function WorkList() {
         >
           <span
             ref={setIndicatorRef}
-            className="pointer-events-none absolute inset-y-1 left-0 z-0 rounded-full bg-(--bg)"
+            className="pointer-events-none absolute inset-y-1 left-0 z-0 rounded-full bg-(--bg) shadow-sm"
             style={{ width: 0, transform: "translateX(0px)" }}
           />
           {FILTERS.map((f) => {

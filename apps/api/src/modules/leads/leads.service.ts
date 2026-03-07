@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { CreateLeadDto } from "./dto/create-lead.dto";
 import { ResendService } from "../email/resend.service";
+import { AiService } from "../ai/ai.service";
 import { LeadsAdminListQueryDto } from "./dto/leads-admin-list-query.dto";
 import { UpdateLeadAdminDto } from "./dto/update-lead-admin.dto";
 
@@ -10,6 +11,7 @@ export class LeadsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly email: ResendService,
+    private readonly ai: AiService,
   ) {}
 
   async create(dto: CreateLeadDto): Promise<string> {
@@ -91,5 +93,23 @@ export class LeadsService {
     }).catch(() => null);
     if (!updated) throw new NotFoundException("Lead not found");
     return { id: id };
+  }
+
+  async adminDelete(id: string): Promise<void> {
+    await this.prisma.lead.delete({ where: { id } }).catch(() => {
+      throw new NotFoundException("Lead not found");
+    });
+  }
+
+  async generateReply(id: string): Promise<{ reply: string }> {
+    const lead = await this.prisma.lead.findUnique({
+      where: { id },
+      select: { message: true, name: true, company: true, service: true },
+    });
+    if (!lead) throw new NotFoundException("Lead not found");
+    
+    const context = `Lead Name: ${lead.name}, Company: ${lead.company || "N/A"}, Service Interest: ${lead.service || "General"}`;
+    const reply = await this.ai.generateLeadReply(lead.message, context);
+    return { reply };
   }
 }

@@ -106,7 +106,7 @@ export async function getPosts(): Promise<BlogPost[]> {
       title: item.title,
       tag: item.tags?.[0] || "Tech",
       excerpt: item.excerpt || "No excerpt available.",
-      image: item.image || `https://picsum.photos/1200/800?seed=${item.slug}`,
+      image: item.coverImage || item.image || `https://picsum.photos/1200/800?seed=${item.slug}`,
       readTime: Math.ceil((item.content?.length || 1000) / 1000), // Rough estimate
       content: item.content,
       publishedAt: item.publishedAt,
@@ -135,7 +135,7 @@ export async function getPostBySlug(
         title: item.title,
         tag: item.tags?.[0] || "Tech",
         excerpt: item.excerpt || "",
-        image: item.image || `https://picsum.photos/1200/800?seed=${item.slug}`,
+        image: item.coverImage || item.image || `https://picsum.photos/1200/800?seed=${item.slug}`,
         readTime: Math.ceil((item.content?.length || 1000) / 1000),
         content: item.content,
         publishedAt: item.publishedAt,

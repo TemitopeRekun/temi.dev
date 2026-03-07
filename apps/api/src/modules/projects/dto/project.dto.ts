@@ -5,6 +5,7 @@ export class ProjectDto {
   techStack!: string[];
   liveUrl?: string | null;
   repoUrl?: string | null;
+  coverImage?: string | null;
   featured!: boolean;
   order!: number;
 }

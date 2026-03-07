@@ -8,13 +8,13 @@ import {
 import { ListJobLeadsQuery } from "./dto/list-job-leads.query";
 import { UpdateJobLeadDto } from "./dto/update-job-lead.dto";
 import { CsvImportDto } from "./dto/csv-import.dto";
-import { AIService } from "../../services/ai.service";
+import { AiService } from "../ai/ai.service";
 
 @Injectable()
 export class JobLeadsService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly ai: AIService,
+    private readonly ai: AiService,
   ) {}
 
   // NOTE: custom implementation — guard against missing Prisma types before generate by typing narrowly with unknown
@@ -105,79 +105,61 @@ export class JobLeadsService {
         createdAt: true,
       },
     });
-    let nextCursor: string | undefined;
+    let nextCursor: string | undefined = undefined;
     if (leads.length > take) {
-      const next = leads.pop();
-      nextCursor = next?.id as string | undefined;
+      const nextItem = leads.pop();
+      nextCursor = nextItem?.id as string | undefined;
     }
     return { items: leads, nextCursor };
   }
 
-  async getById(id: string) {
+  async findOne(id: string) {
     const lead = await this.prismaJobLead.findUnique({
       where: { id },
-      select: {
-        id: true,
-        title: true,
-        company: true,
-        platform: true,
-        description: true,
-        techStack: true,
-        budgetMin: true,
-        budgetMax: true,
-        currency: true,
-        url: true,
-        contactEmail: true,
-        contactName: true,
-        score: true,
-        scoreReason: true,
-        pitchAngle: true,
-        status: true,
-        source: true,
-        notes: true,
-        createdAt: true,
-        updatedAt: true,
-      },
     });
-    if (!lead) throw new NotFoundException("Job lead not found");
+    if (!lead) throw new NotFoundException(`Job lead ${id} not found`);
     return lead;
   }
 
   async update(id: string, dto: UpdateJobLeadDto) {
-    const lead = await this.prismaJobLead
-      .update({
-        where: { id },
-        data: {
-          status: dto.status ?? undefined,
-          notes: dto.notes ?? undefined,
-        },
-        select: { id: true },
-      })
-      .catch(() => null);
-    if (!lead) throw new NotFoundException("Job lead not found");
-    return { id };
-  }
-
-  async remove(id: string) {
-    const lead = await this.prismaJobLead
-      .delete({ where: { id }, select: { id: true } })
-      .catch(() => null);
-    if (!lead) throw new NotFoundException("Job lead not found");
-    return { id };
-  }
-
-  async score(id: string) {
-    const lead = await this.prismaJobLead.findUnique({
+    await this.findOne(id);
+    return this.prismaJobLead.update({
       where: { id },
-      select: { id: true, description: true, techStack: true },
+      data: dto,
     });
-    if (!lead) throw new NotFoundException("Job lead not found");
-    const skills = ["NestJS", "Next.js", "React Native", "AI automation"];
+  }
+
+  async delete(id: string) {
+    await this.findOne(id);
+    return this.prismaJobLead.delete({ where: { id } });
+  }
+
+  async analyze(id: string) {
+    const lead = (await this.findOne(id)) as unknown as {
+      description: string;
+      techStack: string[];
+      score: number;
+      scoreReason: string | null;
+      pitchAngle: string | null;
+    };
+    if (!lead.description) return lead;
+
+    // Hardcoded skills for now - ideally fetched from user profile
+    const mySkills = [
+      "TypeScript",
+      "React",
+      "Next.js",
+      "NestJS",
+      "PostgreSQL",
+      "TailwindCSS",
+      "AI Integration",
+    ];
     const result = await this.ai.scoreLead(
-      lead.description as string,
-      (lead.techStack as string[]) ?? [],
-      skills,
+      lead.description,
+      lead.techStack,
+      mySkills,
     );
+
     await this.prismaJobLead.update({
       where: { id },
       data: {
@@ -185,9 +167,36 @@ export class JobLeadsService {
         scoreReason: result.reason,
         pitchAngle: result.pitchAngle,
       },
-      select: { id: true },
     });
-    return result;
+
+    return { ...lead, ...result };
+  }
+
+  async generateProposal(id: string, variant: string = "SHORT") {
+    const lead = (await this.findOne(id)) as unknown as {
+      description: string;
+      title: string;
+      company: string;
+    };
+    if (!lead.description)
+      throw new NotFoundException("Job description is missing");
+
+    // Fetch relevant projects - for now fetching top 3 featured projects
+    const projects = await (this.prisma as any).project.findMany({
+      where: { featured: true },
+      take: 3,
+      select: { title: true, description: true, techStack: true },
+    });
+
+    const proposal = await this.ai.generateProposal(
+      lead.description,
+      variant,
+      projects,
+    );
+
+    // Save proposal draft? Or just return it?
+    // Let's just return it for now, user can save it manually or we can add Proposal model logic later.
+    return { proposal };
   }
 
   private parseCsv(csv: string): Array<Record<string, string>> {

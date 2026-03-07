@@ -152,9 +152,9 @@ export function Hero() {
 
       <div
         ref={contentRef}
-        className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center justify-center px-4 py-10 text-center sm:px-6 lg:px-8"
+        className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center justify-center px-3 py-10 text-center sm:px-4 lg:px-8"
       >
-        <div ref={overlineWrapperRef} className="mb-6">
+        <div ref={overlineWrapperRef} className="mb-5">
           <div
             ref={overlineRef}
             className="text-xs uppercase tracking-[0.3em] text-(--muted) hero-muted-contrast"
@@ -166,7 +166,7 @@ export function Hero() {
 
         <h1
           ref={headlineRef}
-          className="font-(family-name:--font-fraunces) text-[min(11vw,5.5rem)] sm:text-[min(10vw,8.5rem)] leading-[0.9] tracking-[-0.02em] hero-text-contrast flex flex-wrap justify-center gap-x-3 gap-y-2 sm:gap-x-4"
+          className="font-(family-name:--font-fraunces) text-[min(11vw,4.5rem)] sm:text-[min(10vw,6.5rem)] leading-[0.4] tracking-[-0.01em] hero-text-contrast flex flex-wrap justify-center gap-x-2 gap-y-2 sm:gap-x-3"
         >
           <span ref={headlinePart1Ref} className="inline-block">
             <TextReveal

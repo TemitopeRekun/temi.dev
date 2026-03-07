@@ -39,4 +39,18 @@ export class BlogAdminController {
   async remove(@Param("id") id: string): Promise<{ id: string }> {
     return this.blog.adminRemove(id);
   }
+
+  @Post("generate")
+  @ApiOperation({ summary: "Admin: generate a blog post draft from a topic" })
+  @ApiResponse({ status: 201 })
+  async generate(@Body() body: { topic: string }): Promise<any> {
+    return this.blog.adminGenerate(body.topic);
+  }
+
+  @Get("trending")
+  @ApiOperation({ summary: "Admin: get trending tech topics for blog ideas" })
+  @ApiResponse({ status: 200 })
+  async getTrending(): Promise<string[]> {
+    return this.blog.adminGetTrendingTopics();
+  }
 }

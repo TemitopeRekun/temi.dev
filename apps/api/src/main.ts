@@ -7,6 +7,9 @@ import {
 } from "@nestjs/platform-fastify";
 import helmet from "@fastify/helmet";
 import cors from "@fastify/cors";
+import multipart from "@fastify/multipart";
+import fastifyStatic from "@fastify/static";
+import { join } from "path";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 
@@ -16,8 +19,11 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
-  app.enableCors({
-    origin: [
+  // Register multipart early to handle file uploads
+  await app.register(multipart);
+
+  // Enable CORS
+  app.enableCors({  origin: [
       "http://localhost:3000",
       "http://127.0.0.1:3000",
       "https://temi.dev",
@@ -30,6 +36,10 @@ async function bootstrap() {
   });
 
   await app.register(helmet);
+  await app.register(fastifyStatic, {
+    root: join(process.cwd(), "uploads"),
+    prefix: "/uploads/",
+  });
 
   app.useGlobalPipes(
     new ValidationPipe({

@@ -27,6 +27,11 @@ export class UpdateBlogPostDto {
 
   @ApiPropertyOptional()
   @IsOptional()
+  @IsString()
+  coverImage?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsBoolean()
   published?: boolean;
 }

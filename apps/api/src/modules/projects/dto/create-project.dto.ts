@@ -26,6 +26,11 @@ export class CreateProjectDto {
   @IsString()
   repoUrl?: string | null;
 
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  coverImage?: string;
+
   @ApiProperty({ default: false })
   @IsBoolean()
   featured!: boolean;

@@ -18,6 +18,11 @@ export class CreateBlogPostDto {
   @MaxLength(300)
   excerpt?: string | null;
 
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  coverImage?: string;
+
   @ApiProperty()
   @IsString()
   @MaxLength(20000)

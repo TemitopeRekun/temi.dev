@@ -2,7 +2,9 @@
   "extends": "../../packages/config/tsconfig/base.json",
   "compilerOptions": {
     "strict": true,
+    "baseUrl": ".",
     "paths": {
+      "@/*": ["./*"],
       "@temi/ui": ["../../packages/ui/src"],
       "@temi/ui/*": ["../../packages/ui/src/*"]
     },

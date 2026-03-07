@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Route } from "next";
+import { useQuery } from "@tanstack/react-query";
 import { Container, RevealOnScroll, Section, StaggerReveal } from "@temi/ui";
 import {
   projects,
@@ -186,10 +187,55 @@ export function ProjectsSection() {
     activeBtnRef,
   );
 
+  const { data: dbProjects = [] } = useQuery({
+    queryKey: ["public-projects"],
+    queryFn: async () => {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+      try {
+        const res = await fetch(`${baseUrl}/api/projects`);
+        if (!res.ok) return [];
+        return await res.json();
+      } catch (err) {
+        console.error("Failed to fetch projects:", err);
+        return [];
+      }
+    },
+  });
+
+  const displayProjects = useMemo(() => {
+    if (!dbProjects || dbProjects.length === 0) return projects;
+
+    return dbProjects.map((p: any) => {
+      // Infer category from techStack
+      let category: ProjectCategory = "Frontend";
+      const stack = (p.techStack || []).map((t: string) => t.toLowerCase());
+      
+      if (stack.some((t: string) => t.includes("react native") || t.includes("mobile") || t.includes("expo"))) {
+        category = "Mobile";
+      } else if (stack.some((t: string) => t.includes("ai") || t.includes("rag") || t.includes("gemini") || t.includes("python"))) {
+        category = "AI";
+      } else if (stack.some((t: string) => t.includes("nest") || t.includes("node") || t.includes("backend") || t.includes("sql") || t.includes("postgres"))) {
+        category = "Backend";
+      }
+
+      return {
+        slug: p.id, // Use ID as slug for now since DB doesn't have slug
+        title: p.title,
+        year: new Date(p.createdAt).getFullYear(),
+        category,
+        tags: p.techStack || [],
+        description: p.description,
+        image: p.coverImage || `https://picsum.photos/seed/${p.id}/1200/800`,
+        liveUrl: p.liveUrl || "",
+        repoUrl: p.repoUrl || "",
+      };
+    });
+  }, [dbProjects]);
+
   const filtered: Project[] = useMemo(() => {
-    if (active === "All") return projects;
-    return projects.filter((p: Project) => p.category === active);
-  }, [active]);
+    if (active === "All") return displayProjects;
+    return displayProjects.filter((p: Project) => p.category === active);
+  }, [active, displayProjects]);
 
   useEffect(() => {
     void registerGSAP();

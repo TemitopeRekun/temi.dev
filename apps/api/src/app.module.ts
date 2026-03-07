@@ -15,6 +15,7 @@ import { OutreachModule } from "./modules/outreach/outreach.module";
 import { CareerAnalyticsModule } from "./modules/career-analytics/career-analytics.module";
 import { AiModule } from "./modules/ai/ai.module";
 import { RagModule } from "./modules/rag/rag.module";
+import { DashboardModule } from "./modules/dashboard/dashboard.module";
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { RagModule } from "./modules/rag/rag.module";
     CareerAnalyticsModule,
     AiModule,
     RagModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [

@@ -26,7 +26,7 @@ export class RagService {
       select: { id: true, title: true, content: true },
     });
     if (!post) throw new NotFoundException("Article not found");
-    const answer = await this.ai.generateCompletion(question, post.content);
+    const answer = await this.ai.generateDigitalBrainResponse(question, post.content);
     return { answer, sources: [{ title: post.title }] };
   }
 
@@ -43,7 +43,7 @@ export class RagService {
     const context = combined
       .map((m) => `Title: ${m.title}\n\n${m.content}`)
       .join("\n\n---\n\n");
-    const answer = await this.ai.generateCompletion(question, context);
+    const answer = await this.ai.generateDigitalBrainResponse(question, context);
     const sources = combined.map((m) => ({
       title: m.title,
       similarity: m.similarity,

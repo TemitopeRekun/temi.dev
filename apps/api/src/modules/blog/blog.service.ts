@@ -34,6 +34,7 @@ export class BlogService {
         title: true,
         excerpt: true,
         tags: true,
+        coverImage: true,
         publishedAt: true,
         viewCount: true,
         likeCount: true,
@@ -57,6 +58,7 @@ export class BlogService {
         excerpt: true,
         content: true,
         tags: true,
+        coverImage: true,
         publishedAt: true,
         viewCount: true,
         likeCount: true,
@@ -140,6 +142,7 @@ export class BlogService {
         title: true,
         excerpt: true,
         tags: true,
+        coverImage: true,
         published: true,
         publishedAt: true,
         viewCount: true,
@@ -160,11 +163,21 @@ export class BlogService {
       excerpt: dto.excerpt ?? null,
       content: dto.content,
       tags: dto.tags,
+      coverImage: dto.coverImage ?? null,
       published: dto.published,
       publishedAt: dto.published ? new Date() : null,
     };
     const created = await this.prisma.blogPost.create({
-      data,
+      data: {
+        slug: dto.slug,
+        title: dto.title,
+        excerpt: dto.excerpt ?? null,
+        content: dto.content,
+        tags: dto.tags,
+        coverImage: dto.coverImage ?? null,
+        published: dto.published,
+        publishedAt: dto.published ? new Date() : null,
+      },
       select: { id: true, content: true, published: true },
     });
     if (created.published && this.ai) {
@@ -227,5 +240,64 @@ export class BlogService {
       .catch(() => null);
     if (!deleted) throw new NotFoundException("Post not found");
     return { id };
+  }
+
+  async adminGetTrendingTopics(): Promise<string[]> {
+    if (!this.ai) return [];
+    return this.ai.getTrendingTopics();
+  }
+
+  async adminGenerate(topic: string): Promise<any> {
+    if (!this.ai) throw new BadRequestException("AI service not available");
+
+    const generated = await this.ai.generateBlogPost(topic);
+
+    // 2. Ensure unique slug
+    let slug = generated.slug;
+    const existing = await this.prisma.blogPost.findUnique({
+      where: { slug },
+      select: { id: true },
+    });
+    if (existing) {
+      slug = `${slug}-${Date.now().toString().slice(-4)}`;
+    }
+
+    // 3. Create Draft Post
+    const created = await this.prisma.blogPost.create({
+      data: {
+        slug,
+        title: generated.title,
+        excerpt: generated.excerpt,
+        content: generated.content,
+        tags: generated.tags,
+        published: false, // Draft by default
+        publishedAt: null,
+      },
+      select: { 
+        id: true, 
+        slug: true,
+        title: true,
+        excerpt: true,
+        content: true,
+        tags: true,
+        published: true,
+        publishedAt: true,
+        viewCount: true,
+        likeCount: true,
+      },
+    });
+
+    // 4. Generate Embedding for the draft
+    if (this.ai) {
+      const emb = await this.ai.generateEmbedding(created.content);
+      if (emb.length > 0) {
+        const vec = `'[${emb.map((v) => (Number.isFinite(v) ? v.toFixed(6) : 0)).join(", ")}]'::vector`;
+        await this.prisma.$executeRawUnsafe(
+          `UPDATE "BlogPost" SET embedding = ${vec} WHERE id = '${created.id}'`,
+        );
+      }
+    }
+
+    return created;
   }
 }
