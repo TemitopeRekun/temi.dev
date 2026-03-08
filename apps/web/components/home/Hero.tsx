@@ -103,9 +103,9 @@ export function Hero() {
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: "+=240%",
+            end: "+=150%",
             pin: true,
-            scrub: 1.15,
+            scrub: 1,
             anticipatePin: 1,
             onUpdate: (self) => {
               const nextProgress = Number(self.progress.toFixed(3));
@@ -152,9 +152,9 @@ export function Hero() {
 
       <div
         ref={contentRef}
-        className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center justify-center px-3 py-10 text-center sm:px-4 lg:px-8"
+        className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center justify-center px-3 pt-0 pb-16 text-center sm:px-4 sm:py-4 lg:px-8"
       >
-        <div ref={overlineWrapperRef} className="mb-5">
+        <div ref={overlineWrapperRef} className="mb-3 sm:mb-5">
           <div
             ref={overlineRef}
             className="text-xs uppercase tracking-[0.3em] text-(--muted) hero-muted-contrast"
@@ -166,9 +166,13 @@ export function Hero() {
 
         <h1
           ref={headlineRef}
-          className="font-(family-name:--font-fraunces) text-[min(11vw,4.5rem)] sm:text-[min(10vw,6.5rem)] leading-[0.4] tracking-[-0.01em] hero-text-contrast flex flex-wrap justify-center gap-x-2 gap-y-2 sm:gap-x-3"
+          className="font-(family-name:--font-fraunces) text-[min(11vw,4.5rem)] sm:text-[min(10vw,6.5rem)] leading-[0.9] tracking-[-0.01em] hero-text-contrast flex flex-wrap justify-center gap-x-0 gap-y-0 sm:gap-x-1"
         >
-          <span ref={headlinePart1Ref} className="inline-block">
+          <span
+            ref={headlinePart1Ref}
+            className="inline-block"
+            key={`temi-${isLoading}`}
+          >
             <TextReveal
               text="Temitope"
               type="chars"
@@ -179,7 +183,8 @@ export function Hero() {
           </span>
           <span
             ref={headlinePart2Ref}
-            className="italic text-(--accent) inline-block"
+            className="-skew-x-12 text-(--accent) inline-block"
+            key={`ogun-${isLoading}`}
           >
             <TextReveal
               text="Ogunrekun"
@@ -191,7 +196,7 @@ export function Hero() {
           </span>
         </h1>
 
-        <div ref={sublineWrapperRef} className="mt-6">
+        <div ref={sublineWrapperRef} className="mt-3 sm:mt-6">
           <p
             ref={sublineRef}
             className="max-w-2xl text-lg sm:text-xl text-(--muted) font-light hero-muted-contrast"
@@ -200,7 +205,7 @@ export function Hero() {
           </p>
         </div>
 
-        <div ref={chipsWrapperRef} className="mt-6">
+        <div ref={chipsWrapperRef} className="mt-4 sm:mt-6">
           <div
             ref={chipsRef}
             className="flex max-w-3xl flex-wrap justify-center gap-3 text-[0.65rem] uppercase tracking-[0.18em] text-(--muted)"
@@ -218,7 +223,7 @@ export function Hero() {
           </div>
         </div>
 
-        <div ref={ctasWrapperRef} className="mt-8">
+        <div ref={ctasWrapperRef} className="mt-6 sm:mt-8">
           <div
             ref={ctasRef}
             className="flex flex-wrap items-center justify-center gap-4"
@@ -227,7 +232,7 @@ export function Hero() {
               <Link
                 href={{ pathname: "/" as Route, hash: "work" }}
                 className={[
-                  "inline-flex items-center justify-center rounded-full px-8 py-4 text-sm font-medium text-white",
+                  "inline-flex items-center justify-center rounded-full px-6 py-3 text-xs sm:px-8 sm:py-4 sm:text-sm font-medium text-white",
                   "bg-linear-to-br from-(--accent) to-(--accent2) shadow-[0_0_20px_var(--accent-glow)]",
                   "hover:-translate-y-0.5 hover:shadow-[0_0_28px_var(--accent-glow-strong)] transition-all duration-250",
                 ].join(" ")}
@@ -239,7 +244,7 @@ export function Hero() {
               <Link
                 href={{ pathname: "/" as Route, hash: "contact" }}
                 className={[
-                  "inline-flex items-center justify-center rounded-full px-8 py-4 text-sm font-medium",
+                  "inline-flex items-center justify-center rounded-full px-6 py-3 text-xs sm:px-8 sm:py-4 sm:text-sm font-medium",
                   "border border-(--border) hover:border-(--border-hover) hover:bg-(--surface2) backdrop-blur-sm transition-all duration-250",
                 ].join(" ")}
               >

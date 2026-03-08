@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
-import { menuSlide } from "./animations";
 import { NavLink } from "./NavLink";
 import { NavCurve } from "./NavCurve";
 
@@ -16,6 +15,15 @@ const NAV_ITEMS = [
 ];
 
 const SOCIALS = ["GitHub", "LinkedIn", "Twitter"];
+
+const menuSlide = {
+  initial: { x: "calc(100% + 100px)" },
+  enter: { x: "0", transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] } },
+  exit: {
+    x: "calc(100% + 100px)",
+    transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] },
+  },
+};
 
 export function FullscreenNav() {
   const pathname = usePathname();

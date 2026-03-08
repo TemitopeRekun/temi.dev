@@ -209,6 +209,7 @@ export class BlogService {
         excerpt: dto.excerpt ?? undefined,
         content: dto.content ?? undefined,
         tags: dto.tags ?? undefined,
+        coverImage: dto.coverImage ?? undefined,
         published: published,
         publishedAt: published ? new Date() : null,
       },

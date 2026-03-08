@@ -2,14 +2,18 @@ import { ApiTags } from "@nestjs/swagger";
 import {
   Controller,
   Post,
+  Get,
+  Param,
+  Res,
   Req,
   UseGuards,
   BadRequestException,
+  NotFoundException,
 } from "@nestjs/common";
-import { FastifyRequest } from "fastify";
+import { FastifyRequest, FastifyReply } from "fastify";
 import { pipeline } from "stream";
 import { promisify } from "util";
-import { createWriteStream, existsSync, mkdirSync } from "fs";
+import { createWriteStream, createReadStream, existsSync, mkdirSync } from "fs";
 import { join } from "path";
 import { randomUUID } from "crypto";
 import { AdminGuard } from "../auth/guards/admin.guard";
@@ -19,9 +23,9 @@ const pump = promisify(pipeline);
 
 @ApiTags("Upload")
 @Controller("api/upload")
-@UseGuards(JwtAuthGuard, AdminGuard)
 export class UploadController {
   @Post()
+  @UseGuards(JwtAuthGuard, AdminGuard)
   async uploadFile(@Req() req: FastifyRequest): Promise<{ url: string }> {
     if (!req.isMultipart()) {
       throw new BadRequestException("Request is not multipart");
@@ -42,12 +46,25 @@ export class UploadController {
 
     await pump(part.file, createWriteStream(filePath));
 
-    // Determine base URL
-    // In production, this should be the public URL of the server or CDN
-    // For now, we use a relative path assuming the frontend can resolve it
-    // or the backend serves it from /uploads
-    const url = `/uploads/${filename}`;
+    // Return the API URL instead of the static path to handle CORS/CORP headers manually
+    const url = `/api/upload/${filename}`;
 
     return { url };
+  }
+
+  @Get(":filename")
+  async getFile(@Param("filename") filename: string, @Res() res: FastifyReply) {
+    const filePath = join(process.cwd(), "uploads", filename);
+
+    if (!existsSync(filePath)) {
+      throw new NotFoundException("File not found");
+    }
+
+    const stream = createReadStream(filePath);
+
+    res.header("Cross-Origin-Resource-Policy", "cross-origin");
+    res.header("Access-Control-Allow-Origin", "*");
+
+    return res.send(stream);
   }
 }

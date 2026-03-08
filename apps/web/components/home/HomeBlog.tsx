@@ -29,11 +29,11 @@ export function HomeBlog() {
   };
 
   return (
-    <Section className="bg-(--bg) py-16 md:py-24">
+    <Section className="overflow-hidden bg-(--bg) py-16 md:py-24">
       <Container>
         <div className="flex flex-col gap-16 lg:flex-row lg:gap-24">
           {/* Left Content */}
-          <div className="flex flex-col justify-center lg:w-1/3">
+          <div className="flex shrink-0 flex-col justify-center lg:w-1/3">
             <div className="mb-2 text-sm font-medium uppercase tracking-[0.2em] text-(--accent)">
               <TextReveal text="Latest Insight" type="chars" />
             </div>
@@ -78,10 +78,10 @@ export function HomeBlog() {
           </div>
 
           {/* Right Content (Carousel) */}
-          <div className="min-w-0 overflow-hidden lg:w-2/3">
+          <div className="min-w-0 lg:mr-[calc(50%-50vw)] lg:w-auto lg:flex-1">
             <div
               ref={scrollRef}
-              className="flex flex-nowrap gap-6 overflow-x-auto py-8 scroll-smooth scrollbar-hide -mr-4 pr-4 snap-x snap-mandatory"
+              className="flex flex-nowrap gap-6 overflow-x-auto py-8 pr-4 scroll-smooth scrollbar-hide snap-x snap-mandatory"
             >
               {posts.map((post) => (
                 <div

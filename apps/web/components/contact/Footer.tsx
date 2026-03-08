@@ -47,7 +47,9 @@ export function Footer({ action, defaultService = null }: Props) {
     isMobile ? [0, 0] : [0, 100],
   );
   const rotateRaw = useTransform(scrollYProgress, [0, 1], [120, 90]);
-  const curveRaw = useTransform(scrollYProgress, [0, 1], [0, 1]);
+  const curveRaw = useTransform(scrollYProgress, [0, 0.7], [0, 1], {
+    clamp: true,
+  });
 
   const y = useSpring(yRaw, { stiffness: 80, damping: 20 });
   const x = useSpring(xRaw, { stiffness: 80, damping: 20 });
@@ -127,35 +129,37 @@ export function Footer({ action, defaultService = null }: Props) {
         className="relative mx-auto max-w-7xl px-4 pb-10 pt-24 sm:px-10 sm:pt-60"
       >
         <div className="border-b border-white/10 pb-12 sm:pb-16 relative">
-          <div className="flex flex-col gap-4 sm:gap-6">
-            <p className="text-white/60 uppercase tracking-[0.25em] text-xs">
-              Contact
-            </p>
-            <div className="flex items-center gap-4 sm:gap-6">
-              <div className="h-14 w-14 sm:h-20 sm:w-20 rounded-full overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center text-white/80 text-xs sm:text-sm">
-                TO
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-8">
+            <div className="flex flex-col gap-4 sm:gap-6">
+              <p className="text-white/60 uppercase tracking-[0.25em] text-xs">
+                Contact
+              </p>
+              <div className="flex items-center gap-4 sm:gap-6">
+                <div className="h-14 w-14 sm:h-20 sm:w-20 rounded-full overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center text-white/80 text-xs sm:text-sm">
+                  TO
+                </div>
+                <h2 className="font-(--font-syne) text-[clamp(2.8rem,8vw,6rem)] font-light leading-none">
+                  Let's work
+                </h2>
               </div>
               <h2 className="font-(--font-syne) text-[clamp(2.8rem,8vw,6rem)] font-light leading-none">
-                Let's work
+                together
               </h2>
             </div>
-            <h2 className="font-(--font-syne) text-[clamp(2.8rem,8vw,6rem)] font-light leading-none">
-              together
-            </h2>
-          </div>
 
-          <motion.div
-            style={{ x }}
-            className="mt-8 sm:mt-8 lg:mt-0 lg:absolute lg:right-0 lg:bottom-0 lg:translate-y-1/2 flex justify-center lg:block"
-          >
-            <RoundedButton
-              accentColor="rgba(255,255,255,0.85)"
-              className="border-white/30 text-white shadow-[0_10px_30px_rgba(255,255,255,0.18)] w-28 h-28 sm:w-48 sm:h-48 rounded-full"
-              onClick={() => setShowBrief(true)}
+            <motion.div
+              style={{ x }}
+              className="shrink-0 lg:absolute lg:right-0 lg:bottom-0 lg:translate-y-1/2"
             >
-              Get in touch
-            </RoundedButton>
-          </motion.div>
+              <RoundedButton
+                accentColor="rgba(255,255,255,0.85)"
+                className="border-white/30 text-white shadow-[0_10px_30px_rgba(255,255,255,0.18)] w-36 h-36 sm:w-48 sm:h-48 rounded-full"
+                onClick={() => setShowBrief(true)}
+              >
+                Get in touch
+              </RoundedButton>
+            </motion.div>
+          </div>
 
           <motion.svg
             style={{ rotate }}
@@ -173,22 +177,22 @@ export function Footer({ action, defaultService = null }: Props) {
           </motion.svg>
         </div>
 
-        <div className="my-10 sm:mt-12 flex flex-col gap-8">
+        <div className="my-10 sm:mt-16 flex flex-col gap-8">
           <div className="max-w-xl text-white/70 text-sm sm:text-base">
             <AnimatedText phrase="Whether you need a full-stack overhaul, an AI integration, or a mobile app—let's discuss how I can help you achieve your goals. Tell me about your product, and I'll respond with a clear plan." />
           </div>
 
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <RoundedButton
               accentColor="rgba(255,255,255,0.12)"
-              className="border-white/20 text-white"
+              className="border-white/20 text-white px-5 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm"
               href="mailto:hello@temi.dev"
             >
               hello@temi.dev
             </RoundedButton>
             <RoundedButton
               accentColor="rgba(255,255,255,0.12)"
-              className="border-white/20 text-white"
+              className="border-white/20 text-white px-5 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm"
               onClick={() => setShowBrief(true)}
             >
               Start a Project
@@ -196,7 +200,7 @@ export function Footer({ action, defaultService = null }: Props) {
             <MagneticWrapper>
               <Link
                 href="/services"
-                className="inline-flex items-center gap-2 rounded-full border border-white/20 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10"
+                className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm font-medium text-white transition-colors hover:bg-white/10"
               >
                 View Services
                 <ArrowRight className="h-4 w-4" />

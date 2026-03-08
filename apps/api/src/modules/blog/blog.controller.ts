@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { BlogService } from "./blog.service";
 import { BlogListQueryDto } from "./dto/blog-list-query.dto";
@@ -6,11 +15,20 @@ import { BlogListResponseDto } from "./dto/blog-list-response.dto";
 import { BlogDetailDto } from "./dto/blog-detail.dto";
 import { CreateCommentDto } from "./dto/create-comment.dto";
 import { CommentDto } from "./dto/comment.dto";
+import { AdminGuard } from "../auth/guards/admin.guard";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 
 @ApiTags("Blog")
 @Controller("api/blog")
 export class BlogController {
   constructor(private readonly blog: BlogService) {}
+
+  @Post("generate")
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @ApiOperation({ summary: "Generate blog post content" })
+  async generate(@Body() body: { topic: string; prompt?: string }) {
+    return this.blog.generate(body);
+  }
 
   @Get()
   @ApiOperation({ summary: "List blog posts (cursor paginated)" })

@@ -2,14 +2,21 @@
 import { useEffect, useState } from "react";
 import { motion, type Variants } from "framer-motion";
 
-const words = ["Hello", "Temitope", "Builder", "Developer", "Creator", "Welcome"];
+const words = [
+  "Hello",
+  "Temitope",
+  "Builder",
+  "Developer",
+  "Creator",
+  "Welcome",
+];
 const easing: [number, number, number, number] = [0.76, 0, 0.24, 1];
 
 const slideUp: Variants = {
   initial: { y: 0 },
   exit: {
     y: "-100%",
-    transition: { duration: 0.8, ease: easing, delay: 0.2 },
+    transition: { duration: 2, ease: easing, delay: 0.2 },
   },
 };
 
@@ -28,12 +35,12 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
 
   useEffect(() => {
     if (index === words.length - 1) {
-      const t = setTimeout(onComplete, 3300);
+      const t = setTimeout(onComplete, 1000);
       return () => clearTimeout(t);
     }
     const t = setTimeout(
       () => setIndex((i) => i + 1),
-      index === 0 ? 2500 : 2300,
+      index === 0 ? 1000 : 1000,
     );
     return () => clearTimeout(t);
   }, [index, onComplete]);
@@ -48,11 +55,11 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
   const curve: Variants = {
     initial: {
       d: initialPath,
-      transition: { duration: 0.7, ease: easing },
+      transition: { duration: 1, ease: easing },
     },
     exit: {
-      d: targetPath,
-      transition: { duration: 0.7, ease: easing, delay: 0.3 },
+      d: initialPath,
+      transition: { duration: 2, ease: easing, delay: 0.2 },
     },
   };
 

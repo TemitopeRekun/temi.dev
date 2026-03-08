@@ -30,6 +30,16 @@ export default async function AdminProtectedLayout(
             <SidebarLink href="/admin/leads" label="Leads" />
             <SidebarLink href="/admin/settings" label="Settings" />
           </nav>
+          <div className="mt-auto p-4">
+            <form action="/api/auth/logout" method="post">
+              <button
+                type="submit"
+                className="w-full rounded-md border border-(--border)/40 px-3 py-2 text-sm text-(--text)/80 hover:bg-(--surface)/60 hover:text-(--text) transition-colors"
+              >
+                Log out
+              </button>
+            </form>
+          </div>
         </aside>
         <main className="p-6">{props.children}</main>
       </div>

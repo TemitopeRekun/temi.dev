@@ -68,6 +68,7 @@ export class ProjectsService {
         techStack: dto.techStack,
         liveUrl: dto.liveUrl ?? null,
         repoUrl: dto.repoUrl ?? null,
+        coverImage: dto.coverImage ?? null,
         featured: dto.featured,
         order: dto.order,
       },
