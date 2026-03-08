@@ -7,8 +7,11 @@ import { ImageUpload } from "@/components/ui/ImageUpload";
 
 type Project = {
   id: string;
+  slug: string;
   title: string;
   description: string;
+  category: string;
+  year: number;
   techStack: string[];
   liveUrl?: string | null;
   repoUrl?: string | null;
@@ -18,8 +21,11 @@ type Project = {
 };
 
 type CreateProjectDto = {
+  slug: string;
   title: string;
   description: string;
+  category: string;
+  year: number;
   techStack: string[];
   liveUrl?: string | null;
   repoUrl?: string | null;
@@ -43,8 +49,11 @@ export default function ProjectsClient({ token }: { token: string }) {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
 
   const [formData, setFormData] = useState<CreateProjectDto>({
+    slug: "",
     title: "",
     description: "",
+    category: "Other",
+    year: new Date().getFullYear(),
     techStack: [],
     liveUrl: "",
     repoUrl: "",
@@ -53,7 +62,11 @@ export default function ProjectsClient({ token }: { token: string }) {
     coverImage: "",
   });
 
-  const { data: items = [], isLoading, error } = useQuery({
+  const {
+    data: items = [],
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["admin-projects"],
     queryFn: async () => {
       // Use the public endpoint for listing, or admin endpoint if available
@@ -86,7 +99,13 @@ export default function ProjectsClient({ token }: { token: string }) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: UpdateProjectDto }) => {
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: UpdateProjectDto;
+    }) => {
       const res = await fetch(`${apiBaseUrl()}/api/admin/projects/${id}`, {
         method: "PATCH",
         headers: {
@@ -123,8 +142,11 @@ export default function ProjectsClient({ token }: { token: string }) {
 
   const resetForm = () => {
     setFormData({
+      slug: "",
       title: "",
       description: "",
+      category: "Other",
+      year: new Date().getFullYear(),
       techStack: [],
       liveUrl: "",
       repoUrl: "",
@@ -138,8 +160,11 @@ export default function ProjectsClient({ token }: { token: string }) {
   const handleEdit = (project: Project) => {
     setEditingProject(project);
     setFormData({
+      slug: project.slug,
       title: project.title,
       description: project.description,
+      category: project.category,
+      year: project.year,
       techStack: project.techStack,
       liveUrl: project.liveUrl || "",
       repoUrl: project.repoUrl || "",
@@ -154,6 +179,7 @@ export default function ProjectsClient({ token }: { token: string }) {
     e.preventDefault();
     const payload = {
       ...formData,
+      year: Number(formData.year),
       order: Number(formData.order),
       liveUrl: formData.liveUrl || null,
       repoUrl: formData.repoUrl || null,
@@ -194,119 +220,178 @@ export default function ProjectsClient({ token }: { token: string }) {
               {editingProject ? "Edit Project" : "New Project"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Title</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  className="w-full rounded-md border border-(--border)/20 bg-transparent px-3 py-2"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full rounded-lg border border-(--border) bg-transparent px-3 py-2"
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Slug</label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full rounded-lg border border-(--border) bg-transparent px-3 py-2"
+                    value={formData.slug}
+                    onChange={(e) =>
+                      setFormData({ ...formData, slug: e.target.value })
+                    }
+                  />
+                </div>
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium mb-1">
+                    Category
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    className="w-full rounded-lg border border-(--border) bg-transparent px-3 py-2"
+                    value={formData.category}
+                    onChange={(e) =>
+                      setFormData({ ...formData, category: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Year</label>
+                  <input
+                    type="number"
+                    required
+                    className="w-full rounded-lg border border-(--border) bg-transparent px-3 py-2"
+                    value={formData.year}
+                    onChange={(e) =>
+                      setFormData({ ...formData, year: Number(e.target.value) })
+                    }
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-sm font-medium mb-1">Description</label>
+                <label className="block text-sm font-medium mb-1">
+                  Description
+                </label>
                 <textarea
                   required
+                  rows={4}
+                  className="w-full rounded-lg border border-(--border) bg-transparent px-3 py-2"
                   value={formData.description}
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  className="w-full rounded-md border border-(--border)/20 bg-transparent px-3 py-2"
-                  rows={4}
                 />
               </div>
+
               <div>
                 <label className="block text-sm font-medium mb-1">
                   Tech Stack (comma separated)
                 </label>
                 <input
                   type="text"
+                  className="w-full rounded-lg border border-(--border) bg-transparent px-3 py-2"
                   value={formData.techStack.join(", ")}
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      techStack: e.target.value.split(",").map((t) => t.trim()).filter(Boolean),
+                      techStack: e.target.value
+                        .split(",")
+                        .map((s) => s.trim())
+                        .filter(Boolean),
                     })
                   }
-                  className="w-full rounded-md border border-(--border)/20 bg-transparent px-3 py-2"
                 />
               </div>
-              
-              <ImageUpload
-                token={token}
-                value={formData.coverImage}
-                onChange={(url) => setFormData({ ...formData, coverImage: url })}
-                label="Project Cover Image"
-              />
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Live URL</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Live URL
+                  </label>
                   <input
                     type="url"
+                    className="w-full rounded-lg border border-(--border) bg-transparent px-3 py-2"
                     value={formData.liveUrl || ""}
                     onChange={(e) =>
                       setFormData({ ...formData, liveUrl: e.target.value })
                     }
-                    className="w-full rounded-md border border-(--border)/20 bg-transparent px-3 py-2"
-                    placeholder="https://..."
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">Repo URL</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Repo URL
+                  </label>
                   <input
                     type="url"
+                    className="w-full rounded-lg border border-(--border) bg-transparent px-3 py-2"
                     value={formData.repoUrl || ""}
                     onChange={(e) =>
                       setFormData({ ...formData, repoUrl: e.target.value })
                     }
-                    className="w-full rounded-md border border-(--border)/20 bg-transparent px-3 py-2"
-                    placeholder="https://..."
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Order</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={formData.order}
-                    onChange={(e) =>
-                      setFormData({ ...formData, order: Number(e.target.value) })
-                    }
-                    className="w-full rounded-md border border-(--border)/20 bg-transparent px-3 py-2"
-                  />
-                </div>
-                <div className="flex items-center gap-2 pt-6">
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Cover Image
+                </label>
+                <ImageUpload
+                  value={formData.coverImage || ""}
+                  onChange={(url) =>
+                    setFormData({ ...formData, coverImage: url })
+                  }
+                  token={token}
+                />
+              </div>
+
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2">
                   <input
                     type="checkbox"
-                    id="featured"
                     checked={formData.featured}
                     onChange={(e) =>
                       setFormData({ ...formData, featured: e.target.checked })
                     }
-                    className="rounded border-(--border)/20"
                   />
-                  <label htmlFor="featured" className="text-sm">
-                    Featured
-                  </label>
-                </div>
+                  <span className="text-sm">Featured</span>
+                </label>
+                <label className="flex items-center gap-2">
+                  <span className="text-sm">Order:</span>
+                  <input
+                    type="number"
+                    className="w-20 rounded-lg border border-(--border) bg-transparent px-2 py-1"
+                    value={formData.order}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        order: Number(e.target.value),
+                      })
+                    }
+                  />
+                </label>
               </div>
-              <div className="flex justify-end gap-2 pt-4">
+
+              <div className="flex justify-end gap-2 mt-4">
                 <Button
                   type="button"
-                  magnetic={false}
+                  variant="ghost"
                   onClick={() => setIsEditorOpen(false)}
-                  className="bg-transparent border border-(--border)/20 hover:bg-(--surface)/80"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" magnetic={false}>
-                  {editingProject ? "Update" : "Create"}
+                <Button type="submit">
+                  {editingProject ? "Save Changes" : "Create Project"}
                 </Button>
               </div>
             </form>
@@ -314,65 +399,46 @@ export default function ProjectsClient({ token }: { token: string }) {
         </div>
       )}
 
-      <div className="overflow-x-auto">
-        <table className="w-full text-left text-sm">
-          <thead>
-            <tr className="text-(--muted)">
-              <th className="px-3 py-2 font-medium">Title</th>
-              <th className="px-3 py-2 font-medium">Tech</th>
-              <th className="px-3 py-2 font-medium">Featured</th>
-              <th className="px-3 py-2 font-medium">Order</th>
-              <th className="px-3 py-2 font-medium">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((p) => (
-              <tr key={p.id} className="border-b border-(--border)/10 hover:bg-(--surface)/40">
-                <td className="px-3 py-2 font-medium">{p.title}</td>
-                <td className="px-3 py-2 text-(--muted)">{p.techStack.join(", ")}</td>
-                <td className="px-3 py-2">
-                  <span
-                    className={`inline-block rounded-full px-2 py-0.5 text-xs ${
-                      p.featured
-                        ? "bg-purple-500/10 text-purple-500"
-                        : "text-(--muted)"
-                    }`}
-                  >
-                    {p.featured ? "Featured" : "-"}
-                  </span>
-                </td>
-                <td className="px-3 py-2 text-(--muted)">{p.order}</td>
-                <td className="px-3 py-2">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => handleEdit(p)}
-                      className="rounded-md border border-(--border)/40 px-2 py-1 text-xs hover:bg-(--text)/5"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (confirm("Are you sure?")) {
-                          deleteMutation.mutate(p.id);
-                        }
-                      }}
-                      className="rounded-md border border-red-500/30 px-2 py-1 text-xs text-red-400 hover:bg-red-500/10"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="space-y-2">
+        {items.map((project) => (
+          <div
+            key={project.id}
+            className="flex items-center justify-between rounded-lg border border-(--border)/10 bg-(--bg) p-3"
+          >
+            <div>
+              <h3 className="font-medium">{project.title}</h3>
+              <p className="text-xs text-(--muted) line-clamp-1">
+                {project.description}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleEdit(project)}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => {
+                  if (confirm("Delete this project?")) {
+                    deleteMutation.mutate(project.id);
+                  }
+                }}
+              >
+                Delete
+              </Button>
+            </div>
+          </div>
+        ))}
+        {items.length === 0 && !isLoading && (
+          <p className="text-center text-sm text-(--muted) py-4">
+            No projects found. Add one to get started.
+          </p>
+        )}
       </div>
-      {isLoading && <p className="py-6 text-center text-(--muted)">Loading…</p>}
-      {error && (
-        <p className="py-6 text-center text-red-400" role="alert">
-          {(error as Error).message}
-        </p>
-      )}
     </div>
   );
 }

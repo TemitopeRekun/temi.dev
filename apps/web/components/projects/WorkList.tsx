@@ -3,8 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Route } from "next";
+import { useQuery } from "@tanstack/react-query";
 import {
-  projects,
   type Project,
   type ProjectCategory,
 } from "../../lib/projects";
@@ -86,10 +86,42 @@ export function WorkList() {
     activeBtnRef,
   );
 
+  const { data: dbProjects = [] } = useQuery({
+    queryKey: ["public-projects"],
+    queryFn: async () => {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+      try {
+        const res = await fetch(`${baseUrl}/api/projects`);
+        if (!res.ok) return [];
+        return await res.json();
+      } catch (err) {
+        console.error("Failed to fetch projects:", err);
+        return [];
+      }
+    },
+  });
+
+  const displayProjects = useMemo(() => {
+    return dbProjects.map((p: any) => ({
+      id: p.id,
+      slug: p.slug || p.id,
+      title: p.title,
+      year: p.year || new Date(p.createdAt).getFullYear(),
+      category: p.category || "Other",
+      tags: p.techStack || [],
+      description: p.description,
+      image: p.coverImage || "",
+      liveUrl: p.liveUrl || "",
+      repoUrl: p.repoUrl || "",
+      featured: p.featured,
+      order: p.order,
+    }));
+  }, [dbProjects]);
+
   const filtered = useMemo(() => {
-    if (active === "All") return projects;
-    return projects.filter((p) => p.category === active);
-  }, [active]);
+    if (active === "All") return displayProjects;
+    return displayProjects.filter((p: Project) => p.category === active);
+  }, [active, displayProjects]);
 
   useEffect(() => {
     update();
@@ -198,26 +230,19 @@ export function WorkList() {
           >
             <div className="flex items-baseline gap-6">
               <span className="text-sm tabular-nums text-(--muted) min-w-[2rem]">
-                {String(i + 1).padStart(2, "0")}
+                0{i + 1}
               </span>
-              <div>
-                <h3 className="font-(--font-syne) text-2xl sm:text-3xl font-light tracking-tight group-hover:-translate-x-2 group-hover:opacity-50 transition-all duration-500">
-                  {p.title}
-                </h3>
-                <div className="mt-1.5 flex flex-wrap gap-2">
-                  {p.tags.map((t) => (
-                    <span
-                      key={t}
-                      className="text-xs text-(--muted) border border-(--border) rounded-full px-2 py-0.5"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              <h2 className="text-2xl font-medium transition-colors group-hover:text-(--muted) sm:text-3xl lg:text-4xl">
+                {p.title}
+              </h2>
             </div>
-            <div className="text-sm text-(--muted) group-hover:translate-x-2 group-hover:opacity-50 transition-all duration-500 shrink-0">
-              {p.year}
+            <div className="flex items-center gap-6 md:gap-12">
+              <span className="hidden text-sm text-(--muted) md:block">
+                {p.category}
+              </span>
+              <span className="text-sm tabular-nums text-(--muted)">
+                {p.year}
+              </span>
             </div>
           </Link>
         ))}
@@ -228,29 +253,24 @@ export function WorkList() {
         variants={scaleAnim}
         initial="initial"
         animate={modal.active ? "enter" : "closed"}
-        className="hidden md:block fixed z-50 pointer-events-none w-[340px] h-[230px] overflow-hidden rounded-2xl border border-(--border) bg-(--surface)/20 backdrop-blur-md shadow-2xl"
-        style={{ top: "50%", left: "50%" }}
+        className="pointer-events-none fixed left-0 top-0 hidden h-[300px] w-[400px] overflow-hidden rounded-2xl bg-(--surface) md:block"
+        style={{ zIndex: 50 }}
       >
-        <div className="absolute inset-0 bg-white/10" />
         <div
-          className="relative w-full transition-all duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
-          style={{
-            top: `${modal.index * -100}%`,
-            height: `${projects.length * 100}%`,
-          }}
+          style={{ top: modal.index * -100 + "%" }}
+          className="relative h-full w-full transition-[top] duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
         >
-          {projects.map((p, i) => (
+          {filtered.map((p: Project, index: number) => (
             <div
-              key={i}
-              className="relative w-full"
-              style={{ height: `${100 / projects.length}%` }}
+              key={`modal_${index}`}
+              className="flex h-full w-full items-center justify-center bg-(--surface)"
             >
               <Image
-                fill
+                src={p.image || `https://picsum.photos/seed/${p.slug}/400/300`}
+                width={400}
+                height={300}
                 alt={p.title}
-                src={p.image}
-                className="object-cover"
-                sizes="340px"
+                className="h-auto w-full object-cover"
               />
             </div>
           ))}
@@ -262,17 +282,14 @@ export function WorkList() {
         variants={scaleAnim}
         initial="initial"
         animate={modal.active ? "enter" : "closed"}
-        className="hidden md:block fixed z-50 pointer-events-none w-16 h-16 rounded-full bg-(--accent)"
-        style={{ top: "50%", left: "50%" }}
+        className="pointer-events-none fixed left-0 top-0 z-[50] flex h-20 w-20 items-center justify-center rounded-full bg-(--accent) text-white md:block"
       />
-
       <motion.div
         ref={cursorLblEl}
         variants={scaleAnim}
         initial="initial"
         animate={modal.active ? "enter" : "closed"}
-        className="hidden md:flex fixed z-50 pointer-events-none w-16 h-16 rounded-full items-center justify-center text-white text-xs font-medium"
-        style={{ top: "50%", left: "50%" }}
+        className="pointer-events-none fixed left-0 top-0 z-[50] flex h-20 w-20 items-center justify-center bg-transparent text-sm font-medium text-white md:block"
       >
         View
       </motion.div>

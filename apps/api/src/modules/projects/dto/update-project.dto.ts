@@ -1,7 +1,21 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsArray, IsBoolean, IsInt, IsOptional, IsString, MaxLength, Min } from "class-validator";
+import {
+  IsArray,
+  IsBoolean,
+  IsInt,
+  IsOptional,
+  IsString,
+  MaxLength,
+  Min,
+} from "class-validator";
 
 export class UpdateProjectDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  slug?: string;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
@@ -13,6 +27,18 @@ export class UpdateProjectDto {
   @IsString()
   @MaxLength(5000)
   description?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  category?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsInt()
+  @Min(2000)
+  year?: number;
 
   @ApiPropertyOptional({ type: [String] })
   @IsOptional()
@@ -32,7 +58,7 @@ export class UpdateProjectDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
-  coverImage?: string;
+  coverImage?: string | null;
 
   @ApiPropertyOptional()
   @IsOptional()

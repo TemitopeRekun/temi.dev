@@ -18,8 +18,11 @@ model User {
 
 model Project {
   id          String   @id @default(cuid())
+  slug        String   @unique @default(cuid())
   title       String
   description String
+  category    String   @default("Other")
+  year        Int      @default(2025)
   techStack   String[]
   liveUrl     String?
   repoUrl     String?

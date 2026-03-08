@@ -5,11 +5,7 @@ import Image from "next/image";
 import type { Route } from "next";
 import { useQuery } from "@tanstack/react-query";
 import { Container, RevealOnScroll, Section, StaggerReveal } from "@temi/ui";
-import {
-  projects,
-  type Project,
-  type ProjectCategory,
-} from "../../lib/projects";
+import { type Project, type ProjectCategory } from "../../lib/projects";
 import { gsap, registerGSAP } from "../../lib/gsap";
 import { TextReveal } from "../common/TextReveal";
 
@@ -118,7 +114,10 @@ function ProjectCard({ project }: { project: Project }) {
       <div className="relative aspect-16/10 overflow-hidden">
         <div ref={imgRef} className="h-full w-full">
           <Image
-            src={project.image}
+            src={
+              project.image ||
+              `https://picsum.photos/seed/${project.slug}/1200/800`
+            }
             alt={project.title}
             width={1200}
             height={800}
@@ -155,23 +154,29 @@ function ProjectCard({ project }: { project: Project }) {
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-3">
-          <Link
-            href={project.liveUrl as never}
-            className="text-sm text-(--text) underline-offset-4 hover:underline"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Live
-          </Link>
-          <span className="text-(--muted)">·</span>
-          <Link
-            href={project.repoUrl as never}
-            className="text-sm text-(--text) underline-offset-4 hover:underline"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Repo
-          </Link>
+          {project.liveUrl && (
+            <Link
+              href={project.liveUrl as never}
+              className="text-sm text-(--text) underline-offset-4 hover:underline"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Live
+            </Link>
+          )}
+          {project.liveUrl && project.repoUrl && (
+            <span className="text-(--muted)">·</span>
+          )}
+          {project.repoUrl && (
+            <Link
+              href={project.repoUrl as never}
+              className="text-sm text-(--text) underline-offset-4 hover:underline"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Repo
+            </Link>
+          )}
         </div>
       </div>
     </div>
@@ -190,7 +195,8 @@ export function ProjectsSection() {
   const { data: dbProjects = [] } = useQuery({
     queryKey: ["public-projects"],
     queryFn: async () => {
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+      const baseUrl =
+        process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
       try {
         const res = await fetch(`${baseUrl}/api/projects`);
         if (!res.ok) return [];
@@ -203,33 +209,20 @@ export function ProjectsSection() {
   });
 
   const displayProjects = useMemo(() => {
-    if (!dbProjects || dbProjects.length === 0) return projects;
-
-    return dbProjects.map((p: any) => {
-      // Infer category from techStack
-      let category: ProjectCategory = "Frontend";
-      const stack = (p.techStack || []).map((t: string) => t.toLowerCase());
-      
-      if (stack.some((t: string) => t.includes("react native") || t.includes("mobile") || t.includes("expo"))) {
-        category = "Mobile";
-      } else if (stack.some((t: string) => t.includes("ai") || t.includes("rag") || t.includes("gemini") || t.includes("python"))) {
-        category = "AI";
-      } else if (stack.some((t: string) => t.includes("nest") || t.includes("node") || t.includes("backend") || t.includes("sql") || t.includes("postgres"))) {
-        category = "Backend";
-      }
-
-      return {
-        slug: p.id, // Use ID as slug for now since DB doesn't have slug
-        title: p.title,
-        year: new Date(p.createdAt).getFullYear(),
-        category,
-        tags: p.techStack || [],
-        description: p.description,
-        image: p.coverImage || `https://picsum.photos/seed/${p.id}/1200/800`,
-        liveUrl: p.liveUrl || "",
-        repoUrl: p.repoUrl || "",
-      };
-    });
+    return dbProjects.map((p: any) => ({
+      id: p.id,
+      slug: p.slug || p.id,
+      title: p.title,
+      year: p.year || new Date(p.createdAt).getFullYear(),
+      category: p.category || "Other",
+      tags: p.techStack || [],
+      description: p.description,
+      image: p.coverImage || "",
+      liveUrl: p.liveUrl || "",
+      repoUrl: p.repoUrl || "",
+      featured: p.featured,
+      order: p.order,
+    }));
   }, [dbProjects]);
 
   const filtered: Project[] = useMemo(() => {
@@ -244,8 +237,8 @@ export function ProjectsSection() {
 
   return (
     <Section id="work" className="relative bg-(--bg) py-24 lg:py-32">
-       {/* Distinct background for projects section */}
-       <div className="absolute inset-0 z-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.05] dark:bg-[radial-gradient(#ffffff_1px,transparent_1px)] dark:opacity-[0.03]" />
+      {/* Distinct background for projects section */}
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.05] dark:bg-[radial-gradient(#ffffff_1px,transparent_1px)] dark:opacity-[0.03]" />
       <Container className="relative z-10">
         <RevealOnScroll>
           <div className="mb-12 flex items-end justify-between">

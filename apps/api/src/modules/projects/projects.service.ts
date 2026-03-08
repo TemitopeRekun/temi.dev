@@ -28,8 +28,11 @@ export class ProjectsService {
       orderBy: [{ featured: "desc" }, { order: "asc" }],
       select: {
         id: true,
+        slug: true,
         title: true,
         description: true,
+        category: true,
+        year: true,
         techStack: true,
         liveUrl: true,
         repoUrl: true,
@@ -46,8 +49,33 @@ export class ProjectsService {
       where: { id },
       select: {
         id: true,
+        slug: true,
         title: true,
         description: true,
+        category: true,
+        year: true,
+        techStack: true,
+        liveUrl: true,
+        repoUrl: true,
+        coverImage: true,
+        featured: true,
+        order: true,
+      },
+    });
+    if (!item) throw new NotFoundException("Project not found");
+    return item;
+  }
+
+  async getBySlug(slug: string): Promise<ProjectDto> {
+    const item = await this.prisma.project.findUnique({
+      where: { slug },
+      select: {
+        id: true,
+        slug: true,
+        title: true,
+        description: true,
+        category: true,
+        year: true,
         techStack: true,
         liveUrl: true,
         repoUrl: true,
@@ -63,8 +91,11 @@ export class ProjectsService {
   async create(dto: CreateProjectDto): Promise<string> {
     const created = await this.prisma.project.create({
       data: {
+        slug: dto.slug,
         title: dto.title,
         description: dto.description,
+        category: dto.category,
+        year: dto.year,
         techStack: dto.techStack,
         liveUrl: dto.liveUrl ?? null,
         repoUrl: dto.repoUrl ?? null,
@@ -95,8 +126,11 @@ export class ProjectsService {
       .update({
         where: { id },
         data: {
+          slug: dto.slug ?? undefined,
           title: dto.title ?? undefined,
           description: dto.description ?? undefined,
+          category: dto.category ?? undefined,
+          year: dto.year ?? undefined,
           techStack: dto.techStack ?? undefined,
           liveUrl: dto.liveUrl ?? undefined,
           repoUrl: dto.repoUrl ?? undefined,

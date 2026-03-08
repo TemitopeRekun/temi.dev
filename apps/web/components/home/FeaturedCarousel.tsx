@@ -1,14 +1,49 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
+import { useQuery } from "@tanstack/react-query";
 import { Container, MagneticWrapper, RevealOnScroll, WarmCard } from "@temi/ui";
-import { projects } from "../../lib/projects";
+import { type Project } from "../../lib/projects";
 import { gsap, registerGSAP } from "../../lib/gsap";
 
 export function FeaturedCarousel() {
   const sectionRef = useRef<HTMLElement | null>(null);
+
+  const { data: dbProjects = [] } = useQuery({
+    queryKey: ["public-projects"],
+    queryFn: async () => {
+      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+      try {
+        const res = await fetch(`${baseUrl}/api/projects`);
+        if (!res.ok) return [];
+        return await res.json();
+      } catch (err) {
+        console.error("Failed to fetch projects:", err);
+        return [];
+      }
+    },
+  });
+
+  const featuredProjects = useMemo(() => {
+    return dbProjects
+      .map((p: any) => ({
+        id: p.id,
+        slug: p.slug || p.id,
+        title: p.title,
+        year: p.year || new Date(p.createdAt).getFullYear(),
+        category: p.category || "Other",
+        tags: p.techStack || [],
+        description: p.description,
+        image: p.coverImage || "",
+        liveUrl: p.liveUrl || "",
+        repoUrl: p.repoUrl || "",
+        featured: p.featured,
+        order: p.order,
+      }))
+      .filter((p: Project) => p.featured);
+  }, [dbProjects]);
 
   useEffect(() => {
     let cleanup: (() => void) | null = null;
@@ -16,6 +51,10 @@ export function FeaturedCarousel() {
       await registerGSAP();
       const section = sectionRef.current;
       if (!section) return;
+      
+      // Wait for projects to load
+      if (featuredProjects.length === 0) return;
+
       const ctx = gsap.context(() => {
         const cards = gsap.utils.toArray<HTMLElement>(".featured-work-card");
         gsap.fromTo(
@@ -38,7 +77,9 @@ export function FeaturedCarousel() {
     };
     void run();
     return () => cleanup?.();
-  }, []);
+  }, [featuredProjects.length]);
+
+  if (featuredProjects.length === 0) return null;
 
   return (
     <section
@@ -60,7 +101,7 @@ export function FeaturedCarousel() {
 
         <div className="-mx-4 overflow-x-auto px-4 pb-3 md:-mx-6 md:px-6">
           <ul className="flex snap-x snap-mandatory gap-5">
-            {projects.map((project) => (
+            {featuredProjects.map((project: Project) => (
               <li
                 key={project.slug}
                 className="featured-work-card w-[86%] shrink-0 snap-start md:w-[52%] lg:w-[38%]"
@@ -72,7 +113,7 @@ export function FeaturedCarousel() {
                 >
                   <div className="relative mb-4 aspect-16/10 overflow-hidden rounded-2xl border border-(--border)">
                     <Image
-                      src={project.image}
+                      src={project.image || `https://picsum.photos/seed/${project.slug}/800/600`}
                       alt={project.title}
                       fill
                       sizes="(max-width: 768px) 86vw, (max-width: 1024px) 52vw, 38vw"
@@ -102,14 +143,16 @@ export function FeaturedCarousel() {
                         View Case Study
                       </Link>
                     </MagneticWrapper>
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-xs uppercase tracking-[0.12em] text-(--accent)"
-                    >
-                      Live
-                    </a>
+                    {project.liveUrl && (
+                      <a
+                        href={project.liveUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-xs uppercase tracking-[0.12em] text-(--accent)"
+                      >
+                        Live
+                      </a>
+                    )}
                   </div>
                 </WarmCard>
               </li>

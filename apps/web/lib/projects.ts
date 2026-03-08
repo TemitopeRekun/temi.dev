@@ -1,6 +1,7 @@
-export type ProjectCategory = "Frontend" | "Backend" | "AI" | "Mobile";
+export type ProjectCategory = string;
 
 export type Project = {
+  id: string;
   slug: string;
   title: string;
   year: number;
@@ -10,55 +11,53 @@ export type Project = {
   image: string;
   liveUrl: string;
   repoUrl: string;
+  featured: boolean;
+  order: number;
 };
 
-export const projects: Project[] = [
-  {
-    slug: "nextjs-portfolio",
-    title: "AI-First Portfolio",
-    year: 2026,
-    category: "Frontend",
-    tags: ["Next.js 15", "Tailwind CSS", "GSAP", "R3F"],
-    description:
-      "A performant, theme-aware portfolio with GSAP interactions, R3F visuals, and Server Components.",
-    image: "https://picsum.photos/seed/nextjs/1200/800",
-    liveUrl: "https://temi.dev",
-    repoUrl: "https://github.com/temitopeog/portfolio",
-  },
-  {
-    slug: "nestjs-api",
-    title: "Modular API Platform",
-    year: 2026,
-    category: "Backend",
-    tags: ["NestJS", "PostgreSQL", "Prisma", "pgvector"],
-    description:
-      "Production-ready NestJS service with clean modules, DTO validation, and vector search.",
-    image: "https://picsum.photos/seed/nestjs/1200/800",
-    liveUrl: "https://api.temi.dev",
-    repoUrl: "https://github.com/temitopeog/nest-api",
-  },
-  {
-    slug: "ai-automation",
-    title: "AI Automation Suite",
-    year: 2026,
-    category: "AI",
-    tags: ["Gemini", "RAG", "BullMQ", "TypeScript"],
-    description:
-      "Background AI workflows with Gemini, pgvector RAG, and resilient job queues via BullMQ.",
-    image: "https://picsum.photos/seed/ai/1200/800",
-    liveUrl: "https://temi.dev/ai",
-    repoUrl: "https://github.com/temitopeog/ai-automation",
-  },
-  {
-    slug: "react-native-app",
-    title: "React Native App",
-    year: 2025,
-    category: "Mobile",
-    tags: ["React Native", "Expo", "Zustand"],
-    description:
-      "Cross-platform mobile experience with Expo and smooth native interactions.",
-    image: "https://picsum.photos/seed/rn/1200/800",
-    liveUrl: "https://expo.dev/@temitopeog/app",
-    repoUrl: "https://github.com/temitopeog/react-native-app",
-  },
-];
+const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+
+export async function getProjects(): Promise<Project[]> {
+  try {
+    const res = await fetch(`${API_URL}/api/projects`, {
+      next: { revalidate: 60 }, // Revalidate every minute
+    });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.map(mapProject);
+  } catch (error) {
+    console.error("Failed to fetch projects:", error);
+    return [];
+  }
+}
+
+export async function getProjectBySlug(slug: string): Promise<Project | null> {
+  try {
+    const res = await fetch(`${API_URL}/api/projects/slug/${slug}`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return mapProject(data);
+  } catch (error) {
+    console.error(`Failed to fetch project ${slug}:`, error);
+    return null;
+  }
+}
+
+function mapProject(data: any): Project {
+  return {
+    id: data.id,
+    slug: data.slug || data.id,
+    title: data.title,
+    year: data.year || new Date(data.createdAt).getFullYear(),
+    category: data.category || "Other",
+    tags: data.techStack || [],
+    description: data.description,
+    image: data.coverImage || "",
+    liveUrl: data.liveUrl || "",
+    repoUrl: data.repoUrl || "",
+    featured: data.featured || false,
+    order: data.order || 0,
+  };
+}

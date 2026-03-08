@@ -16,6 +16,13 @@ export class ProjectsController {
     return this.projects.list(query);
   }
 
+  @Get("slug/:slug")
+  @ApiOperation({ summary: "Get project by slug" })
+  @ApiResponse({ status: 200, type: ProjectDto })
+  async getBySlug(@Param("slug") slug: string): Promise<ProjectDto> {
+    return this.projects.getBySlug(slug);
+  }
+
   @Get(":id")
   @ApiOperation({ summary: "Get project by id" })
   @ApiResponse({ status: 200, type: ProjectDto })
