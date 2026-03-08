@@ -19,7 +19,7 @@ export default function LoadingWork() {
         {[1, 2, 3, 4].map((i) => (
           <div
             key={i}
-            className="aspect-[4/3] w-full animate-pulse rounded-2xl bg-(--surface)"
+            className="aspect-4/3 w-full animate-pulse rounded-2xl bg-(--surface)"
           />
         ))}
       </div>
