@@ -1,44 +1,9 @@
-"use client";
-
-import { useQuery } from "@tanstack/react-query";
+import { getPosts } from "../../lib/blog";
 import { FeaturedPost } from "./FeaturedPost";
 import { BlogList } from "./BlogList";
-import { seededLikes } from "../../lib/blog";
-
-function apiBaseUrl(): string {
-  const env = process.env.NEXT_PUBLIC_API_BASE_URL;
-  return (
-    env && env.trim().length > 0 ? env : "http://localhost:4000"
-  ) as string;
-}
-
-export function BlogContent() {
-  const { data: posts = [] } = useQuery({
-    queryKey: ["public-blog"],
-    queryFn: async () => {
-      const res = await fetch(`${apiBaseUrl()}/api/blog?take=50`, {
-        cache: "no-store",
-      });
-      if (!res.ok) return [];
-      const data = await res.json();
-      if (!data.items || !Array.isArray(data.items)) return [];
-      return data.items.map((item: any) => ({
-        id: item.id,
-        slug: item.slug,
-        title: item.title,
-        tag: item.tags?.[0] || "Tech",
-        excerpt: item.excerpt || "No excerpt available.",
-        image:
-          item.coverImage ||
-          item.image ||
-          `https://picsum.photos/1200/800?seed=${item.slug}`,
-        readTime: Math.ceil((item.content?.length || 1000) / 1000),
-        content: item.content,
-        publishedAt: item.publishedAt,
-        likeCount: (item.likeCount || 0) + seededLikes(item.slug),
-      }));
-    },
-  });
+ 
+export async function BlogContent() {
+  const posts = await getPosts();
 
   if (posts.length === 0) {
     return (
