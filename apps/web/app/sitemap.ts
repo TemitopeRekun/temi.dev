@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
 import { projects } from "../lib/projects";
-import { posts } from "../lib/blog";
+import { getPosts } from "../lib/blog";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://temi.dev";
   const now = new Date();
+  const posts = await getPosts();
 
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${base}/`, lastModified: now, changeFrequency: "weekly", priority: 1 },

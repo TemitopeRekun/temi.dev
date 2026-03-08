@@ -82,7 +82,7 @@ export default async function BlogDetailPage({
                 </div>
               </RevealOnScroll>
 
-              <div className="relative mb-12 aspect-[16/9] w-full overflow-hidden rounded-2xl border border-(--border)/20 shadow-2xl">
+              <div className="relative mb-12 aspect-video w-full overflow-hidden rounded-2xl border border-(--border)/20 shadow-2xl">
                 <Image
                   src={post.image}
                   alt={post.title}

@@ -9,6 +9,15 @@ import { useQuery } from "@tanstack/react-query";
 import { TextReveal } from "../common/TextReveal";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 
+type BlogPost = {
+  slug: string;
+  title: string;
+  tag: string;
+  excerpt: string;
+  image: string;
+  readTime: number;
+};
+
 function apiBaseUrl(): string {
   const env = process.env.NEXT_PUBLIC_API_BASE_URL;
   return (
@@ -19,7 +28,7 @@ function apiBaseUrl(): string {
 export function HomeBlog() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const { data: posts = [] } = useQuery({
+  const { data: posts = [] } = useQuery<BlogPost[]>({
     queryKey: ["public-blog-home"],
     queryFn: async () => {
       const res = await fetch(`${apiBaseUrl()}/api/blog?take=6`, {

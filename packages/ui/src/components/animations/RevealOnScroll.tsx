@@ -24,6 +24,10 @@ type Props = {
    * Trigger element selector relative to the wrapper
    */
   triggerSelector?: string | null;
+  /**
+   * Delay in seconds before starting animation after trigger
+   */
+  delay?: number;
 };
 
 export function RevealOnScroll({
@@ -31,6 +35,7 @@ export function RevealOnScroll({
   className,
   offsetY = 24,
   triggerSelector = null,
+  delay = 0,
 }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
   type ScrollTriggerHandle = ReturnType<typeof ScrollTrigger.create>;
@@ -55,6 +60,7 @@ export function RevealOnScroll({
         el.style.willChange = "transform, opacity";
         const tl = gsap.timeline({
           paused: true,
+          delay: delay,
           defaults: { duration: 0.8, ease: "power3.out" },
           onComplete: () => {
             el.style.willChange = "";
@@ -90,7 +96,7 @@ export function RevealOnScroll({
       triggers.current.forEach((st) => st.kill());
       triggers.current = [];
     };
-  }, [offsetY, triggerSelector]);
+  }, [offsetY, triggerSelector, delay]);
 
   return (
     <div ref={ref} className={className}>

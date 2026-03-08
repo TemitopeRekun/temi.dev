@@ -16,7 +16,7 @@ export function FeaturedPost({ post }: Props) {
       <Container>
         <RevealOnScroll>
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-24">
-            <div className="relative aspect-video md:aspect-[4/3] overflow-hidden rounded-2xl border border-(--border)/20 shadow-2xl">
+            <div className="relative aspect-video md:aspect-4/3 overflow-hidden rounded-2xl border border-(--border)/20 shadow-2xl">
               <Image
                 src={post.image}
                 alt={post.title}
@@ -35,7 +35,7 @@ export function FeaturedPost({ post }: Props) {
               </div>
               <AnimatedText
                 phrase={post.title}
-                className="text-3xl font-bold leading-tight text-(--text) md:text-5xl lg:text-6xl"
+                className="text-2xl font-bold leading-tight text-(--text) md:text-4xl lg:text-4xl"
               />
               <p className="text-lg leading-relaxed text-(--muted) md:text-xl">
                 {post.excerpt}

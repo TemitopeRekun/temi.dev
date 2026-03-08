@@ -54,19 +54,21 @@ export function Navbar() {
           {/* Logo */}
           <Link
             href="/"
-            className="font-(--font-syne) text-lg text-(--text) z-[201]"
+            className="font-(--font-syne) text-lg text-(--text) z-201"
           >
             TO
           </Link>
 
           {/* Desktop links — hidden on mobile (burger covers all) */}
           <div className="hidden items-center gap-8 md:flex">
-            {[
-              { href: "/#work", label: "Work" },
-              { href: "/about", label: "About" },
-              { href: "/blog", label: "Blog" },
-              { href: "/services", label: "Services" },
-            ].map((l) => (
+            {(
+              [
+                { href: "/#work", label: "Work" },
+                { href: "/about", label: "About" },
+                { href: "/blog", label: "Blog" },
+                { href: "/services", label: "Services" },
+              ] as const
+            ).map((l) => (
               <Link
                 key={l.label}
                 href={l.href}

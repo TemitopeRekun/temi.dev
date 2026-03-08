@@ -84,11 +84,19 @@ export function RoundedButton({
   return (
     <MagneticWrapper>
       {href ? (
-        <a href={href} {...(rest as AnchorProps)} {...commonProps}>
+        <a
+          href={href}
+          {...(rest as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+          {...commonProps}
+        >
           {content}
         </a>
       ) : (
-        <button type="button" {...(rest as ButtonProps)} {...commonProps}>
+        <button
+          type="button"
+          {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)}
+          {...commonProps}
+        >
           {content}
         </button>
       )}

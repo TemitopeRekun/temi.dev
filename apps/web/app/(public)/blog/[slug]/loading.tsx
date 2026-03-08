@@ -9,7 +9,7 @@ export default function LoadingBlogPost() {
             <div className="mx-auto mt-4 h-4 w-40 animate-pulse rounded-full bg-(--surface)" />
           </div>
 
-          <div className="relative mb-12 aspect-[16/9] w-full overflow-hidden rounded-2xl border border-(--border)/20">
+          <div className="relative mb-12 aspect-video w-full overflow-hidden rounded-2xl border border-(--border)/20">
             <div className="h-full w-full animate-pulse bg-(--surface)" />
           </div>
 

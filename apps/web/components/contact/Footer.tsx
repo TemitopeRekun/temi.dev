@@ -138,11 +138,11 @@ export function Footer({ action, defaultService = null }: Props) {
                 <div className="h-14 w-14 sm:h-20 sm:w-20 rounded-full overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center text-white/80 text-xs sm:text-sm">
                   TO
                 </div>
-                <h2 className="font-(--font-syne) text-[clamp(2.8rem,8vw,6rem)] font-light leading-none">
+                <h2 className="font-(--font-syne) text-[clamp(2.8rem,8vw,6rem)] leading-none">
                   Let's work
                 </h2>
               </div>
-              <h2 className="font-(--font-syne) text-[clamp(2.8rem,8vw,6rem)] font-light leading-none">
+              <h2 className="font-(--font-syne) text-[clamp(2.8rem,8vw,6rem)] leading-none">
                 together
               </h2>
             </div>
