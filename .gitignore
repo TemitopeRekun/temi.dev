@@ -68,3 +68,4 @@ skills-lock.json
 **/cypress/screenshots
 **/playwright-report/
 **/test-results/
+apps/api/uploads/

@@ -25,9 +25,11 @@ export async function uploadFile(file: File, token: string): Promise<string> {
   }
 
   const data = await res.json();
-  // Ensure the URL is absolute or properly relative. 
-  // The backend returns `/uploads/filename`.
-  // If we want to display it, we might need the full URL if it's served from the API.
-  // Since we set up static serving on the API, we can prepend the API base URL.
-  return `${apiBaseUrl()}${data.url}`;
+  const url = data.url;
+
+  if (url.startsWith("http://") || url.startsWith("https://")) {
+    return url;
+  }
+  
+  return `${apiBaseUrl()}${url}`;
 }
