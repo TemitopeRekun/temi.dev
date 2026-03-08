@@ -4,6 +4,14 @@ import bundleAnalyzer from "@next/bundle-analyzer";
 const nextConfig: NextConfig = {
   typedRoutes: true,
   transpilePackages: ["@temi/ui"],
+  optimizePackageImports: [
+    "@temi/ui",
+    "lucide-react",
+    "date-fns",
+    "gsap",
+    "framer-motion",
+    "@radix-ui/react-icons",
+  ],
   eslint: {
     ignoreDuringBuilds: true,
   },

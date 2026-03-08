@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "main": "./dist/index.js",
+  "sideEffects": false,
   "types": "./src/index.tsx",
   "exports": {
     ".": {

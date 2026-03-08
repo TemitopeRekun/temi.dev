@@ -71,16 +71,16 @@ export function HomeBlog() {
   return (
     <Section className="overflow-hidden bg-(--bg) py-16 md:py-24">
       <Container>
-        <div className="flex flex-col gap-16 lg:flex-row lg:gap-24">
+        <div className="flex flex-col gap-16 lg:flex-row lg:gap-12">
           {/* Left Content */}
-          <div className="flex shrink-0 flex-col justify-center lg:w-1/3">
+          <div className="flex shrink-0 flex-col justify-center lg:w-1/2">
             <div className="mb-2 text-sm font-medium uppercase tracking-[0.2em] text-(--accent)">
               <TextReveal text="Latest Insight" type="chars" />
             </div>
             <h2 className="mt-4 text-3xl font-semibold tracking-tight text-(--text) sm:text-4xl">
               <TextReveal text="Blog" type="chars" delay={0.2} />
             </h2>
-            <p className="mt-4 text-lg text-(--muted)">
+            <p className="mt-4 max-w-lg text-lg text-(--muted)">
               Stay updated with the latest articles, tips, and insights from my
               engineering journey.
             </p>
@@ -118,13 +118,13 @@ export function HomeBlog() {
           </div>
 
           {/* Right Content (Carousel) */}
-          <div className="min-w-0 lg:mr-[calc(50%-50vw)] lg:w-auto lg:flex-1">
+          <div className="min-w-0 lg:mr-[calc(40%-50vw)] lg:w-auto lg:flex-1">
             <div
               ref={scrollRef}
-              className="flex flex-nowrap gap-6 overflow-x-auto py-8 pr-4 scroll-smooth scrollbar-hide snap-x snap-mandatory"
+              className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth -mx-4 px-4 pb-4"
             >
               {posts.length === 0 && (
-                <div className="min-w-[260px] shrink-0 snap-start sm:min-w-[300px] md:min-w-[350px]">
+                <div className="w-80 shrink-0">
                   <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-(--border)/40 bg-(--surface) p-6 text-center">
                     <div className="mb-3 text-2xl">🍳</div>
                     <p className="text-sm text-(--text)">
@@ -139,39 +139,41 @@ export function HomeBlog() {
               {posts.map((post) => (
                 <div
                   key={post.slug}
-                  className="min-w-[260px] shrink-0 snap-start sm:min-w-[300px] md:min-w-[350px]"
+                  className="w-90 bg-(--surface) rounded-xl shadow-lg overflow-hidden shrink-0"
                 >
                   <Link
                     href={`/blog/${post.slug}`}
                     className="group block h-full"
                     onMouseEnter={() => router.prefetch(`/blog/${post.slug}`)}
                   >
-                    <article className="flex h-full flex-col overflow-hidden rounded-2xl bg-(--surface) border border-(--border)/50 transition-transform hover:-translate-y-2 hover:shadow-xl">
-                      <div className="relative aspect-video w-full overflow-hidden">
-                        <Image
-                          src={post.image}
-                          alt={post.title}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        />
+                    <div className="relative w-full aspect-4/3 overflow-hidden">
+                      <Image
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        sizes="320px"
+                      />
+                    </div>
+                    <div className="p-4">
+                      <span className="text-sm text-(--accent) font-medium">
+                        {post.tag}
+                      </span>
+                      <h3 className="text-lg font-semibold text-(--text) mt-2 mb-4 group-hover:text-(--accent) transition-colors line-clamp-2">
+                        {post.title}
+                      </h3>
+                      <p className="text-(--muted) mt-2 text-sm line-clamp-3">
+                        {post.excerpt}
+                      </p>
+                      <div className="flex flex-wrap mt-4 gap-2">
+                        <span className="text-xs font-medium text-(--muted) bg-(--bg) px-3 py-0.5 rounded-full border border-(--border)">
+                          #{post.tag.toLowerCase()}
+                        </span>
+                        <span className="text-xs font-medium text-(--muted) bg-(--bg) px-3 py-0.5 rounded-full border border-(--border)">
+                          {post.readTime} min read
+                        </span>
                       </div>
-                      <div className="flex flex-1 flex-col p-6">
-                        <div className="mb-4 flex items-center gap-3 text-xs font-bold uppercase tracking-wider text-(--muted)">
-                          <span className="text-(--accent) bg-(--accent)/10 px-2 py-1 rounded-md">
-                            {post.tag}
-                          </span>
-                          <span>•</span>
-                          <span>{post.readTime} min read</span>
-                        </div>
-                        <h3 className="mb-3 text-xl font-semibold text-(--text) group-hover:text-(--accent) transition-colors line-clamp-2">
-                          {post.title}
-                        </h3>
-                        <p className="line-clamp-3 text-sm text-(--muted)">
-                          {post.excerpt}
-                        </p>
-                      </div>
-                    </article>
+                    </div>
                   </Link>
                 </div>
               ))}
