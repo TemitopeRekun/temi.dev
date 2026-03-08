@@ -4,12 +4,43 @@ import { useRef } from "react";
 import { Container, Section, MagneticWrapper } from "@temi/ui";
 import Link from "next/link";
 import Image from "next/image";
-import { posts } from "../../lib/blog";
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import { TextReveal } from "../common/TextReveal";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 
+function apiBaseUrl(): string {
+  const env = process.env.NEXT_PUBLIC_API_BASE_URL;
+  return (
+    env && env.trim().length > 0 ? env : "http://localhost:4000"
+  ) as string;
+}
+
 export function HomeBlog() {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const { data: posts = [] } = useQuery({
+    queryKey: ["public-blog-home"],
+    queryFn: async () => {
+      const res = await fetch(`${apiBaseUrl()}/api/blog?take=6`, {
+        cache: "no-store",
+      });
+      if (!res.ok) return [];
+      const data = await res.json();
+      if (!data.items || !Array.isArray(data.items)) return [];
+      return data.items.map((item: any) => ({
+        slug: item.slug,
+        title: item.title,
+        tag: item.tags?.[0] || "Tech",
+        excerpt: item.excerpt || "No excerpt available.",
+        image:
+          item.coverImage ||
+          item.image ||
+          `https://picsum.photos/1200/800?seed=${item.slug}`,
+        readTime: Math.ceil((item.content?.length || 1000) / 1000),
+      }));
+    },
+  });
 
   const scrollLeft = () => {
     if (scrollRef.current) {
@@ -83,6 +114,19 @@ export function HomeBlog() {
               ref={scrollRef}
               className="flex flex-nowrap gap-6 overflow-x-auto py-8 pr-4 scroll-smooth scrollbar-hide snap-x snap-mandatory"
             >
+              {posts.length === 0 && (
+                <div className="min-w-[260px] shrink-0 snap-start sm:min-w-[300px] md:min-w-[350px]">
+                  <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-(--border)/40 bg-(--surface) p-6 text-center">
+                    <div className="mb-3 text-2xl">🍳</div>
+                    <p className="text-sm text-(--text)">
+                      Fresh posts are on the way.
+                    </p>
+                    <p className="mt-1 text-xs text-(--muted)">
+                      Check back soon for new insights.
+                    </p>
+                  </div>
+                </div>
+              )}
               {posts.map((post) => (
                 <div
                   key={post.slug}
@@ -91,6 +135,7 @@ export function HomeBlog() {
                   <Link
                     href={`/blog/${post.slug}`}
                     className="group block h-full"
+                    onMouseEnter={() => router.prefetch(`/blog/${post.slug}`)}
                   >
                     <article className="flex h-full flex-col overflow-hidden rounded-2xl bg-(--surface) border border-(--border)/50 transition-transform hover:-translate-y-2 hover:shadow-xl">
                       <div className="relative aspect-video w-full overflow-hidden">

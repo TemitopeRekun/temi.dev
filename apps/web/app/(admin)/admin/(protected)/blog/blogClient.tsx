@@ -2,8 +2,9 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@temi/ui";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ImageUpload } from "@/components/ui/ImageUpload";
+import { toast } from "sonner";
 
 type BlogSummary = {
   id: string;
@@ -43,6 +44,8 @@ export default function BlogClient({ token }: { token: string }) {
   // AI Generation State
   const [isGeneratingOpen, setIsGeneratingOpen] = useState(false);
   const [generateTopic, setGenerateTopic] = useState("");
+  const suppressCloseRef = useRef(false);
+  const publishToastRef = useRef(false);
 
   // Form state
   const [formData, setFormData] = useState<CreateBlogPostDto>({
@@ -68,7 +71,12 @@ export default function BlogClient({ token }: { token: string }) {
     },
   });
 
-  const { data: trendingTopics = [] } = useQuery({
+  const {
+    data: trendingTopics = [],
+    isLoading: isTrendingLoading,
+    error: trendingError,
+    refetch: refetchTrending,
+  } = useQuery({
     queryKey: ["admin-blog-trending"],
     queryFn: async () => {
       const res = await fetch(`${apiBaseUrl()}/api/admin/blog/trending`, {
@@ -81,22 +89,26 @@ export default function BlogClient({ token }: { token: string }) {
   });
 
   const generateMutation = useMutation({
-    mutationFn: async (topic: string) => {
+    mutationFn: async (vars: { topic: string; publishNow: boolean }) => {
       const res = await fetch(`${apiBaseUrl()}/api/admin/blog/generate`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ topic }),
+        body: JSON.stringify({ topic: vars.topic }),
       });
-      if (!res.ok) throw new Error("Failed to generate post");
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(text || "Failed to generate post");
+      }
       return res.json();
     },
-    onSuccess: (data) => {
+    onSuccess: (data, vars) => {
       queryClient.invalidateQueries({ queryKey: ["admin-blog-posts"] });
       setIsGeneratingOpen(false);
       setGenerateTopic("");
+      const publishNow = vars.publishNow;
       
       // Auto-open editor with generated content
       setFormData({
@@ -105,7 +117,7 @@ export default function BlogClient({ token }: { token: string }) {
         excerpt: data.excerpt || "",
         content: data.content,
         tags: data.tags || [],
-        published: false,
+        published: true,
         coverImage: "",
       });
       // We don't have an ID for editingPost since it's a new draft, 
@@ -123,6 +135,33 @@ export default function BlogClient({ token }: { token: string }) {
         coverImage: null,
       });
       setIsEditorOpen(true);
+
+      if (publishNow) {
+        suppressCloseRef.current = true;
+        publishToastRef.current = true;
+        updateMutation.mutate(
+          {
+            id: data.id,
+            data: {
+              title: data.title,
+              excerpt: data.excerpt || "",
+              content: data.content || "",
+              tags: data.tags || [],
+              published: true,
+              coverImage: "",
+            },
+          },
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries({ queryKey: ["admin-blog-posts"] });
+            },
+          },
+        );
+      }
+    },
+    onError: (err) => {
+      console.error("Generate failed:", err);
+      alert(err instanceof Error ? err.message : "Failed to generate post");
     },
   });
 
@@ -141,6 +180,18 @@ export default function BlogClient({ token }: { token: string }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-blog-posts"] });
+      if (suppressCloseRef.current) {
+        suppressCloseRef.current = false;
+        if (publishToastRef.current) {
+          toast.success("Post published.");
+          publishToastRef.current = false;
+        }
+        return;
+      }
+      if (publishToastRef.current) {
+        toast.success("Post published.");
+        publishToastRef.current = false;
+      }
       setIsEditorOpen(false);
       resetForm();
     },
@@ -161,6 +212,10 @@ export default function BlogClient({ token }: { token: string }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-blog-posts"] });
+      if (publishToastRef.current) {
+        toast.success("Post published.");
+        publishToastRef.current = false;
+      }
       setIsEditorOpen(false);
       resetForm();
     },
@@ -185,7 +240,12 @@ export default function BlogClient({ token }: { token: string }) {
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!generateTopic.trim()) return;
-    generateMutation.mutate(generateTopic);
+    generateMutation.mutate({ topic: generateTopic, publishNow: false });
+  };
+
+  const handlePublishNow = () => {
+    if (!generateTopic.trim()) return;
+    generateMutation.mutate({ topic: generateTopic, publishNow: true });
   };
 
   const resetForm = () => {
@@ -237,6 +297,7 @@ export default function BlogClient({ token }: { token: string }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    publishToastRef.current = formData.published;
     if (editingPost) {
       updateMutation.mutate({
         id: editingPost.id,
@@ -250,6 +311,7 @@ export default function BlogClient({ token }: { token: string }) {
         },
       });
     } else {
+      publishToastRef.current = formData.published;
       createMutation.mutate(formData);
     }
   };
@@ -292,14 +354,38 @@ export default function BlogClient({ token }: { token: string }) {
               className="flex-1 rounded-md border border-(--border) bg-(--bg) p-2 text-(--text)"
               disabled={generateMutation.isPending}
             />
-            <Button magnetic={false} type="submit" disabled={generateMutation.isPending || !generateTopic.trim()}>
+            <Button
+              magnetic={false}
+              type="submit"
+              disabled={generateMutation.isPending || !generateTopic.trim()}
+            >
               {generateMutation.isPending ? "Generating..." : "Generate Draft"}
+            </Button>
+            <Button
+              magnetic={false}
+              type="button"
+              onClick={handlePublishNow}
+              disabled={generateMutation.isPending || !generateTopic.trim()}
+              className="bg-transparent border border-(--border)/20 hover:bg-(--surface)/80"
+            >
+              {generateMutation.isPending ? "Generating..." : "Publish Now"}
             </Button>
           </form>
           
           {trendingTopics.length > 0 && (
             <div className="space-y-2">
-              <p className="text-sm text-(--muted)">Trending Topics:</p>
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm text-(--muted)">Trending Topics:</p>
+                <Button
+                  type="button"
+                  magnetic={false}
+                  onClick={() => refetchTrending()}
+                  disabled={isTrendingLoading}
+                  className="bg-transparent border border-(--border)/20 hover:bg-(--surface)/80 px-3 py-1 text-xs"
+                >
+                  {isTrendingLoading ? "Refreshing..." : "Refresh"}
+                </Button>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {trendingTopics.map((topic) => (
                   <button
@@ -312,6 +398,14 @@ export default function BlogClient({ token }: { token: string }) {
                 ))}
               </div>
             </div>
+          )}
+          {isTrendingLoading && trendingTopics.length === 0 && (
+            <p className="text-sm text-(--muted)">Loading trending topics...</p>
+          )}
+          {trendingError && (
+            <p className="text-sm text-red-400" role="alert">
+              Failed to load trending topics.
+            </p>
           )}
         </div>
       )}

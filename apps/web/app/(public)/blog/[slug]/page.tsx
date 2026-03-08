@@ -1,12 +1,16 @@
+import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
 import { Container, RevealOnScroll, Section } from "@temi/ui";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
 import { AnimatedText } from "../../../../components/common/AnimatedText";
-import { getPosts, getPostBySlug, getComments } from "../../../../lib/blog";
+import { getPosts, getPostBySlug } from "../../../../lib/blog";
 import { buildMetadata } from "../../../../lib/metadata";
 import { ArticleInteractions } from "../../../../components/blog/ArticleInteractions";
-import { CommentSection } from "../../../../components/blog/CommentSection";
+import { CommentList } from "../../../../components/blog/CommentList";
 import { AskArticle } from "../../../../components/blog/AskArticle";
 
 type Params = { slug: string };
@@ -39,7 +43,6 @@ export default async function BlogDetailPage({
 }) {
   const { slug } = await params;
   const post = await getPostBySlug(slug);
-  const comments = await getComments(slug);
 
   return (
     <main>
@@ -90,47 +93,39 @@ export default async function BlogDetailPage({
                 />
               </div>
 
-              <div className="prose prose-invert prose-lg max-w-none text-(--muted)">
-                {/* If we have full content, render it. Otherwise show excerpt + note */}
+              <div
+                className="prose prose-invert prose-lg max-w-none text-(--muted) leading-7 prose-p:my-6 prose-li:my-3 prose-ul:my-6 prose-ol:my-6 prose-blockquote:my-6 prose-pre:my-6 prose-pre:rounded-xl prose-pre:border prose-pre:border-(--border)/30 prose-pre:bg-(--surface2) prose-pre:p-5 prose-code:rounded prose-code:bg-(--surface2)/80 prose-code:px-1.5 prose-code:py-0.5 prose-code:font-mono"
+                style={{ fontFamily: "Arial, sans-serif" }}
+              >
                 {post.content ? (
-                  <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
+                    {post.content}
+                  </ReactMarkdown>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-4">
                     <p className="lead text-xl text-(--text)">{post.excerpt}</p>
-                    <p>
-                      <em>
-                        (Full content is currently being migrated. Please check
-                        back later.)
-                      </em>
-                    </p>
-                    {/* Placeholder paragraphs to make it look like a real post */}
-                    <p>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Sed do eiusmod tempor incididunt ut labore et dolore magna
-                      aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                      ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                    </p>
-                    <h2>Key Takeaways</h2>
-                    <ul className="list-disc pl-5 space-y-2">
-                      <li>Start with a clear problem statement.</li>
-                      <li>Iterate on the solution with feedback.</li>
-                      <li>Measure impact using defined metrics.</li>
-                    </ul>
-                    <p>
-                      Duis aute irure dolor in reprehenderit in voluptate velit
-                      esse cillum dolore eu fugiat nulla pariatur. Excepteur
-                      sint occaecat cupidatat non proident, sunt in culpa qui
-                      officia deserunt mollit anim id est laborum.
+                    <p className="text-sm text-(--muted)">
+                      Full content is not available for this post.
                     </p>
                   </div>
                 )}
               </div>
 
-              {post.id && (
-                <AskArticle articleId={post.id} articleTitle={post.title} />
-              )}
+              <div className="mt-16 border-t border-(--border)/20 pt-8">
+                <Suspense
+                  fallback={
+                    <div className="h-32 animate-pulse rounded-2xl bg-(--surface)" />
+                  }
+                >
+                  <CommentList slug={slug} />
+                </Suspense>
+              </div>
 
-              <CommentSection slug={slug} comments={comments} />
+              {post.id && (
+                <div className="mt-16 border-t border-(--border)/20 pt-8">
+                  <AskArticle articleId={post.id} articleTitle={post.title} />
+                </div>
+              )}
 
               <div className="mt-16 border-t border-(--border)/10 pt-8">
                 <Link

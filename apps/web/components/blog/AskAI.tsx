@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Container, Section, RevealOnScroll } from "@temi/ui";
 import { Sparkles, Send, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
 import { AnimatedText } from "../common/AnimatedText";
 
 export function AskAI() {
@@ -108,8 +110,16 @@ export function AskAI() {
                   <Sparkles className="h-4 w-4" />
                   AI Response
                 </div>
-                <div className="prose prose-invert prose-sm max-w-none text-(--text)">
-                  <ReactMarkdown>{answer}</ReactMarkdown>
+                <div
+                  className="prose prose-invert prose-sm max-w-none text-(--text) leading-6 prose-p:my-5 prose-li:my-3 prose-ul:my-5 prose-ol:my-5 prose-blockquote:my-5 prose-pre:my-5 prose-pre:rounded-xl prose-pre:border prose-pre:border-(--border)/30 prose-pre:bg-(--surface2) prose-pre:p-4 prose-code:rounded prose-code:bg-(--surface2)/80 prose-code:px-1.5 prose-code:py-0.5 prose-code:font-mono"
+                  style={{ fontFamily: "Arial, sans-serif" }}
+                >
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeHighlight]}
+                  >
+                    {answer}
+                  </ReactMarkdown>
                 </div>
               </div>
             )}

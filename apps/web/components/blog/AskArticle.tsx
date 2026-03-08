@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Sparkles, Send, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
 import { AnimatedText } from "../common/AnimatedText";
 
 type Props = {
@@ -104,8 +105,16 @@ export function AskArticle({ articleId, articleTitle }: Props) {
       )}
 
       {answer && (
-        <div className="prose prose-sm prose-invert max-w-none rounded-xl bg-(--surface) p-6 shadow-sm animate-in fade-in slide-in-from-bottom-2">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{answer}</ReactMarkdown>
+        <div
+          className="prose prose-sm prose-invert max-w-none rounded-xl bg-(--surface) p-6 shadow-sm animate-in fade-in slide-in-from-bottom-2 leading-6 prose-p:my-5 prose-li:my-3 prose-ul:my-5 prose-ol:my-5 prose-blockquote:my-5 prose-pre:my-5 prose-pre:rounded-xl prose-pre:border prose-pre:border-(--border)/30 prose-pre:bg-(--surface2) prose-pre:p-4 prose-code:rounded prose-code:bg-(--surface2)/80 prose-code:px-1.5 prose-code:py-0.5 prose-code:font-mono"
+          style={{ fontFamily: "Arial, sans-serif" }}
+        >
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeHighlight]}
+          >
+            {answer}
+          </ReactMarkdown>
         </div>
       )}
     </div>

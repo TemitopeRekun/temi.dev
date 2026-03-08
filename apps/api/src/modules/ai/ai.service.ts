@@ -120,6 +120,7 @@ Do not wrap the JSON in markdown code blocks. Just return the raw JSON.`;
 
     const raw = await this.callGemini(prompt, {
       responseMimeType: "application/json",
+      maxOutputTokens: 4096,
     });
 
     try {
@@ -133,7 +134,27 @@ Do not wrap the JSON in markdown code blocks. Just return the raw JSON.`;
         imagePrompt: json.imagePrompt || `Abstract tech illustration of ${topic}`,
       };
     } catch {
-      throw new BadRequestException("Failed to generate blog post JSON");
+      const extracted = raw.match(/\{[\s\S]*\}/)?.[0] ?? "";
+      if (extracted) {
+        try {
+          const json = JSON.parse(extracted);
+          return {
+            title: json.title || topic,
+            slug: json.slug || topic.toLowerCase().replace(/\s+/g, "-"),
+            excerpt: json.excerpt || "",
+            content: json.content || "",
+            tags: json.tags || [],
+            imagePrompt:
+              json.imagePrompt || `Abstract tech illustration of ${topic}`,
+          };
+        } catch {
+          // fall through to error below
+        }
+      }
+      const sample = raw.slice(0, 200).replace(/\s+/g, " ").trim();
+      throw new BadRequestException(
+        `Failed to parse blog JSON from Gemini. Sample: ${sample}`,
+      );
     }
   }
 
@@ -259,7 +280,7 @@ Return a valid JSON array of strings (e.g., ["Topic 1", "Topic 2"]).`;
 
   private async callGemini(
     prompt: string,
-    config: { responseMimeType?: string } = {},
+    config: { responseMimeType?: string; maxOutputTokens?: number } = {},
   ): Promise<string> {
     if (!this.genAI) throw new BadRequestException("GEMINI_API_KEY missing");
     try {
@@ -270,7 +291,7 @@ Return a valid JSON array of strings (e.g., ["Topic 1", "Topic 2"]).`;
       const res = await model.generateContent({
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: {
-          maxOutputTokens: 1024,
+          maxOutputTokens: config.maxOutputTokens ?? 1024,
           ...(config.responseMimeType
             ? { responseMimeType: config.responseMimeType }
             : {}),

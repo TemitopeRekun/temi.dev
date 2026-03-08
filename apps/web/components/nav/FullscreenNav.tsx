@@ -61,6 +61,10 @@ export function FullscreenNav() {
     setSelectedIndicator(currentHref);
   }, [currentHref]);
 
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname, hash]);
+
   return (
     <>
       {/* Burger button */}
