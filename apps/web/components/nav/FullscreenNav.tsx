@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { NavLink } from "./NavLink";
 import { NavCurve } from "./NavCurve";
+import { MagneticWrapper } from "@temi/ui";
 
 const NAV_ITEMS = [
   { title: "Home", href: "/" },
@@ -14,7 +15,11 @@ const NAV_ITEMS = [
   { title: "Contact", href: "/#contact" },
 ];
 
-const SOCIALS = ["GitHub", "LinkedIn", "Twitter"];
+const SOCIALS = [
+  { label: "GitHub", href: "https://github.com/TemitopeRekun" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/temitope-ogunrekun-092736229/" },
+  { label: "Twitter", href: "https://x.com/_sireTemi" },
+];
 
 const menuSlide = {
   initial: { x: "calc(100% + 100px)" },
@@ -131,15 +136,18 @@ export function FullscreenNav() {
 
             {/* Social links footer inside nav */}
             <div className="flex gap-6">
-              {SOCIALS.map((s) => (
-                <a
-                  key={s}
-                  href="#"
-                  className="text-xs text-(--muted) hover:text-(--text) transition-colors cursor-pointer"
-                >
-                  {s}
-                </a>
-              ))}
+             {SOCIALS.map((s) => (
+                           <MagneticWrapper key={s.label}>
+                             <a
+                               href={s.href}
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               className="hover:text-white transition-colors cursor-pointer"
+                             >
+                               {s.label}
+                             </a>
+                           </MagneticWrapper>
+                         ))}
             </div>
           </motion.div>
         )}

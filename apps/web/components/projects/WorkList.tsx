@@ -4,10 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Route } from "next";
 import { useQuery } from "@tanstack/react-query";
-import {
-  type Project,
-  type ProjectCategory,
-} from "../../lib/projects";
+import { type Project, type ProjectCategory } from "../../lib/projects";
 import { gsap } from "../../lib/gsap";
 import { motion } from "framer-motion";
 
@@ -89,7 +86,8 @@ export function WorkList() {
   const { data: dbProjects = [] } = useQuery({
     queryKey: ["public-projects"],
     queryFn: async () => {
-      const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+      const baseUrl =
+        process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
       try {
         const res = await fetch(`${baseUrl}/api/projects`);
         if (!res.ok) return [];
@@ -253,8 +251,7 @@ export function WorkList() {
         variants={scaleAnim}
         initial="initial"
         animate={modal.active ? "enter" : "closed"}
-        className="pointer-events-none fixed left-0 top-0 hidden h-[300px] w-[400px] overflow-hidden rounded-2xl bg-(--surface) md:block"
-        style={{ zIndex: 50 }}
+        className="pointer-events-none fixed left-0 top-0 z-[50] hidden h-[300px] w-[400px] overflow-hidden rounded-2xl bg-(--surface) md:block"
       >
         <div
           style={{ top: modal.index * -100 + "%" }}
@@ -289,7 +286,7 @@ export function WorkList() {
         variants={scaleAnim}
         initial="initial"
         animate={modal.active ? "enter" : "closed"}
-        className="pointer-events-none fixed left-0 top-0 z-[50] flex h-20 w-20 items-center justify-center bg-transparent text-sm font-medium text-white md:block"
+        className="pointer-events-none fixed left-0 top-0 z-50 flex h-20 w-20 items-center justify-center bg-transparent text-sm font-medium text-white md:block"
       >
         View
       </motion.div>

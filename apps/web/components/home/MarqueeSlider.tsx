@@ -66,13 +66,15 @@ export function MarqueeSlider({
       >
         <p
           ref={firstText}
-          className="shrink-0 font-(--font-syne) text-[clamp(2.5rem,6vw,5rem)] font-bold pr-12 text-transparent [-webkit-text-stroke:1px_var(--muted)] opacity-40"
+          style={{ fontFamily: "var(--font-syne)" }}
+          className="shrink-0 text-[clamp(2.5rem,6vw,5rem)] font-bold pr-12 text-transparent [-webkit-text-stroke:1px_var(--muted)] opacity-40"
         >
           {content}
         </p>
         <p
           ref={secondText}
-          className="shrink-0 font-(--font-syne) text-[clamp(2.5rem,6vw,5rem)] font-bold pr-12 text-transparent [-webkit-text-stroke:1px_var(--muted)] opacity-40"
+          style={{ fontFamily: "var(--font-syne)" }}
+          className="shrink-0 text-[clamp(2.5rem,6vw,5rem)] font-bold pr-12 text-transparent [-webkit-text-stroke:1px_var(--muted)] opacity-40"
         >
           {content}
         </p>

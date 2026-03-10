@@ -62,11 +62,7 @@ export default function ProjectsClient({ token }: { token: string }) {
     coverImage: "",
   });
 
-  const {
-    data: items = [],
-    isLoading,
-    error,
-  } = useQuery({
+  const { data: items = [], isLoading } = useQuery({
     queryKey: ["admin-projects"],
     queryFn: async () => {
       // Use the public endpoint for listing, or admin endpoint if available
@@ -414,19 +410,19 @@ export default function ProjectsClient({ token }: { token: string }) {
             <div className="flex gap-2">
               <Button
                 variant="ghost"
-                size="sm"
                 onClick={() => handleEdit(project)}
+                className="!px-4 !py-2 !text-xs h-auto"
               >
                 Edit
               </Button>
               <Button
-                variant="destructive"
-                size="sm"
+                variant="ghost"
                 onClick={() => {
                   if (confirm("Delete this project?")) {
                     deleteMutation.mutate(project.id);
                   }
                 }}
+                className="!px-4 !py-2 !text-xs h-auto !text-red-500 hover:!bg-red-500/10 hover:!text-red-600"
               >
                 Delete
               </Button>

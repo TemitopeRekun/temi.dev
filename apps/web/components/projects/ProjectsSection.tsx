@@ -238,7 +238,7 @@ export function ProjectsSection() {
   return (
     <Section id="work" className="relative bg-(--bg) py-24 lg:py-32">
       {/* Distinct background for projects section */}
-      <div className="absolute inset-0 z-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.05] dark:bg-[radial-gradient(#ffffff_1px,transparent_1px)] dark:opacity-[0.03]" />
+      <div className="absolute inset-0 z-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px_16px] opacity-[0.05] dark:bg-[radial-gradient(#ffffff_1px,transparent_1px)] dark:opacity-[0.03]" />
       <Container className="relative z-10">
         <RevealOnScroll>
           <div className="mb-12 flex items-end justify-between">

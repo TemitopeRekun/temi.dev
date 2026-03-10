@@ -7,27 +7,24 @@ import { TextReveal } from "../common/TextReveal";
 const TESTIMONIALS = [
   {
     id: 1,
-    content:
-      "Temi transformed our messy MVP into a scalable, production-ready platform. His deep knowledge of Next.js and system architecture saved us months of technical debt.",
-    author: "Sarah Jenkins",
+    content: "Across our collaborations, Temitope showed strong programming fundamentals, the ability to navigate complex codebases and documentation, and a rare mix of curiosity, communication, and growth mindset—making him a developer we would confidently recommend to any team looking for motivated, technically capable talent.",
+    author: "Salem Etohokpan",
     role: "CTO @ TechFlow",
-    avatar: "SJ",
+    avatar: "SE",
   },
   {
     id: 2,
-    content:
-      "An exceptional engineer who understands product. He didn't just build what we asked for—he improved the design and user experience along the way.",
-    author: "David Chen",
-    role: "Founder, AiStudio",
-    avatar: "DC",
+    content: "Temitope contributed to the engineering of our fiscal‑compliant invoicing platform, Multifactu, working inside a modern TypeScript monorepo across compliant invoicing flows, XML export pipelines, PDF rendering, and AEAT‑compliant QR verification—adapting quickly to a complex, production environment." ,
+    author: "Pedro Dopico",
+    role: "Managing Director, ADP Digitek",
+    avatar: "PD",
   },
   {
     id: 3,
-    content:
-      "The AI automation pipeline Temi built has cut our manual processing time by 80%. Highly recommended for complex backend integrations.",
-    author: "Marcus Johnson",
-    role: "Director of Ops, FinCorp",
-    avatar: "MJ",
+    content: "What stood out most about Temitope was his ambition to continuously improve and expand his skills. He approaches problems with a pragmatic engineering mindset, explores new technologies, and shows a genuine commitment to growing as a developer—an invaluable mindset in a fast-moving industry like software engineering.",  
+    author: "Aina Maria",
+    role: "CTO, Martinez & Company",
+    avatar: "AM",
   },
 ];
 

@@ -10,8 +10,8 @@ import { ContactForm, type LeadState } from "./ContactForm";
 
 const SOCIALS = [
   { label: "GitHub", href: "https://github.com/TemitopeRekun" },
-  { label: "LinkedIn", href: "#" },
-  { label: "Twitter", href: "#" },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/temitope-ogunrekun-092736229/" },
+  { label: "Twitter", href: "https://x.com/_sireTemi" },
 ];
 
 type Props = {
