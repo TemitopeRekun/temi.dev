@@ -15,15 +15,15 @@ const TESTIMONIALS = [
   {
     id: 2,
     content: "Temitope contributed to the engineering of our fiscal‑compliant invoicing platform, Multifactu, working inside a modern TypeScript monorepo across compliant invoicing flows, XML export pipelines, PDF rendering, and AEAT‑compliant QR verification—adapting quickly to a complex, production environment." ,
-    author: "Pedro Dopico",
+    author: "Pedro Martínez Dopico",
     role: "Managing Director, ADP Digitek",
     avatar: "PD",
   },
   {
     id: 3,
     content: "What stood out most about Temitope was his ambition to continuously improve and expand his skills. He approaches problems with a pragmatic engineering mindset, explores new technologies, and shows a genuine commitment to growing as a developer—an invaluable mindset in a fast-moving industry like software engineering.",  
-    author: "Aina Maria",
-    role: "CTO, Martinez & Company",
+    author: "Aina Maria Perelló Company",
+    role: "CTO, Martínez & Company - Management & Intermediation",
     avatar: "AM",
   },
 ];
