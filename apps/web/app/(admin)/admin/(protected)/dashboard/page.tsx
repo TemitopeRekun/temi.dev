@@ -12,7 +12,6 @@ type Counts = {
   totalPosts: number;
   totalLeads: number;
   newLeads7d: number;
-  totalJobLeads: number;
 };
 
 async function getCounts(token: string): Promise<Counts> {
@@ -28,7 +27,6 @@ async function getCounts(token: string): Promise<Counts> {
       totalPosts: 0,
       totalLeads: 0,
       newLeads7d: 0,
-      totalJobLeads: 0,
     };
   }
   return res.json();
@@ -50,7 +48,6 @@ export default async function DashboardPage() {
         <Card title="Total Projects" value={counts.totalProjects.toString()} />
         <Card title="Total Blog Posts" value={counts.totalPosts.toString()} />
         <Card title="Total Leads" value={counts.totalLeads.toString()} />
-        <Card title="Job Leads" value={counts.totalJobLeads.toString()} />
         <Card title="New Leads (7d)" value={counts.newLeads7d.toString()} />
       </div>
     </div>

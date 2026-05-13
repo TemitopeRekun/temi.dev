@@ -9,10 +9,6 @@ import { ProjectsModule } from "./modules/projects/projects.module";
 import { BlogModule } from "./modules/blog/blog.module";
 import { LeadsModule } from "./modules/leads/leads.module";
 import { UploadModule } from "./modules/upload/upload.module";
-import { JobLeadsModule } from "./modules/job-leads/job-leads.module";
-import { ProposalsModule } from "./modules/proposals/proposals.module";
-import { OutreachModule } from "./modules/outreach/outreach.module";
-import { CareerAnalyticsModule } from "./modules/career-analytics/career-analytics.module";
 import { AiModule } from "./modules/ai/ai.module";
 import { RagModule } from "./modules/rag/rag.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
@@ -27,10 +23,6 @@ import { DashboardModule } from "./modules/dashboard/dashboard.module";
     BlogModule,
     LeadsModule,
     UploadModule,
-    JobLeadsModule,
-    ProposalsModule,
-    OutreachModule,
-    CareerAnalyticsModule,
     AiModule,
     RagModule,
     DashboardModule,

@@ -13,9 +13,6 @@ export class AiService {
   private readonly embeddingModel: string;
   private readonly generationModel: string;
   private readonly genAI: GoogleGenerativeAI | null;
-  private readonly prismaLike: {
-    aiRequestLog: { create(args: unknown): Promise<unknown> };
-  };
 
   constructor(
     private readonly config: ConfigService,
@@ -27,9 +24,6 @@ export class AiService {
     this.generationModel =
       this.config.get<string>("GEMINI_MODEL") ?? "gemini-1.5-flash";
     this.genAI = this.apiKey ? new GoogleGenerativeAI(this.apiKey) : null;
-    this.prismaLike = this.prisma as unknown as {
-      aiRequestLog: { create(args: unknown): Promise<unknown> };
-    };
   }
 
   async generateEmbedding(text: string): Promise<number[]> {
@@ -43,19 +37,6 @@ export class AiService {
       const values = res.embedding?.values ?? [];
       if (!Array.isArray(values) || values.length === 0) return [];
       const out = values.map((v) => Number(v));
-      const duration = Date.now() - started;
-      // NOTE: custom implementation — minimal DB logging for AI observability
-      await this.prismaLike.aiRequestLog.create({
-        data: {
-          model: this.embeddingModel,
-          input: text.slice(0, 2000),
-          output: `dims=${out.length}; sample=[${out
-            .slice(0, 8)
-            .map((v) => v.toFixed(6))
-            .join(", ")}]`,
-          durationMs: duration,
-        },
-      } as unknown);
       return out;
     } catch {
       return [];
@@ -175,95 +156,6 @@ Return a valid JSON array of strings (e.g., ["Topic 1", "Topic 2"]).`;
     }
   }
 
-  async scoreLead(
-    description: string,
-    techStack: string[],
-    skills: string[],
-  ): Promise<{ score: number; reason: string; pitchAngle: string }> {
-    const prompt = [
-      "You are an assistant scoring job leads for Temitope.",
-      "Evaluate fit between job description and skills.",
-      `Job Description:\n${description}`,
-      `Job Tech Stack: ${techStack.join(", ")}`,
-      `Temitope's Skills: ${skills.join(", ")}`,
-      "Return JSON with fields: score (0-100), reason (short), pitchAngle (short).",
-    ].join("\n\n");
-
-    const raw = await this.callGemini(prompt, {
-      responseMimeType: "application/json",
-    });
-
-    try {
-      const json = JSON.parse(raw) as Partial<{
-        score: number;
-        reason: string;
-        pitchAngle: string;
-      }>;
-      return {
-        score: Math.max(0, Math.min(100, Math.round(json.score ?? 0))),
-        reason: json.reason ?? "",
-        pitchAngle: json.pitchAngle ?? "",
-      };
-    } catch {
-      const base = description.length > 500 ? 60 : 40;
-      return {
-        score: base,
-        reason: "Heuristic fallback",
-        pitchAngle: "General value alignment",
-      };
-    }
-  }
-
-  async generateProposal(
-    jobDescription: string,
-    variant: string,
-    projects: Array<{
-      title: string;
-      description: string;
-      techStack: string[];
-    }>,
-  ): Promise<string> {
-    const projectsText = projects
-      .map((p) => `- ${p.title}: ${p.description} [${p.techStack.join(", ")}]`)
-      .join("\n");
-    const path = resolve(
-      process.cwd(),
-      "../../packages/ai/prompts/proposal.txt",
-    );
-    const tmpl = await readFile(path, "utf8").catch(() => "");
-    const prompt = tmpl
-      ? tmpl
-          .replace("{{variant}}", variant)
-          .replace("{{jobDescription}}", jobDescription)
-          .replace("{{projects}}", projectsText)
-      : [
-          "Generate a concise proposal tailored to the job description.",
-          `Variant: ${variant}`,
-          `Job Description:\n${jobDescription}`,
-          "Use Temitope's background:",
-          projectsText,
-          "Tone: professional, clear value, short paragraphs, include relevant achievements.",
-        ].join("\n\n");
-
-    return this.callGemini(prompt);
-  }
-
-  async generateWeeklyInsights(stats: unknown): Promise<string> {
-    const path = resolve(
-      process.cwd(),
-      "../../packages/ai/prompts/weekly-insights.txt",
-    );
-    const tmpl = await readFile(path, "utf8").catch(() => "");
-    const prompt = tmpl
-      ? tmpl.replace("{{stats}}", JSON.stringify(stats, null, 2))
-      : [
-          "You are a career pipeline analyst.",
-          "Given the following weekly stats JSON, produce a short, actionable summary (bullets).",
-          JSON.stringify(stats, null, 2),
-        ].join("\n\n");
-    return this.callGemini(prompt);
-  }
-
   async generateLeadReply(
     leadMessage: string,
     context?: string,
@@ -298,16 +190,6 @@ Return a valid JSON array of strings (e.g., ["Topic 1", "Topic 2"]).`;
         },
       });
       const text = res.response?.text?.() ?? "";
-      const duration = Date.now() - started;
-      // NOTE: custom implementation — minimal DB logging for AI observability
-      await this.prismaLike.aiRequestLog.create({
-        data: {
-          model: this.generationModel,
-          input: prompt.slice(0, 4000),
-          output: text.slice(0, 4000),
-          durationMs: duration,
-        },
-      } as unknown);
       return text;
     } catch (error) {
       console.error("AI Generation Error:", error);
