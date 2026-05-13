@@ -8,25 +8,9 @@ export type BlogPost = {
   readTime: number;
   content?: string;
   publishedAt?: string;
-  likeCount?: number;
-};
-
-export type Comment = {
-  id: string;
-  content: string;
-  author: string;
-  createdAt: string;
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
-
-export function seededLikes(seed: string, min = 8, range = 50): number {
-  let hash = 0;
-  for (let i = 0; i < seed.length; i += 1) {
-    hash = (hash * 31 + seed.charCodeAt(i)) >>> 0;
-  }
-  return min + (hash % range);
-}
 
 export async function getPosts(): Promise<BlogPost[]> {
   try {
@@ -49,9 +33,7 @@ export async function getPosts(): Promise<BlogPost[]> {
         item.image ||
         `https://picsum.photos/1200/800?seed=${item.slug}`,
       readTime: Math.ceil((item.content?.length || 1000) / 1000),
-      // content: item.content, // Exclude content from list to reduce payload
       publishedAt: item.publishedAt,
-      likeCount: (item.likeCount || 0) + seededLikes(item.slug),
     }));
   } catch (error) {
     console.error("Failed to fetch posts:", error);
@@ -81,7 +63,6 @@ export async function getPostBySlug(
         readTime: Math.ceil((item.content?.length || 1000) / 1000),
         content: item.content,
         publishedAt: item.publishedAt,
-        likeCount: (item.likeCount || 0) + seededLikes(item.slug),
       };
     }
   } catch {
@@ -89,18 +70,4 @@ export async function getPostBySlug(
   }
 
   return undefined;
-}
-
-export async function getComments(slug: string): Promise<Comment[]> {
-  try {
-    const res = await fetch(`${API_URL}/api/blog/${slug}/comments`, {
-      cache: "no-store",
-    });
-    if (res.ok) {
-      return res.json();
-    }
-    return [];
-  } catch {
-    return [];
-  }
 }

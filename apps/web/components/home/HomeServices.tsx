@@ -17,18 +17,12 @@ export function HomeServices() {
               </div>
               <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl text-(--text)">
                 <TextReveal
-                  text="Services & Expertise"
+                  text="Technical Expertise"
                   type="chars"
                   delay={0.2}
                 />
               </h2>
             </div>
-            <Link
-              href="/services"
-              className="text-sm font-medium text-(--text) underline-offset-4 hover:underline"
-            >
-              View all services →
-            </Link>
           </div>
         </RevealOnScroll>
 

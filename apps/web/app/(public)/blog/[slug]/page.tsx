@@ -9,8 +9,6 @@ import rehypeHighlight from "rehype-highlight";
 import { AnimatedText } from "../../../../components/common/AnimatedText";
 import { getPosts, getPostBySlug } from "../../../../lib/blog";
 import { buildMetadata } from "../../../../lib/metadata";
-import { ArticleInteractions } from "../../../../components/blog/ArticleInteractions";
-import { CommentList } from "../../../../components/blog/CommentList";
 import { AskArticle } from "../../../../components/blog/AskArticle";
 
 type Params = { slug: string };
@@ -46,9 +44,6 @@ export default async function BlogDetailPage({
 
   return (
     <main>
-      {post && (
-        <ArticleInteractions slug={slug} likeCount={post.likeCount || 0} />
-      )}
       <Section>
         <Container>
           {!post ? (
@@ -111,15 +106,6 @@ export default async function BlogDetailPage({
                 )}
               </div>
 
-              <div className="mt-16 border-t border-(--border)/20 pt-8">
-                <Suspense
-                  fallback={
-                    <div className="h-32 animate-pulse rounded-2xl bg-(--surface)" />
-                  }
-                >
-                  <CommentList slug={slug} />
-                </Suspense>
-              </div>
 
               {post.id && (
                 <div className="mt-16 border-t border-(--border)/20 pt-8">

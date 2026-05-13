@@ -139,23 +139,6 @@ Do not wrap the JSON in markdown code blocks. Just return the raw JSON.`;
     }
   }
 
-  async getTrendingTopics(): Promise<string[]> {
-    const prompt = `List 5 trending software engineering topics or technologies that are currently popular or rising.
-Focus on practical, interesting subjects for a tech blog.
-Return a valid JSON array of strings (e.g., ["Topic 1", "Topic 2"]).`;
-
-    const raw = await this.callGemini(prompt, {
-      responseMimeType: "application/json",
-    });
-
-    try {
-      const json = JSON.parse(raw);
-      return Array.isArray(json) ? json : [];
-    } catch {
-      return ["React Server Components", "AI Engineering", "TypeScript Best Practices", "Next.js Performance", "Rust for Web Dev"];
-    }
-  }
-
   async generateLeadReply(
     leadMessage: string,
     context?: string,

@@ -11,9 +11,6 @@ import { CreateBlogPostDto } from "./dto/create-blog-post.dto";
 import { UpdateBlogPostDto } from "./dto/update-blog-post.dto";
 import { AiService } from "../ai/ai.service";
 
-import { CreateCommentDto } from "./dto/create-comment.dto";
-import { CommentDto } from "./dto/comment.dto";
-
 @Injectable()
 export class BlogService {
   constructor(
@@ -36,8 +33,6 @@ export class BlogService {
         tags: true,
         coverImage: true,
         publishedAt: true,
-        viewCount: true,
-        likeCount: true,
       },
     });
     let nextCursor: string | undefined;
@@ -60,77 +55,10 @@ export class BlogService {
         tags: true,
         coverImage: true,
         publishedAt: true,
-        viewCount: true,
-        likeCount: true,
       },
     });
     if (!post) throw new NotFoundException("Post not found");
     return post;
-  }
-
-  async incrementView(slug: string): Promise<void> {
-    const updated = await this.prisma.blogPost
-      .update({
-        where: { slug },
-        data: { viewCount: { increment: 1 } },
-        select: { id: true },
-      })
-      .catch(() => null);
-    if (!updated) throw new NotFoundException("Post not found");
-  }
-
-  async incrementLike(slug: string): Promise<void> {
-    const updated = await this.prisma.blogPost
-      .update({
-        where: { slug },
-        data: { likeCount: { increment: 1 } },
-        select: { id: true },
-      })
-      .catch(() => null);
-    if (!updated) throw new NotFoundException("Post not found");
-  }
-
-  async addComment(slug: string, dto: CreateCommentDto): Promise<CommentDto> {
-    const post = await this.prisma.blogPost.findUnique({
-      where: { slug },
-      select: { id: true },
-    });
-    if (!post) throw new NotFoundException("Post not found");
-
-    const comment = await this.prisma.comment.create({
-      data: {
-        content: dto.content,
-        author: dto.author ?? "Anonymous",
-        postId: post.id,
-      },
-      select: {
-        id: true,
-        content: true,
-        author: true,
-        createdAt: true,
-      },
-    });
-    return comment;
-  }
-
-  async getComments(slug: string): Promise<CommentDto[]> {
-    const post = await this.prisma.blogPost.findUnique({
-      where: { slug },
-      select: { id: true },
-    });
-    if (!post) throw new NotFoundException("Post not found");
-
-    const comments = await this.prisma.comment.findMany({
-      where: { postId: post.id },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        content: true,
-        author: true,
-        createdAt: true,
-      },
-    });
-    return comments;
   }
 
   async adminListAll(): Promise<Array<unknown>> {
@@ -145,7 +73,6 @@ export class BlogService {
         coverImage: true,
         published: true,
         publishedAt: true,
-        viewCount: true,
       },
     });
     return items;
@@ -243,11 +170,6 @@ export class BlogService {
     return { id };
   }
 
-  async adminGetTrendingTopics(): Promise<string[]> {
-    if (!this.ai) return [];
-    return this.ai.getTrendingTopics();
-  }
-
   async adminGenerate(topic: string): Promise<any> {
     if (!this.ai) throw new BadRequestException("AI service not available");
 
@@ -283,8 +205,6 @@ export class BlogService {
         tags: true,
         published: true,
         publishedAt: true,
-        viewCount: true,
-        likeCount: true,
       },
     });
 

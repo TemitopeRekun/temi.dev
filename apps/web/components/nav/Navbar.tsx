@@ -66,7 +66,6 @@ export function Navbar() {
                 { href: "/#work", label: "Work" },
                 { href: "/about", label: "About" },
                 { href: "/blog", label: "Blog" },
-                { href: "/services", label: "Services" },
               ] as const
             ).map((l) => (
               <Link

@@ -34,7 +34,6 @@ const BLOG_POSTS = [
     image: "https://picsum.photos/1200/800?seed=ai-pipeline",
     readTime: 6,
     published: true,
-    viewCount: 120,
   },
   {
     slug: "nextjs-15-ssr",
@@ -197,7 +196,6 @@ async function main(): Promise<void> {
           tags: [post.tag],
           published: post.published,
           publishedAt: new Date(),
-          viewCount: post.viewCount,
         },
       });
       

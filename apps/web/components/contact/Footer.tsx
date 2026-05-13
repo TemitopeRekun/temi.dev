@@ -197,15 +197,6 @@ export function Footer({ action, defaultService = null }: Props) {
             >
               Start a Project
             </RoundedButton>
-            <MagneticWrapper>
-              <Link
-                href="/services"
-                className="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm font-medium text-white transition-colors hover:bg-white/10"
-              >
-                View Services
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </MagneticWrapper>
           </div>
         </div>
 

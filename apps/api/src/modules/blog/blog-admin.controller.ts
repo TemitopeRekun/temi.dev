@@ -49,11 +49,4 @@ export class BlogAdminController {
     }
     return this.blog.adminGenerate(body.topic);
   }
-
-  @Get("trending")
-  @ApiOperation({ summary: "Admin: get trending tech topics for blog ideas" })
-  @ApiResponse({ status: 200 })
-  async getTrending(): Promise<string[]> {
-    return this.blog.adminGetTrendingTopics();
-  }
 }

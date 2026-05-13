@@ -5,5 +5,4 @@ export class BlogSummaryDto {
   excerpt?: string | null;
   tags!: string[];
   publishedAt!: Date | null;
-  viewCount!: number;
 }

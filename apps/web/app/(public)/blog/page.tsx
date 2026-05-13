@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { Newsletter } from "../../../components/blog/Newsletter";
 import { AskAI } from "../../../components/blog/AskAI";
 import { BlogContent } from "../../../components/blog/BlogContent";
 import { buildMetadata } from "../../../lib/metadata";
@@ -20,7 +19,6 @@ export default function BlogPage() {
         <BlogContent />
       </Suspense>
       <AskAI />
-      <Newsletter />
     </main>
   );
 }
