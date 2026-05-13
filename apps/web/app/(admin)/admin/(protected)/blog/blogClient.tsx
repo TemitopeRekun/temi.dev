@@ -5,6 +5,9 @@ import { Button } from "@temi/ui";
 import { useRef, useState } from "react";
 import { ImageUpload } from "@/components/ui/ImageUpload";
 import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeHighlight from "rehype-highlight";
 
 type BlogSummary = {
   id: string;
@@ -40,6 +43,7 @@ export default function BlogClient({ token }: { token: string }) {
   const queryClient = useQueryClient();
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogSummary | null>(null);
+  const [activeTab, setActiveTab] = useState<"edit" | "preview">("edit");
   
   // AI Generation State
   const [isGeneratingOpen, setIsGeneratingOpen] = useState(false);
@@ -455,16 +459,61 @@ export default function BlogClient({ token }: { token: string }) {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Content</label>
-                <textarea
-                  required
-                  value={formData.content}
-                  onChange={(e) =>
-                    setFormData({ ...formData, content: e.target.value })
-                  }
-                  className="w-full rounded-md border border-(--border)/20 bg-transparent px-3 py-2 font-mono text-sm"
-                  rows={10}
-                />
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium">Content</label>
+                  <div className="flex rounded-lg border border-(--border)/20 p-1 bg-(--bg)">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("edit")}
+                      className={`px-3 py-1 text-xs rounded-md transition-colors ${
+                        activeTab === "edit"
+                          ? "bg-(--accent) text-white shadow-sm"
+                          : "text-(--muted) hover:text-(--text)"
+                      }`}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab("preview")}
+                      className={`px-3 py-1 text-xs rounded-md transition-colors ${
+                        activeTab === "preview"
+                          ? "bg-(--accent) text-white shadow-sm"
+                          : "text-(--muted) hover:text-(--text)"
+                      }`}
+                    >
+                      Preview
+                    </button>
+                  </div>
+                </div>
+
+                {activeTab === "edit" ? (
+                  <textarea
+                    required
+                    value={formData.content}
+                    onChange={(e) =>
+                      setFormData({ ...formData, content: e.target.value })
+                    }
+                    className="w-full rounded-md border border-(--border)/20 bg-transparent px-3 py-2 font-mono text-sm focus:border-(--accent) focus:outline-none"
+                    rows={12}
+                    placeholder="Write your story in Markdown..."
+                  />
+                ) : (
+                  <div className="min-h-[300px] w-full rounded-md border border-(--border)/20 bg-(--bg) px-4 py-4 overflow-y-auto">
+                    <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-(--surface2) prose-pre:border prose-pre:border-(--border)/30">
+                      {formData.content ? (
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          rehypePlugins={[rehypeHighlight]}
+                        >
+                          {formData.content}
+                        </ReactMarkdown>
+                      ) : (
+                        <p className="text-(--muted) italic">Nothing to preview yet...</p>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">

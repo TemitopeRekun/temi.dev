@@ -89,8 +89,7 @@ export default async function BlogDetailPage({
               </div>
 
               <div
-                className="prose prose-invert prose-lg max-w-none text-(--muted) leading-7 prose-p:my-6 prose-li:my-3 prose-ul:my-6 prose-ol:my-6 prose-blockquote:my-6 prose-pre:my-6 prose-pre:rounded-xl prose-pre:border prose-pre:border-(--border)/30 prose-pre:bg-(--surface2) prose-pre:p-5 prose-code:rounded prose-code:bg-(--surface2)/80 prose-code:px-1.5 prose-code:py-0.5 prose-code:font-mono"
-                style={{ fontFamily: "Arial, sans-serif" }}
+                className="prose prose-invert prose-lg max-w-none text-(--text)/90 leading-relaxed prose-p:my-6 prose-li:my-3 prose-ul:my-6 prose-ol:my-6 prose-blockquote:my-6 prose-pre:my-6 prose-pre:rounded-xl prose-pre:border prose-pre:border-(--border)/30 prose-pre:bg-(--surface2) prose-pre:p-5 prose-code:rounded prose-code:bg-(--surface2)/80 prose-code:px-1.5 prose-code:py-0.5 prose-code:font-mono"
               >
                 {post.content ? (
                   <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
