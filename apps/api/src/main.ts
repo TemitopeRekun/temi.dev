@@ -23,14 +23,27 @@ async function bootstrap() {
   await app.register(multipart);
 
   // Enable CORS
-  app.enableCors({  origin: [
-      "http://localhost:3000",
-      "http://127.0.0.1:3000",
-      "https://temi.dev",
-      "https://www.temi.dev",
-      "http://localhost:3001",
-      "http://127.0.0.1:3001",
-    ],
+  app.enableCors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
+      if (!origin) {
+        callback(null, true);
+        return;
+      }
+
+      const allowedOrigins = [
+        "https://temi.dev",
+        "https://www.temi.dev",
+      ];
+
+      const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+
+      if (isLocalhost || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"), false);
+      }
+    },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     credentials: true,
   });
