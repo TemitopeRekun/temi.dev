@@ -38,8 +38,9 @@ export function Footer({ action, defaultService = null }: Props) {
 
   const yRaw = useTransform(
     scrollYProgress,
-    [0, 1],
+    [0, 0.85],
     isMobile ? [-150, 0] : [-300, 0],
+    { clamp: true }
   );
   const xRaw = useTransform(
     scrollYProgress,
@@ -58,16 +59,24 @@ export function Footer({ action, defaultService = null }: Props) {
 
   const curveFill = useTransform(
     curve,
-    [0, 1],
+    [0, 0.5, 1],
     [
+      // Phase 1: full-width cover — same bg as previous section, no dark footer visible
+      "M0,250 Q720,250 1440,250 L1440,0 L0,0 Z",
+      // Phase 2: dome shape — cover shrinks to center arc
       "M0,0 Q720,250 1440,0 L1440,0 L0,0 Z",
+      // Phase 3: flat — fully revealed footer
       "M0,0 Q720,0 1440,0 L1440,0 L0,0 Z",
     ],
   );
   const curveStroke = useTransform(
     curve,
-    [0, 1],
-    ["M0,0 Q720,250 1440,0", "M0,0 Q720,0 1440,0"],
+    [0, 0.5, 1],
+    [
+      "M0,250 Q720,250 1440,250",
+      "M0,0 Q720,250 1440,0",
+      "M0,0 Q720,0 1440,0",
+    ],
   );
 
   useEffect(() => {
@@ -83,9 +92,9 @@ export function Footer({ action, defaultService = null }: Props) {
     <motion.footer
       ref={container}
       id="contact"
-      className="relative mt-16 sm:mt-32 overflow-hidden text-white isolate"
+      className="relative text-white"
       style={{
-        backgroundColor: "color-mix(in oklab, var(--text) 15%, #000 85%)",
+        backgroundColor: "#0C0B0A",
       }}
     >
       <motion.div className="pointer-events-none absolute inset-x-0 top-0 h-[100px] sm:h-[250px] z-10">
@@ -113,14 +122,14 @@ export function Footer({ action, defaultService = null }: Props) {
             d={curveStroke}
             fill="none"
             stroke="color-mix(in oklab, var(--bg) 80%, var(--text) 20%)"
-            strokeWidth="2"
-            className="opacity-70"
+            strokeWidth="1.5"
+            className="opacity-15"
           />
         </svg>
       </motion.div>
 
       <motion.div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-24 -right-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+        {/* Removed top-right white glow to prevent grey misty bleed on dark backgrounds */}
         <div className="absolute -bottom-32 -left-16 h-72 w-72 rounded-full bg-(--accent)/25 blur-3xl" />
       </motion.div>
 

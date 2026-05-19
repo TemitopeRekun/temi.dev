@@ -194,11 +194,15 @@ export function ProjectsSection() {
 
   const { data: dbProjects = [] } = useQuery({
     queryKey: ["public-projects"],
+    staleTime: 30_000,
+    retry: 1,
     queryFn: async () => {
       const baseUrl =
         process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
       try {
-        const res = await fetch(`${baseUrl}/api/projects`);
+        const res = await fetch(`${baseUrl}/api/projects`, {
+          cache: "no-store",
+        });
         if (!res.ok) return [];
         return await res.json();
       } catch (err) {

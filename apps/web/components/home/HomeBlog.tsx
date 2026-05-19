@@ -30,6 +30,8 @@ export function HomeBlog() {
   const router = useRouter();
   const { data: posts = [] } = useQuery<BlogPost[]>({
     queryKey: ["public-blog-home"],
+    staleTime: 30_000,
+    retry: 1,
     queryFn: async () => {
       const res = await fetch(`${apiBaseUrl()}/api/blog?take=6`, {
         cache: "no-store",
@@ -121,6 +123,7 @@ export function HomeBlog() {
           <div className="min-w-0 lg:mr-[calc(40%-50vw)] lg:w-auto lg:flex-1">
             <div
               ref={scrollRef}
+              data-lenis-prevent
               className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth -mx-4 px-4 pb-4"
             >
               {posts.length === 0 && (
