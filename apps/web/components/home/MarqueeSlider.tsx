@@ -14,7 +14,8 @@ export function MarqueeSlider({
   const secondText = useRef<HTMLParagraphElement>(null);
   const slider = useRef<HTMLDivElement>(null);
   const xPercent = useRef(0);
-  const direction = useRef(-1);
+  const speed = useRef(-0.06); // Starts at base speed moving left
+  const targetSpeed = useRef(-0.06);
   const rafId = useRef(0);
 
   // Repeat text to ensure it covers wide screens
@@ -23,43 +24,74 @@ export function MarqueeSlider({
   useLayoutEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
-    gsap.to(slider.current, {
+    const baseSpeed = -0.06; // moves left by default
+    let lastScrollY = window.scrollY;
+    let scrollTimeout: NodeJS.Timeout;
+
+    // Slide effect based on scroll position
+    const t1 = gsap.to(slider.current, {
       scrollTrigger: {
         trigger: document.documentElement,
         scrub: 0.25,
         start: 0,
         end: window.innerHeight,
       },
-      x: "-500px",
+      x: "-350px", // subtle scroll parallax shift
     });
 
-    ScrollTrigger.create({
-      trigger: document.documentElement,
-      start: "top top",
-      end: "bottom bottom",
-      onUpdate: (self) => {
-        direction.current = self.direction * -1;
-      },
-    });
+    // Extremely reliable native scroll listener to capture exact scroll delta
+    const onScroll = () => {
+      const currentScrollY = window.scrollY;
+      const diff = currentScrollY - lastScrollY;
+      lastScrollY = currentScrollY;
+
+      // diff > 0 (scrolling down) -> move left faster (negative speed)
+      // diff < 0 (scrolling up) -> reverse direction and move right (positive speed)
+      // Very gentle multiplier of 0.015 for organic scroll-reaction physics
+      const target = baseSpeed - (diff * 0.015);
+
+      // Clamp speed between -0.5 and 0.5 to keep speed elegant and perfectly readable
+      targetSpeed.current = Math.max(-0.5, Math.min(0.5, target));
+
+      // Smoothly decay back to normal base speed when scrolling stops
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        targetSpeed.current = baseSpeed;
+      }, 100);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
 
     const animate = () => {
-      if (xPercent.current < -100) xPercent.current = 0;
-      else if (xPercent.current > 0) xPercent.current = -100;
+      // Lerp current speed towards the target speed for buttery-smooth transitions
+      speed.current += (targetSpeed.current - speed.current) * 0.08;
+
+      xPercent.current += speed.current;
+
+      if (xPercent.current < -100) {
+        xPercent.current = 0;
+      } else if (xPercent.current > 0) {
+        xPercent.current = -100;
+      }
+
       gsap.set(firstText.current, { xPercent: xPercent.current });
       gsap.set(secondText.current, { xPercent: xPercent.current });
-      xPercent.current += 0.05 * direction.current;
+
       rafId.current = requestAnimationFrame(animate);
     };
     rafId.current = requestAnimationFrame(animate);
 
     return () => {
       cancelAnimationFrame(rafId.current);
-      ScrollTrigger.getAll().forEach((t) => t.kill());
+      clearTimeout(scrollTimeout);
+      window.removeEventListener("scroll", onScroll);
+      t1.scrollTrigger?.kill();
+      t1.kill();
     };
   }, []);
 
   return (
-    <div className="relative overflow-hidden py-10 sm:py-16 border-y border-(--border)/50 bg-(--surface)/30 backdrop-blur-sm">
+    <div className="relative overflow-hidden py-8 sm:py-14 border-y border-(--border)/50 bg-(--surface)/30 backdrop-blur-sm">
       <div
         ref={slider}
         className="relative flex whitespace-nowrap will-change-transform"
@@ -67,14 +99,14 @@ export function MarqueeSlider({
         <p
           ref={firstText}
           style={{ fontFamily: "var(--font-syne)" }}
-          className="shrink-0 text-[clamp(2.5rem,6vw,5rem)] font-bold pr-12 text-transparent [-webkit-text-stroke:1px_var(--muted)] opacity-40"
+          className="shrink-0 text-[clamp(1.8rem,5vw,4.5rem)] font-bold pr-6 sm:pr-12 text-transparent [-webkit-text-stroke:1px_var(--muted)] opacity-40"
         >
           {content}
         </p>
         <p
           ref={secondText}
           style={{ fontFamily: "var(--font-syne)" }}
-          className="shrink-0 text-[clamp(2.5rem,6vw,5rem)] font-bold pr-12 text-transparent [-webkit-text-stroke:1px_var(--muted)] opacity-40"
+          className="shrink-0 text-[clamp(1.8rem,5vw,4.5rem)] font-bold pr-6 sm:pr-12 text-transparent [-webkit-text-stroke:1px_var(--muted)] opacity-40"
         >
           {content}
         </p>

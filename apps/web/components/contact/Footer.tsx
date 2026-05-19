@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { useScroll, useTransform, useSpring, motion } from "framer-motion";
+import { useScroll, useTransform, motion } from "framer-motion";
 import { AnimatedText } from "../common/AnimatedText";
 import { RoundedButton } from "../common/RoundedButton";
 import { MagneticWrapper } from "@temi/ui";
@@ -51,11 +51,10 @@ export function Footer({ action, defaultService = null }: Props) {
   const curveRaw = useTransform(scrollYProgress, [0, 0.7], [0, 1], {
     clamp: true,
   });
-
-  const y = useSpring(yRaw, { stiffness: 80, damping: 20 });
-  const x = useSpring(xRaw, { stiffness: 80, damping: 20 });
-  const rotate = useSpring(rotateRaw, { stiffness: 80, damping: 20 });
-  const curve = useSpring(curveRaw, { stiffness: 120, damping: 24 });
+  const y = yRaw;
+  const x = xRaw;
+  const rotate = rotateRaw;
+  const curve = curveRaw;
 
   const curveFill = useTransform(
     curve,
@@ -135,7 +134,7 @@ export function Footer({ action, defaultService = null }: Props) {
 
       <motion.div
         style={{ y }}
-        className="relative mx-auto max-w-7xl px-4 pb-10 pt-24 sm:px-10 sm:pt-60"
+        className="relative mx-auto max-w-7xl px-4 pt-24 sm:px-10 sm:pt-60"
       >
         <div className="border-b border-white/10 pb-12 sm:pb-16 relative">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-8">
