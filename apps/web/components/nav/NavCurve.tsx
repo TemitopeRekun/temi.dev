@@ -12,8 +12,8 @@ export function NavCurve() {
 
   if (!h) return null;
 
-  const curveOut = `M100 0 L100 ${h} Q0 ${h / 2} 100 0 Z`;
-  const curveStraight = `M100 0 L100 ${h} Q100 ${h / 2} 100 0 Z`;
+  const curveOut = `M200 0 L200 ${h} Q0 ${h / 2} 200 0 Z`;
+  const curveStraight = `M200 0 L200 ${h} Q200 ${h / 2} 200 0 Z`;
 
   const curve: Variants = {
     initial: { d: curveOut },
@@ -29,8 +29,8 @@ export function NavCurve() {
 
   return (
     <svg
-      className="absolute -left-[100px] top-0 w-[100px] fill-(--bg) stroke-none"
-      viewBox={`0 0 100 ${h}`}
+      className="absolute -left-[200px] top-0 w-[200px] fill-(--bg) stroke-none"
+      viewBox={`0 0 200 ${h}`}
       preserveAspectRatio="none"
       style={{ height: `${h}px` }}
     >

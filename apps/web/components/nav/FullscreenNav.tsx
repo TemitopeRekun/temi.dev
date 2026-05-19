@@ -38,6 +38,16 @@ export function FullscreenNav() {
   const [selectedIndicator, setSelectedIndicator] = useState(pathname);
   const [hash, setHash] = useState("");
   const [atTop, setAtTop] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768); // 768px matches Tailwind md breakpoint
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     setHash(window.location.hash || "");
@@ -76,7 +86,7 @@ export function FullscreenNav() {
     <>
       {/* Burger button */}
       <AnimatePresence>
-        {(isOpen || !atTop) && (
+        {(isOpen || !atTop || isMobile) && (
           <motion.button
             aria-label={isOpen ? "Close menu" : "Open menu"}
             onClick={() => setIsOpen((v) => !v)}

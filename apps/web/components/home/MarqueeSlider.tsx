@@ -22,22 +22,9 @@ export function MarqueeSlider({
   const content = text.repeat(4);
 
   useLayoutEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
     const baseSpeed = -0.06; // moves left by default
     let lastScrollY = window.scrollY;
     let scrollTimeout: NodeJS.Timeout;
-
-    // Slide effect based on scroll position
-    const t1 = gsap.to(slider.current, {
-      scrollTrigger: {
-        trigger: document.documentElement,
-        scrub: 0.25,
-        start: 0,
-        end: window.innerHeight,
-      },
-      x: "-350px", // subtle scroll parallax shift
-    });
 
     // Extremely reliable native scroll listener to capture exact scroll delta
     const onScroll = () => {
@@ -47,11 +34,15 @@ export function MarqueeSlider({
 
       // diff > 0 (scrolling down) -> move left faster (negative speed)
       // diff < 0 (scrolling up) -> reverse direction and move right (positive speed)
-      // Very gentle multiplier of 0.015 for organic scroll-reaction physics
-      const target = baseSpeed - (diff * 0.015);
-
-      // Clamp speed between -0.5 and 0.5 to keep speed elegant and perfectly readable
-      targetSpeed.current = Math.max(-0.5, Math.min(0.5, target));
+      if (diff > 0) {
+        // Scrolling down: Use a very gentle multiplier (0.006) and a softer speed cap (-0.35)
+        const rawTarget = baseSpeed - (diff * 0.006);
+        targetSpeed.current = Math.max(-0.35, rawTarget);
+      } else if (diff < 0) {
+        // Scrolling up: Use a stronger multiplier (0.028) to easily overcome baseSpeed and a higher speed cap (0.55)
+        const rawTarget = baseSpeed - (diff * 0.028);
+        targetSpeed.current = Math.min(0.55, rawTarget);
+      }
 
       // Smoothly decay back to normal base speed when scrolling stops
       clearTimeout(scrollTimeout);
@@ -85,8 +76,6 @@ export function MarqueeSlider({
       cancelAnimationFrame(rafId.current);
       clearTimeout(scrollTimeout);
       window.removeEventListener("scroll", onScroll);
-      t1.scrollTrigger?.kill();
-      t1.kill();
     };
   }, []);
 
