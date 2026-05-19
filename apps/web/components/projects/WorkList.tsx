@@ -279,14 +279,14 @@ export function WorkList() {
         variants={scaleAnim}
         initial="initial"
         animate={modal.active ? "enter" : "closed"}
-        className="pointer-events-none fixed left-0 top-0 z-[50] flex h-20 w-20 items-center justify-center rounded-full bg-(--accent) text-white md:block"
+        className="pointer-events-none fixed left-0 top-0 z-[50] hidden h-20 w-20 items-center justify-center rounded-full bg-(--accent) text-white md:flex"
       />
       <motion.div
         ref={cursorLblEl}
         variants={scaleAnim}
         initial="initial"
         animate={modal.active ? "enter" : "closed"}
-        className="pointer-events-none fixed left-0 top-0 z-50 flex h-20 w-20 items-center justify-center bg-transparent text-sm font-medium text-white md:block"
+        className="pointer-events-none fixed left-0 top-0 z-50 hidden h-20 w-20 items-center justify-center bg-transparent text-sm font-medium text-white md:flex"
       >
         View
       </motion.div>

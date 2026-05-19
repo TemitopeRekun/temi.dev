@@ -5,6 +5,7 @@ import { useTheme } from "next-themes";
 import { gsap } from "../../lib/gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FullscreenNav } from "./FullscreenNav";
+import { MagneticWrapper } from "@temi/ui";
 
 let registered = false;
 function ensureRegister() {
@@ -12,6 +13,47 @@ function ensureRegister() {
     gsap.registerPlugin(ScrollTrigger);
     registered = true;
   }
+}
+
+import type { Route } from "next";
+
+function NavLinkItem<T extends string>({ href, label }: { href: Route<T>; label: string }) {
+  const circle = useRef<HTMLDivElement>(null);
+  const timeline = useRef<gsap.core.Timeline | null>(null);
+  const tid = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    timeline.current = gsap.timeline({ paused: true });
+    timeline.current
+      .to(circle.current, { top: "-25%", width: "150%", duration: 0.25, ease: "power2.inOut" }, "enter")
+      .to(circle.current, { top: "-150%", width: "125%", duration: 0.15 }, "exit");
+    return () => { timeline.current?.kill(); };
+  }, []);
+
+  const onEnter = () => {
+    if (tid.current) clearTimeout(tid.current);
+    timeline.current?.tweenFromTo("enter", "exit");
+  };
+  const onLeave = () => {
+    tid.current = setTimeout(() => timeline.current?.play(), 300);
+  };
+
+  return (
+    <MagneticWrapper>
+      <Link
+        href={href}
+        onMouseEnter={onEnter}
+        onMouseLeave={onLeave}
+        className="relative inline-flex items-center justify-center px-4 py-2 rounded-full overflow-hidden text-sm text-(--text)/70 transition-colors hover:text-[#0C0B0A] group"
+      >
+        <span className="relative z-10 font-medium">{label}</span>
+        <div
+          ref={circle}
+          className="absolute w-full h-[150%] rounded-full top-full left-1/2 -translate-x-1/2 pointer-events-none bg-(--accent)"
+        />
+      </Link>
+    </MagneticWrapper>
+  );
 }
 
 export function Navbar() {
@@ -63,18 +105,13 @@ export function Navbar() {
           <div className="hidden items-center gap-8 md:flex">
             {(
               [
-                { href: "/#work", label: "Work" },
+                { href: "/", label: "Home" },
+                { href: "/work", label: "Work" },
                 { href: "/about", label: "About" },
                 { href: "/blog", label: "Blog" },
               ] as const
             ).map((l) => (
-              <Link
-                key={l.label}
-                href={l.href}
-                className="text-sm text-(--text)/70 hover:text-(--text) transition-colors"
-              >
-                {l.label}
-              </Link>
+              <NavLinkItem key={l.label} href={l.href} label={l.label} />
             ))}
 
             {/* Theme toggle */}

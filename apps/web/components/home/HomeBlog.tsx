@@ -123,7 +123,6 @@ export function HomeBlog() {
           <div className="min-w-0 lg:mr-[calc(40%-50vw)] lg:w-auto lg:flex-1">
             <div
               ref={scrollRef}
-              data-lenis-prevent
               className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth -mx-4 px-4 pb-4"
             >
               {posts.length === 0 && (
