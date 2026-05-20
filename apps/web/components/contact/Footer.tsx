@@ -147,11 +147,11 @@ export function Footer({ action, defaultService = null }: Props) {
                   TO
                 </div>
                 <h2 className="font-(--font-syne) text-[clamp(2.8rem,8vw,6rem)] leading-none">
-                  Let's work
+                  Open to
                 </h2>
               </div>
               <h2 className="font-(--font-syne) text-[clamp(2.8rem,8vw,6rem)] leading-none">
-                together
+                new roles
               </h2>
             </div>
 
@@ -187,7 +187,7 @@ export function Footer({ action, defaultService = null }: Props) {
 
         <div className="my-10 sm:mt-16 flex flex-col gap-8">
           <div className="max-w-xl text-white/70 text-sm sm:text-base">
-            <AnimatedText phrase="Whether you need a full-stack overhaul, an AI integration, or a mobile app—let's discuss how I can help you achieve your goals. Tell me about your product, and I'll respond with a clear plan." />
+            <AnimatedText phrase="Looking for a remote mid-level full-stack or backend position. If your team is hiring and the engineering culture is strong, I'd like to hear about it." />
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
@@ -197,13 +197,6 @@ export function Footer({ action, defaultService = null }: Props) {
               href="mailto:hello@temi.dev"
             >
               hello@temi.dev
-            </RoundedButton>
-            <RoundedButton
-              accentColor="rgba(255,255,255,0.12)"
-              className="border-white/20 text-white px-5 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm"
-              onClick={() => setShowBrief(true)}
-            >
-              Start a Project
             </RoundedButton>
           </div>
         </div>
@@ -241,7 +234,7 @@ export function Footer({ action, defaultService = null }: Props) {
           className="fixed inset-0 z-50 flex items-center justify-center px-4"
           role="dialog"
           aria-modal="true"
-          aria-label="Project brief"
+          aria-label="Get in touch"
         >
           <button
             type="button"
@@ -253,10 +246,10 @@ export function Footer({ action, defaultService = null }: Props) {
             <div className="flex items-start justify-between gap-6">
               <div>
                 <p className="text-(--muted) text-xs uppercase tracking-[0.2em] mb-2">
-                  Project brief
+                  Get in touch
                 </p>
                 <p className="text-(--text) text-sm">
-                  Share a few details and I’ll get back with a plan.
+                  Drop me a message — happy to chat about roles, engineering, or anything in between.
                 </p>
               </div>
               <button

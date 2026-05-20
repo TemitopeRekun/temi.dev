@@ -160,7 +160,7 @@ export function Hero() {
             className="text-xs uppercase tracking-[0.3em] text-(--muted) hero-muted-contrast"
           >
             <span className="mr-3 inline-block h-2 w-2 animate-[glowPulse_2s_ease-in-out_infinite] rounded-full bg-(--accent)" />
-            Full-Stack · AI · Mobile
+            Full-Stack Engineer
           </div>
         </div>
 
@@ -201,7 +201,7 @@ export function Hero() {
             ref={sublineRef}
             className="max-w-2xl text-lg sm:text-xl text-(--muted) font-light hero-muted-contrast"
           >
-            Software Engineer & AI Automation Expert
+            I build full-stack products that solve real problems — TypeScript on both ends.
           </p>
         </div>
 
@@ -210,7 +210,7 @@ export function Hero() {
             ref={chipsRef}
             className="flex max-w-3xl flex-wrap justify-center gap-3 text-[0.65rem] uppercase tracking-[0.18em] text-(--muted)"
           >
-            {["AI Systems", "Next.js", "NestJS", "R3F", "Automation"].map(
+            {["TypeScript", "Next.js", "NestJS", "PostgreSQL", "REST APIs"].map(
               (chip) => (
                 <span
                   key={chip}
@@ -237,7 +237,7 @@ export function Hero() {
                   "hover:-translate-y-0.5 hover:shadow-[0_0_28px_var(--accent-glow-strong)] transition-all duration-250",
                 ].join(" ")}
               >
-                View Work
+                See My Work
               </Link>
             </MagneticWrapper>
             <MagneticWrapper>
@@ -248,7 +248,7 @@ export function Hero() {
                   "border border-(--border) hover:border-(--border-hover) hover:bg-(--surface2) backdrop-blur-sm transition-all duration-250",
                 ].join(" ")}
               >
-                Let&apos;s Talk
+                Get In Touch
               </Link>
             </MagneticWrapper>
           </div>

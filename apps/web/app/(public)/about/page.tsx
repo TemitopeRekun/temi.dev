@@ -9,7 +9,7 @@ import { TextReveal } from "../../../components/common/TextReveal";
 export const metadata = buildMetadata({
   title: "About — Temitope Ogunrekun",
   description:
-    "My journey from frontend developer to AI systems architect. A look at my timeline, skills, and what drives me.",
+    "From Lagos to shipping fiscal-compliance software in Spain. A look at my timeline, stack, and how I got here.",
   path: "/about",
   image: "https://picsum.photos/1200/630?seed=about-og",
 });
@@ -27,15 +27,15 @@ export default function AboutPage() {
             </div>
             <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-(--text) mb-6">
               <TextReveal
-                text="From first line of code to AI systems architecture"
+                text="From Lagos to shipping fiscal-compliance software in Spain."
                 type="words"
                 delay={0.2}
               />
             </h2>
             <p className="text-lg text-(--muted) leading-relaxed">
-              Every project has been a stepping stone. I've always been driven
-              by curiosity—wanting to know not just how things work, but how to
-              make them work better, faster, and smarter.
+              I picked up programming the way most people in Lagos do — piecing
+              things together from whatever was available online. Here's what's
+              happened since.
             </p>
           </div>
 

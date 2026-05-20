@@ -9,7 +9,7 @@ type Props = {
   defaultService?: string | null;
 };
 
-export function ContactForm({ action, defaultService }: Props) {
+export function ContactForm({ action }: Props) {
   const [state, formAction, pending] = useActionState<LeadState, FormData>(
     action,
     null,
@@ -44,27 +44,13 @@ export function ContactForm({ action, defaultService }: Props) {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm text-(--muted)">Service</label>
-            <select
-              name="service"
-              defaultValue={defaultService ?? ""}
-              className="w-full rounded-xl border border-(--border,rgba(0,0,0,0.08)) bg-(--bg) px-3 py-2 text-(--text)"
-            >
-              <option value="">Select a service</option>
-              <option>Full-Stack Development</option>
-              <option>AI Automation</option>
-              <option>Mobile Engineering</option>
-              <option>Freelance/Consulting</option>
-            </select>
-          </div>
-          <div>
             <label className="mb-1 block text-sm text-(--muted)">Message</label>
             <textarea
               name="message"
               required
               rows={5}
               className="w-full rounded-xl border border-(--border,rgba(0,0,0,0.08)) bg-(--bg) px-3 py-2 text-(--text)"
-              placeholder="Tell me about your project..."
+              placeholder="Tell me about the role or just say hello..."
             />
           </div>
           <div>
@@ -77,7 +63,7 @@ export function ContactForm({ action, defaultService }: Props) {
                 pending ? "opacity-70" : "hover:opacity-95 active:opacity-90",
               ].join(" ")}
             >
-              {pending ? "Sending..." : "Send message"}
+              {pending ? "Sending..." : "Send it"}
             </button>
           </div>
         </StaggerReveal>

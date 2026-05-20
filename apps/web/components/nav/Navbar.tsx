@@ -108,6 +108,7 @@ export function Navbar() {
                 { href: "/", label: "Home" },
                 { href: "/work", label: "Work" },
                 { href: "/about", label: "About" },
+                { href: "/stack" as Route, label: "Stack" },
                 { href: "/blog", label: "Blog" },
               ] as const
             ).map((l) => (

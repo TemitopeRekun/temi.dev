@@ -7,43 +7,51 @@ import { motion, useScroll, useTransform } from "framer-motion";
 const TIMELINE = [
   {
     year: "2019",
-    title: "The Spark",
-    role: "Freelance Developer",
+    title: "Lagos, the beginning",
+    role: "Self-taught Developer",
     description:
-      "Started my journey building custom WordPress themes and static sites for local businesses. This taught me the fundamentals of the web, client communication, and the importance of shipping.",
-    tech: ["HTML/CSS", "JavaScript", "PHP", "WordPress"],
+      "Pieced it together from whatever was available online. Started with tutorials, then documentation, then building things just to see if I could. Turns out I could.",
+    tech: ["HTML", "CSS", "JavaScript"],
   },
   {
-    year: "2020",
-    title: "Deep Dive into Systems",
-    role: "Junior Full-Stack Engineer",
+    year: "2021",
+    title: "First product, first real stakes",
+    role: "Sole Developer — Talent Group Services, UK",
     description:
-      "Joined a fintech startup where I transitioned to TypeScript and Node.js. Built my first microservices and learned about database design, caching strategies, and API security.",
-    tech: ["TypeScript", "Node.js", "PostgreSQL", "Redis"],
+      "Hired as the only developer at a cleaning agency in Bedford. Built their booking platform from scratch — it scaled to 300 monthly active users and cut 40% of the team's manual scheduling work. That's where I learned what it means to own a product end to end: architecture decisions, production incidents, performance bottlenecks, all of it.",
+    tech: ["TypeScript", "Node.js", "PostgreSQL", "REST APIs"],
   },
   {
     year: "2022",
-    title: "Scaling Up",
-    role: "Senior Frontend Engineer",
+    title: "Crossing into Europe",
+    role: "Developer — Martínez & Company, Spain",
     description:
-      "Led the migration of a monolithic frontend to a Next.js architecture. Focused on performance optimization, design systems, and improving developer experience for a team of 10.",
-    tech: ["Next.js", "React", "Tailwind CSS", "Storybook"],
+      "Built a GDPR-compliant website for a European grant consultancy, then wired up analytics and lead capture tooling that actually moved numbers. The quality of the work got me a direct referral to a SaaS company.",
+    tech: ["Next.js", "TypeScript", "GDPR compliance", "Analytics"],
   },
   {
-    year: "2024",
-    title: "The AI Revolution",
-    role: "AI Engineer & Consultant",
+    year: "2023",
+    title: "Production-grade complexity",
+    role: "Full-Stack Engineer — ADP Digitek, Spain",
     description:
-      "Shifted focus to integrating LLMs into production workflows. Building RAG pipelines, autonomous agents, and AI-powered interfaces that solve real business problems.",
-    tech: ["Python", "LangChain", "OpenAI", "Vector DBs"],
+      "Joined the engineering team on Multifactu — a fiscal-compliance invoicing platform for Spanish SMEs. TypeScript monorepo: Next.js 14, NestJS, PostgreSQL. Worked on signed XML generation that satisfies Spanish tax authority standards, OpenAPI documentation, Docker-based CI/CD, and Playwright test suites.",
+    tech: ["TypeScript", "Next.js 14", "NestJS", "PostgreSQL", "Docker", "Playwright"],
+  },
+  {
+    year: "2026",
+    title: "Building in real-time",
+    role: "Frontend Engineer — Bica Driver",
+    description:
+      "Working on a real-time ride-sharing PWA with native mobile capabilities via Capacitor. Namespaced Socket.io for driver, owner, and admin roles. Built the payment state machine, car verification flow, offline-first connectivity layer, and Firebase push notifications.",
+    tech: ["React", "TypeScript", "Socket.io", "Capacitor", "Zustand"],
   },
   {
     year: "Now",
-    title: "Building the Future",
-    role: "Independent Consultant",
+    title: "Looking for what's next",
+    role: "Open to remote mid-level roles",
     description:
-      "Helping companies build AI-native products. Combining deep technical expertise with product thinking to deliver scalable, high-impact solutions.",
-    tech: ["AI Agents", "System Design", "Product Strategy"],
+      "I'm looking for a remote full-stack or backend role — somewhere with a strong engineering culture where the work is real and the expectations are high. If that sounds like where you work, I'd like to hear about it.",
+    tech: ["TypeScript", "Next.js", "NestJS", "PostgreSQL", "Docker"],
   },
 ];
 

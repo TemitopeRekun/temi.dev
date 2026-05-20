@@ -118,19 +118,19 @@ export function AboutHero({ hideLink = false }: { hideLink?: boolean }) {
             <h2 className="text-3xl sm:text-4xl font-light leading-tight">
               A{" "}
               <span className="font-serif italic text-(--accent)">
-                software engineer
+                full-stack engineer
               </span>{" "}
-              blending creative design with robust systems architecture.
+              from Lagos. Shipping products across the UK, Spain, and beyond.
             </h2>
             <div className="text-lg text-(--muted) leading-relaxed">
               <TextReveal
-                text="I specialize in building high-performance web and mobile applications that feel alive. My approach combines technical precision with a deep appreciation for motion and aesthetics, ensuring every interaction serves a purpose."
+                text="I've shipped products at companies in the UK and Spain — from a booking platform I built solo, to a fiscal-compliance invoicing platform running inside a TypeScript monorepo. Next.js on the front, NestJS on the back, PostgreSQL underneath."
                 delay={0.2}
               />
             </div>
             <div className="text-lg text-(--muted) leading-relaxed">
               <TextReveal
-                text="Currently focused on AI-driven automation and 3D web experiences that push the boundaries of what's possible in the browser."
+                text="Currently part of the engineering team at ADP Digitek, and open to what's next."
                 delay={0.4}
               />
             </div>
@@ -142,7 +142,7 @@ export function AboutHero({ hideLink = false }: { hideLink?: boolean }) {
                     href={"/about" as Route}
                     className="inline-flex items-center gap-2 text-sm font-medium uppercase tracking-wider text-(--text) hover:text-(--accent) transition-colors"
                   >
-                    More about my journey
+                    Read the full story →
                     <span className="inline-block transition-transform group-hover:translate-x-1">
                       →
                     </span>

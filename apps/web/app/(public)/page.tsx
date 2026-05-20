@@ -10,9 +10,9 @@ import { GlobalBackground } from "../../components/common/GlobalBackground";
 import { buildMetadata } from "../../lib/metadata";
 
 export const metadata = buildMetadata({
-  title: "Temitope Ogunrekun — Full-Stack · AI · Mobile",
+  title: "Temitope Ogunrekun — Full-Stack Engineer",
   description:
-    "Software Engineer & AI Automation Expert. Building AI-first web and mobile products with Next.js, NestJS, and R3F.",
+    "Full-stack engineer from Lagos. TypeScript, Next.js, NestJS, PostgreSQL. Open to remote mid-level roles.",
   path: "/",
   image: "https://picsum.photos/1200/630?seed=home-og",
   type: "website",
@@ -30,23 +30,26 @@ export default function HomePage() {
             "@type": "Person",
             name: "Temitope Ogunrekun",
             url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://temi.dev") + "/",
-            jobTitle: "Software Engineer & AI Automation Expert",
+            jobTitle: "Full-Stack Engineer",
             sameAs: [
-              "https://github.com/temitopeog",
-              "https://www.linkedin.com/in/temitopeogunrekun",
-              "https://x.com/temitopeog",
+              "https://github.com/TemitopeRekun",
+              "https://www.linkedin.com/in/temitope-ogunrekun-092736229/",
+              "https://x.com/_sireTemi",
             ],
             worksFor: {
               "@type": "Organization",
-              name: "Independent Consultant",
+              name: "ADP Digitek",
             },
             knowsAbout: [
+              "TypeScript",
               "Next.js",
               "NestJS",
-              "TypeScript",
-              "React Native",
-              "AI Automation",
-              "RAG",
+              "PostgreSQL",
+              "REST APIs",
+              "Docker",
+              "React",
+              "Node.js",
+              "Full-Stack Engineering",
             ],
           }),
         }}

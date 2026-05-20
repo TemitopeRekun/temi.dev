@@ -45,9 +45,10 @@ export function PersonalSection() {
             Beyond the Code
           </h2>
           <p className="text-lg text-(--muted) leading-relaxed">
-            While I love building systems, I believe that great engineering
-            comes from a balanced life. Stepping away from the screen helps me
-            recharge and brings fresh perspectives to my work.
+            When I'm not writing code, I'm usually cycling around Lagos, reading
+            sci-fi, or taking photos of things that catch my eye — mostly
+            architecture and street scenes. The cycling especially. Long rides
+            are where I do my best thinking.
           </p>
         </RevealOnScroll>
       </div>

@@ -1,14 +1,13 @@
 "use client";
 import { useRef, useLayoutEffect } from "react";
 import { gsap } from "../../lib/gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 interface Props {
   text?: string;
 }
 
 export function MarqueeSlider({
-  text = "Full-Stack Development · AI Automation · Mobile Engineering · NestJS · Next.js · React Native · ",
+  text = "TypeScript · Next.js · NestJS · PostgreSQL · REST APIs · Full-Stack Engineering · React · Docker · CI/CD · ",
 }: Props) {
   const firstText = useRef<HTMLParagraphElement>(null);
   const secondText = useRef<HTMLParagraphElement>(null);
