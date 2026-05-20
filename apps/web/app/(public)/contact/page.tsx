@@ -13,14 +13,7 @@ export const metadata = buildMetadata({
   image: "https://picsum.photos/1200/630?seed=contact-og",
 });
 
-export default async function ContactPage(props: {
-  searchParams?: Promise<Record<string, string | string[]>>;
-}) {
-  const sp = (await props.searchParams) ?? {};
-  const serviceParam = (() => {
-    const q = sp.service;
-    return Array.isArray(q) ? q[0] : (q ?? null);
-  })();
+export default function ContactPage() {
   return (
     <main>
       <Section>
@@ -65,10 +58,7 @@ export default async function ContactPage(props: {
             </RevealOnScroll>
 
             <div>
-              <ContactForm
-                action={createLeadAction}
-                defaultService={serviceParam}
-              />
+              <ContactForm action={createLeadAction} />
             </div>
           </div>
         </Container>

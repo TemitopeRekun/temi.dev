@@ -6,7 +6,6 @@ export type LeadState = { ok: true } | { ok: false; error: string } | null;
 
 type Props = {
   action: (prev: LeadState, data: FormData) => Promise<LeadState>;
-  defaultService?: string | null;
 };
 
 export function ContactForm({ action }: Props) {

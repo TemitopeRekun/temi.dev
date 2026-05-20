@@ -6,7 +6,7 @@ import { buildMetadata } from "../../../lib/metadata";
 export const metadata = buildMetadata({
   title: "Work — Selected Projects",
   description:
-    "Browse selected projects across frontend, backend, AI automation, and mobile.",
+    "Selected work across full-stack web, backend systems, and mobile engineering.",
   path: "/work",
   image: "https://picsum.photos/1200/630?seed=work-og",
 });

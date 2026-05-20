@@ -16,10 +16,9 @@ const SOCIALS = [
 
 type Props = {
   action: (prev: LeadState, data: FormData) => Promise<LeadState>;
-  defaultService?: string | null;
 };
 
-export function Footer({ action, defaultService = null }: Props) {
+export function Footer({ action }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const [showBrief, setShowBrief] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -261,7 +260,7 @@ export function Footer({ action, defaultService = null }: Props) {
               </button>
             </div>
             <div className="mt-6">
-              <ContactForm action={action} defaultService={defaultService} />
+              <ContactForm action={action} />
             </div>
           </div>
         </motion.div>
