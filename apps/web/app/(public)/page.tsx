@@ -3,7 +3,7 @@ import { Hero } from "../../components/home/Hero";
 import { MarqueeSlider } from "../../components/home/MarqueeSlider";
 import { HomeStatsRow } from "../../components/home/HomeStatsRow";
 import { ProjectsSection } from "../../components/projects/ProjectsSection";
-import { HomeServices } from "../../components/home/HomeServices";
+import { HomeStackIntro } from "../../components/home/HomeStackIntro";
 import { Testimonials } from "../../components/home/Testimonials";
 import { HomeBlog } from "../../components/home/HomeBlog";
 import { GlobalBackground } from "../../components/common/GlobalBackground";
@@ -59,7 +59,7 @@ export default function HomePage() {
       <MarqueeSlider />
       <HomeStatsRow />
       <AboutHero />
-      <HomeServices />
+      <HomeStackIntro />
       <ProjectsSection />
       <Testimonials />
       <HomeBlog />

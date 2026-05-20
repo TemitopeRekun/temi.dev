@@ -38,11 +38,11 @@ const STACK: StackSection[] = [
       },
       {
         name: "Tailwind CSS",
-        body: "Every project I'm currently on uses it — Multifactu, Bica Driver, this portfolio. It keeps styling close to the component and makes consistency across a codebase easier to maintain without a design system overhead.",
+        body: "I resisted Tailwind for a while — utility classes felt like a step backwards from clean CSS. What changed my mind was opening a stylesheet on a codebase I hadn't touched in months and having no idea what was safe to delete. Tailwind makes every style decision local and visible: you open a component, the styles are right there, no mystery cascade. Multifactu, Bica Driver, and this portfolio all use it, and onboarding back into any of them after time away takes seconds.",
       },
       {
         name: "Vite",
-        body: "Build tool for Bica Driver. Fast HMR, clean config, and the Capacitor integration works without fighting it. Having worked with Vite directly gives me a clearer picture of what's happening under the hood on builds.",
+        body: "I picked Vite for Bica Driver because Capacitor — the native mobile bridge — needed a build tool that didn't get in the way. Webpack configs that fight you are a real productivity drain, and I'd already wasted enough time debugging build issues that had nothing to do with the actual product. With Vite, HMR is fast enough that I stopped noticing it, which is exactly what a build tool should do. Working with it directly rather than through Next.js's abstraction also gave me a clearer picture of what bundlers are actually doing.",
       },
     ],
   },
@@ -64,7 +64,7 @@ const STACK: StackSection[] = [
     items: [
       {
         name: "NestJS",
-        body: "My backend framework on Multifactu's API layer at ADP Digitek. Modules, guards, interceptors, dependency injection — I've built auth systems, file upload pipelines, rate-limited endpoints, and maintained OpenAPI specs that keep the frontend-backend contract honest.",
+        body: "When I outgrew plain Node.js at Talent Group Services, I needed a backend framework that would keep things organised as the codebase grew — not just for me, but for the next person in the code. NestJS gives you that: modules, guards, dependency injection, a clear place for everything. At ADP Digitek I've used it to build Multifactu's entire API layer — auth systems, file uploads, rate-limited endpoints, OpenAPI specs. The structured approach means less time arguing about where things go and more time actually building.",
       },
       {
         name: "Node.js",
@@ -102,7 +102,7 @@ const STACK: StackSection[] = [
       },
       {
         name: "Prisma",
-        body: "My ORM for TypeScript projects. The generated types mean database queries are as type-safe as the rest of the code. I use it in personal projects including this portfolio's backend.",
+        body: "Before Prisma I was writing raw SQL migrations at Talent Group Services and manually keeping TypeScript interfaces in sync with the database schema. One missed column meant a runtime error that TypeScript couldn't catch until something blew up in production. Prisma closes that gap: a schema change generates both the migration file and the updated types. It removes a whole category of bugs that live in the gap between your database and your code.",
       },
     ],
   },
@@ -123,7 +123,7 @@ const STACK: StackSection[] = [
       },
       {
         name: "Vitest",
-        body: "Unit testing in Bica Driver. Fast, Vite-native, and the API is close enough to Jest that there's no context-switching cost.",
+        body: "The parts of Bica Driver that are hardest to test manually are the ones with the most moving state — ride lifecycle transitions, payment status flows, connectivity handling. Those are exactly the things that need unit tests. Vitest is what I use to cover those paths. It's Vite-native so there's no config overhead, and it's fast enough that I actually run it during development rather than treating it as a pre-commit checkbox.",
       },
     ],
   },
@@ -140,7 +140,20 @@ const STACK: StackSection[] = [
       },
       {
         name: "Supabase",
-        body: "File storage and auth in personal projects including this portfolio. PostgreSQL under the hood, which keeps the data model consistent with what I'd use in production.",
+        body: "I used Supabase for this portfolio because I needed file storage and auth without spinning up a separate service for each. What I liked is that the underlying database is just PostgreSQL — the mental model is the same as production, no 'but Supabase handles it differently' gotcha waiting to bite you. For production work at ADP Digitek we run our own PostgreSQL, but Supabase taught me how to think about managed databases cleanly.",
+      },
+    ],
+  },
+  {
+    category: "AI in my workflow",
+    items: [
+      {
+        name: "GitHub Copilot",
+        body: "Copilot handles the repetitive layer of writing code — boilerplate, test stubs, the tenth variation of a similar function. At its best it finishes a line I was about to write anyway, which means I stay in flow instead of breaking off to type out something mechanical. I don't treat its suggestions as correct by default, but I've learned to read them quickly: useful 60% of the time, wrong in an interesting way 30% of the time, completely off 10%. The 60% is worth having.",
+      },
+      {
+        name: "Claude",
+        body: "I use Claude for the thinking-out-loud parts of development — explaining an unfamiliar codebase, talking through an architectural decision before committing to it, understanding why a TypeScript error is happening three layers deep. It's like having a well-read pair programming partner available at 2am when you're stuck on something. What I've found is that AI is genuinely good at breadth: it can explain an API I've never touched in minutes. But it still needs someone who understands the full system to decide what's actually correct for the situation. That's the part I focus on.",
       },
     ],
   },
