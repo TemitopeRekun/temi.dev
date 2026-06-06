@@ -35,12 +35,17 @@
   --hero-ink-strong: rgba(12, 11, 10, 0.45);
 }
 
+html {
+  background-color: #0C0B0A;
+}
+
 body {
   background-color: var(--bg);
   color: var(--text);
   font-family: var(--font-syne), system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   -webkit-font-smoothing: antialiased;
   line-height: 1.65;
+  overscroll-behavior-y: none;
 }
 
 h1,

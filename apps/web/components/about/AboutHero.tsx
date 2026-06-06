@@ -97,14 +97,15 @@ export function AboutHero({ hideLink = false }: { hideLink?: boolean }) {
               <TextReveal text="Who I Am" type="chars" />
             </div>
             <div className="relative mt-6">
-              <h1 className="font-(--font-syne) text-[clamp(3rem,8vw,6rem)] leading-[0.82] tracking-[-0.02em] text-(--text)/10">
+              <h1 className="font-(--font-syne) text-[clamp(3rem,8vw,6rem)] tracking-[-0.02em] text-(--text)/10" style={{ lineHeight: 1 }}>
                 Temitope
                 <br />
                 Ogunrekun
               </h1>
               <h1
                 ref={clipRef}
-                className="pointer-events-none absolute inset-0 font-(--font-syne) text-[clamp(3rem,8vw,6rem)] leading-[0.82] tracking-[-0.02em] text-(--text)"
+                className="pointer-events-none absolute inset-0 font-(--font-syne) text-[clamp(3rem,8vw,6rem)] tracking-[-0.02em] text-(--text)"
+                style={{ lineHeight: 1 }}
                 aria-hidden="true"
               >
                 Temitope

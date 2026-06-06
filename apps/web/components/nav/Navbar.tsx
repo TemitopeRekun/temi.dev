@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useRef, useMemo, useState } from "react";
 import { useTheme } from "next-themes";
 import { gsap } from "../../lib/gsap";
@@ -98,9 +99,9 @@ export function Navbar() {
           <Link
             href="/"
             prefetch={true}
-            className="font-(--font-syne) text-lg text-(--text) z-201"
+            className="z-201 rounded-lg overflow-hidden"
           >
-            TO
+            <Image src="/icon" width={32} height={32} alt="Temitope Ogunrekun" />
           </Link>
 
           {/* Desktop links — hidden on mobile (burger covers all) */}

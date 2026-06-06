@@ -6,6 +6,7 @@ import { RoundedButton } from "../common/RoundedButton";
 import { MagneticWrapper } from "@temi/ui";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { ContactForm, type LeadState } from "./ContactForm";
 
 const SOCIALS = [
@@ -90,7 +91,7 @@ export function Footer({ action }: Props) {
     <motion.footer
       ref={container}
       id="contact"
-      className="relative text-white"
+      className="relative text-white overflow-hidden"
       style={{
         backgroundColor: "#0C0B0A",
       }}
@@ -142,8 +143,8 @@ export function Footer({ action }: Props) {
                 Contact
               </p>
               <div className="flex items-center gap-4 sm:gap-6">
-                <div className="h-14 w-14 sm:h-20 sm:w-20 rounded-full overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center text-white/80 text-xs sm:text-sm">
-                  TO
+                <div className="h-14 w-14 sm:h-20 sm:w-20 rounded-full overflow-hidden bg-white/10 border border-white/10 flex items-center justify-center">
+                  <Image src="/icon" width={56} height={56} alt="Temitope Ogunrekun" className="w-full h-full object-cover" />
                 </div>
                 <h2 className="font-(--font-syne) text-[clamp(2.8rem,8vw,6rem)] leading-none">
                   Open to

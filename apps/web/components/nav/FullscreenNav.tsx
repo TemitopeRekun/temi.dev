@@ -99,12 +99,12 @@ export function FullscreenNav() {
           >
             <motion.span
               animate={isOpen ? { rotate: 45, y: 5 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1] }}
               className="w-[22px] h-[1.5px] md:w-[28px] md:h-[2px] bg-(--bg) block"
             />
             <motion.span
               animate={isOpen ? { rotate: -45, y: -4 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1] }}
               className="w-[22px] h-[1.5px] md:w-[28px] md:h-[2px] bg-(--bg) block"
             />
           </motion.button>
