@@ -60,3 +60,9 @@ model Lead {
   status    String   @default("new")
   createdAt DateTime @default(now())
 }
+
+model Setting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

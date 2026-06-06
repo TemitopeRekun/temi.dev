@@ -16,7 +16,6 @@ type BlogSummary = {
   excerpt?: string | null;
   tags: string[];
   publishedAt?: string | null;
-  viewCount: number;
   coverImage?: string | null;
 };
 

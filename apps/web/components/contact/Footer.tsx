@@ -170,6 +170,7 @@ export function Footer({ action }: Props) {
           </div>
 
           <motion.svg
+            aria-hidden="true"
             style={{ rotate }}
             width="14"
             height="14"

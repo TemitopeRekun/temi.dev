@@ -23,8 +23,9 @@ export function ContactForm({ action }: Props) {
       <form action={formAction} className="space-y-4">
         <StaggerReveal>
           <div>
-            <label className="mb-1 block text-sm text-(--muted)">Name</label>
+            <label htmlFor="contact-name" className="mb-1 block text-sm text-(--muted)">Name</label>
             <input
+              id="contact-name"
               name="name"
               type="text"
               required
@@ -33,8 +34,9 @@ export function ContactForm({ action }: Props) {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm text-(--muted)">Email</label>
+            <label htmlFor="contact-email" className="mb-1 block text-sm text-(--muted)">Email</label>
             <input
+              id="contact-email"
               name="email"
               type="email"
               required
@@ -43,8 +45,9 @@ export function ContactForm({ action }: Props) {
             />
           </div>
           <div>
-            <label className="mb-1 block text-sm text-(--muted)">Message</label>
+            <label htmlFor="contact-message" className="mb-1 block text-sm text-(--muted)">Message</label>
             <textarea
+              id="contact-message"
               name="message"
               required
               rows={5}
@@ -69,6 +72,8 @@ export function ContactForm({ action }: Props) {
       </form>
 
       <div
+        role="status"
+        aria-live="polite"
         data-visible={Boolean(state)}
         className={[
           "mt-4 rounded-xl border border-(--border,rgba(0,0,0,0.08)) p-3 text-sm transition-all",

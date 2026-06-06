@@ -90,6 +90,8 @@ export function FullscreenNav() {
         {(isOpen || !atTop || isMobile) && (
           <motion.button
             aria-label={isOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isOpen}
+            aria-controls="fullscreen-nav"
             onClick={() => setIsOpen((v) => !v)}
             initial={{ opacity: 0, y: -8, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -115,6 +117,10 @@ export function FullscreenNav() {
       <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
+            id="fullscreen-nav"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
             variants={menuSlide}
             initial="initial"
             animate="enter"
