@@ -87,6 +87,7 @@ export function BlogList({ posts }: Props) {
             <Link
               key={p.slug}
               href={`/blog/${p.slug}`}
+              prefetch={true}
               className="group block h-full"
             >
               <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-(--border)/40 bg-(--surface) transition-all duration-300 hover:-translate-y-1 hover:border-(--accent)/50 hover:shadow-lg">

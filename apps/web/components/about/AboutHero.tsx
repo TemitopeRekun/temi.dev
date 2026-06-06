@@ -97,14 +97,14 @@ export function AboutHero({ hideLink = false }: { hideLink?: boolean }) {
               <TextReveal text="Who I Am" type="chars" />
             </div>
             <div className="relative mt-6">
-              <h1 className="font-(--font-syne) text-[clamp(3rem,8vw,6rem)] leading-[0.9] tracking-[-0.02em] text-(--text)/10">
+              <h1 className="font-(--font-syne) text-[clamp(3rem,8vw,6rem)] leading-[0.82] tracking-[-0.02em] text-(--text)/10">
                 Temitope
                 <br />
                 Ogunrekun
               </h1>
               <h1
                 ref={clipRef}
-                className="pointer-events-none absolute inset-0 font-(--font-syne) text-[clamp(3rem,8vw,6rem)] leading-[0.9] tracking-[-0.02em] text-(--text)"
+                className="pointer-events-none absolute inset-0 font-(--font-syne) text-[clamp(3rem,8vw,6rem)] leading-[0.82] tracking-[-0.02em] text-(--text)"
                 aria-hidden="true"
               >
                 Temitope
@@ -116,21 +116,21 @@ export function AboutHero({ hideLink = false }: { hideLink?: boolean }) {
 
           <div ref={contentRef} className="space-y-8 relative">
             <h2 className="text-3xl sm:text-4xl font-light leading-tight">
-              A{" "}
+              I grew up in Lagos, picking up{" "}
               <span className="font-serif italic text-(--accent)">
-                full-stack engineer
+                programming
               </span>{" "}
-              from Lagos. Shipping products across the UK, Spain, and beyond.
+              the way most people here do — piecing it together from whatever was available online.
             </h2>
             <div className="text-lg text-(--muted) leading-relaxed">
               <TextReveal
-                text="I've shipped products at companies in the UK and Spain — from a booking platform I built solo, to a fiscal-compliance invoicing platform running inside a TypeScript monorepo. Next.js on the front, NestJS on the back, PostgreSQL underneath."
+                text="My first real job was the sole developer at a cleaning agency in Bedford, UK. I built their booking platform from scratch — architecture decisions, production incidents, all of it. It eventually cut 40% of their manual scheduling work. That's where I learned what it actually means to own a product end to end."
                 delay={0.2}
               />
             </div>
             <div className="text-lg text-(--muted) leading-relaxed">
               <TextReveal
-                text="Currently part of the engineering team at ADP Digitek, and open to what's next."
+                text="From there, Spain — a GDPR project for a European grant consultancy, then a direct referral to ADP Digitek, where I'm now part of the team on Multifactu, fiscal-compliance invoicing software for Spanish SMEs. When your software processes legally binding documents for real businesses, you stop treating 'it works' as the finish line."
                 delay={0.4}
               />
             </div>

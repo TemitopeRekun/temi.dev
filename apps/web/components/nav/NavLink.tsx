@@ -34,6 +34,7 @@ export function NavLink({ data, isActive, setSelectedIndicator }: Props) {
       />
       <Link
         href={href as Route}
+        prefetch={true}
         className="text-[clamp(1rem,4vw,2.5rem)] font-light text-(--text) hover:text-(--accent) transition-colors duration-300"
       >
         {title}

@@ -6,7 +6,7 @@ import { TextReveal } from "../common/TextReveal";
 
 const NUMERIC_STATS = [
   { value: 5, suffix: "+", label: "Years Building", icon: Briefcase },
-  { value: 300, suffix: "+", label: "Users on First Product", icon: Code2 },
+  { value: 40, suffix: "%", label: "Scheduling Work Eliminated", icon: Code2 },
 ] as const;
 
 export function HomeStatsRow() {

@@ -1,63 +1,13 @@
 "use client";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Route } from "next";
 import { useQuery } from "@tanstack/react-query";
 import { Container, RevealOnScroll, Section, StaggerReveal } from "@temi/ui";
-import { type Project, type ProjectCategory } from "../../lib/projects";
+import { type Project } from "../../lib/projects";
 import { gsap, registerGSAP } from "../../lib/gsap";
 import { TextReveal } from "../common/TextReveal";
-
-type Filter = "All" | ProjectCategory;
-const FILTERS: Filter[] = ["All", "Frontend", "Backend", "AI", "Mobile"];
-
-function useSlidingIndicator(
-  containerRef: React.RefObject<HTMLDivElement | null>,
-  activeBtnRef: React.RefObject<HTMLButtonElement | null>,
-) {
-  const xTo = useRef<((v: number) => void) | null>(null);
-  const wTo = useRef<((v: number) => void) | null>(null);
-  const indicatorRef = useRef<HTMLSpanElement | null>(null);
-
-  const setIndicatorRef = useCallback((el: HTMLSpanElement | null) => {
-    indicatorRef.current = el;
-  }, []);
-
-  const update = useCallback(() => {
-    const container = containerRef.current;
-    const btn = activeBtnRef.current;
-    const indicator = indicatorRef.current;
-    if (!container || !btn || !indicator) return;
-    const cRect = container.getBoundingClientRect();
-    const bRect = btn.getBoundingClientRect();
-    const left = bRect.left - cRect.left;
-    const width = bRect.width;
-    if (!xTo.current || !wTo.current) {
-      xTo.current = gsap.quickTo(indicator, "x", {
-        duration: 0.4,
-        ease: "power3.out",
-      });
-      wTo.current = gsap.quickTo(indicator, "width", {
-        duration: 0.4,
-        ease: "power3.out",
-      });
-    }
-    xTo.current?.(left);
-    wTo.current?.(width);
-  }, [activeBtnRef, containerRef]);
-
-  useEffect(() => {
-    const onResize = () => update();
-    window.addEventListener("resize", onResize);
-    update();
-    return () => {
-      window.removeEventListener("resize", onResize);
-    };
-  }, [update]);
-
-  return { setIndicatorRef, update };
-}
 
 function ProjectCard({ project }: { project: Project }) {
   const imgRef = useRef<HTMLDivElement | null>(null);
@@ -183,36 +133,22 @@ function ProjectCard({ project }: { project: Project }) {
   );
 }
 
-export function ProjectsSection() {
-  const [active, setActive] = useState<Filter>("All");
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const activeBtnRef = useRef<HTMLButtonElement | null>(null);
-  const { setIndicatorRef, update } = useSlidingIndicator(
-    containerRef,
-    activeBtnRef,
-  );
-
+export function ProjectsSection({ initialProjects }: { initialProjects?: Project[] }) {
   const { data: dbProjects = [] } = useQuery({
     queryKey: ["public-projects"],
-    staleTime: 30_000,
+    staleTime: 60_000,
     retry: 1,
+    initialData: initialProjects,
     queryFn: async () => {
       const baseUrl =
         process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
-      try {
-        const res = await fetch(`${baseUrl}/api/projects`, {
-          cache: "no-store",
-        });
-        if (!res.ok) return [];
-        return await res.json();
-      } catch (err) {
-        console.error("Failed to fetch projects:", err);
-        return [];
-      }
+      const res = await fetch(`${baseUrl}/api/projects`);
+      if (!res.ok) return [];
+      return await res.json();
     },
   });
 
-  const displayProjects = useMemo(() => {
+  const projects: Project[] = useMemo(() => {
     return dbProjects.map((p: any) => ({
       id: p.id,
       slug: p.slug || p.id,
@@ -226,22 +162,15 @@ export function ProjectsSection() {
       repoUrl: p.repoUrl || "",
       featured: p.featured,
       order: p.order,
-    }));
+    })).sort((a: any, b: any) => a.order - b.order);
   }, [dbProjects]);
-
-  const filtered: Project[] = useMemo(() => {
-    if (active === "All") return displayProjects;
-    return displayProjects.filter((p: Project) => p.category === active);
-  }, [active, displayProjects]);
 
   useEffect(() => {
     void registerGSAP();
-    update();
-  }, [active, update]);
+  }, []);
 
   return (
     <Section id="work" className="relative bg-(--bg) py-24 lg:py-32">
-      {/* Distinct background for projects section */}
       <div className="absolute inset-0 z-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-size-[16px_16px] opacity-[0.05] dark:bg-[radial-gradient(#ffffff_1px,transparent_1px)] dark:opacity-[0.03]" />
       <Container className="relative z-10">
         <RevealOnScroll>
@@ -263,41 +192,8 @@ export function ProjectsSection() {
           </div>
         </RevealOnScroll>
 
-        <div className="mb-12">
-          <div
-            ref={containerRef}
-            className="relative inline-flex rounded-full border border-(--border,rgba(0,0,0,0.08)) bg-(--surface) p-1"
-          >
-            <span
-              ref={setIndicatorRef}
-              className="pointer-events-none absolute inset-y-1 left-0 z-0 rounded-full bg-(--bg)"
-              style={{ width: 0, transform: "translateX(0px)" }}
-            />
-            {FILTERS.map((f) => {
-              const isActive = active === f;
-              const setRef = (el: HTMLButtonElement | null) => {
-                if (isActive) activeBtnRef.current = el;
-              };
-              return (
-                <button
-                  key={f}
-                  ref={setRef}
-                  type="button"
-                  onClick={() => setActive(f)}
-                  className={[
-                    "relative z-10 rounded-full px-3.5 py-1.5 text-sm transition-colors",
-                    isActive ? "text-(--text)" : "text-(--muted)",
-                  ].join(" ")}
-                >
-                  {f}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
         <StaggerReveal className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {filtered.map((p) => (
+          {projects.map((p: Project) => (
             <ProjectCard key={p.slug} project={p} />
           ))}
         </StaggerReveal>

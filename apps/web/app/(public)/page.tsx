@@ -8,6 +8,8 @@ import { Testimonials } from "../../components/home/Testimonials";
 import { HomeBlog } from "../../components/home/HomeBlog";
 import { GlobalBackground } from "../../components/common/GlobalBackground";
 import { buildMetadata } from "../../lib/metadata";
+import { getPosts } from "../../lib/blog";
+import { getProjects } from "../../lib/projects";
 
 export const metadata = buildMetadata({
   title: "Temitope Ogunrekun — Full-Stack Engineer",
@@ -18,7 +20,9 @@ export const metadata = buildMetadata({
   type: "website",
 });
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [posts, projects] = await Promise.all([getPosts(), getProjects()]);
+
   return (
     <main>
       <script
@@ -60,9 +64,9 @@ export default function HomePage() {
       <HomeStatsRow />
       <AboutHero />
       <HomeStackIntro />
-      <ProjectsSection />
+      <ProjectsSection initialProjects={projects} />
       <Testimonials />
-      <HomeBlog />
+      <HomeBlog initialPosts={posts} />
     </main>
   );
 }

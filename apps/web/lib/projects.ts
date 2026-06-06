@@ -25,8 +25,7 @@ export async function getProjects(): Promise<Project[]> {
     if (!res.ok) return [];
     const data = await res.json();
     return data.map(mapProject);
-  } catch (error) {
-    console.error("Failed to fetch projects:", error);
+  } catch {
     return [];
   }
 }
@@ -39,8 +38,7 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
     if (!res.ok) return null;
     const data = await res.json();
     return mapProject(data);
-  } catch (error) {
-    console.error(`Failed to fetch project ${slug}:`, error);
+  } catch {
     return null;
   }
 }

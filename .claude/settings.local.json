@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(grep -E \"\\\\.\\(tsx|ts|jsx|js\\)$\")"
+      "Bash(grep -E \"\\\\.\\(tsx|ts|jsx|js\\)$\")",
+      "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\Projects\\\\temi.dev\" -Force)",
+      "Bash(Select-Object Name, FullName)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Projects\\\\temi.dev\\\\apps\\\\web\\\\app\" -Recurse | Select-Object FullName | ForEach-Object { $_.FullName.Replace\\(\"C:\\\\Users\\\\Projects\\\\temi.dev\\\\apps\\\\web\\\\app\\\\\", \"\"\\) } | Sort-Object)",
+      "PowerShell(Get-ChildItem -Path \"C:\\\\Users\\\\Projects\\\\temi.dev\\\\apps\\\\api\\\\src\" -Recurse -Directory | Select-Object FullName | ForEach-Object { $_.FullName.Replace\\(\"C:\\\\Users\\\\Projects\\\\temi.dev\\\\apps\\\\api\\\\src\\\\\", \"\"\\) } | Sort-Object | Select-Object -First 40)",
+      "Bash(pnpm *)",
+      "Bash(Remove-Item *)",
+      "Read(//mnt/c/Users/Projects/**)",
+      "Bash(rm apps/api/prisma/blog_content.txt apps/api/prisma/blog_html.txt apps/api/prisma/blog_md.txt apps/api/prisma/check_blog.sql apps/api/prisma/check_full.sql apps/api/prisma/cleanup.sql apps/api/prisma/convert_blog_to_md.sql apps/api/prisma/count.sql apps/api/prisma/current_content.txt apps/api/prisma/get_blog_full.sql apps/api/prisma/get_current.sql apps/api/prisma/insert-projects.sql apps/api/prisma/seed-projects.ts apps/api/prisma/update-projects-v2.sql apps/api/prisma/update-projects.sql apps/api/prisma/v2_verify.sql apps/api/prisma/verify.sql apps/api/prisma/verify2.sql)"
     ]
   }
 }

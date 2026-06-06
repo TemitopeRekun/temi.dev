@@ -42,6 +42,7 @@ function NavLinkItem<T extends string>({ href, label }: { href: Route<T>; label:
     <MagneticWrapper>
       <Link
         href={href}
+        prefetch={true}
         onMouseEnter={onEnter}
         onMouseLeave={onLeave}
         className="relative inline-flex items-center justify-center px-4 py-2 rounded-full overflow-hidden text-sm text-(--text)/70 transition-colors hover:text-[#0C0B0A] group"
@@ -96,6 +97,7 @@ export function Navbar() {
           {/* Logo */}
           <Link
             href="/"
+            prefetch={true}
             className="font-(--font-syne) text-lg text-(--text) z-201"
           >
             TO

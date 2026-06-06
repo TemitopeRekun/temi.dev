@@ -499,19 +499,19 @@ export default function BlogClient({ token }: { token: string }) {
                     placeholder="Write your story in Markdown..."
                   />
                 ) : (
-                  <div className="min-h-[300px] w-full rounded-md border border-(--border)/20 bg-(--bg) px-4 py-4 overflow-y-auto">
-                    <div className="prose prose-invert prose-sm max-w-none prose-pre:bg-(--surface2) prose-pre:border prose-pre:border-(--border)/30">
-                      {formData.content ? (
+                  <div className="min-h-[300px] w-full rounded-md border border-(--border)/20 bg-(--bg) px-6 py-6 overflow-y-auto">
+                    {formData.content ? (
+                      <div className="case-study">
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
                           rehypePlugins={[rehypeHighlight]}
                         >
                           {formData.content}
                         </ReactMarkdown>
-                      ) : (
-                        <p className="text-(--muted) italic">Nothing to preview yet...</p>
-                      )}
-                    </div>
+                      </div>
+                    ) : (
+                      <p className="text-(--muted) italic">Nothing to preview yet...</p>
+                    )}
                   </div>
                 )}
               </div>

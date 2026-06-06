@@ -226,6 +226,231 @@ pre {
   );
 }
 
+/* ── Case Study Typography ─────────────────────── */
+
+.case-study {
+  font-size: 1.0625rem;
+  line-height: 1.85;
+  color: var(--muted);
+}
+
+.case-study-h2 {
+  font-family: var(--font-fraunces), var(--font-syne), system-ui, serif;
+  font-size: 1.625rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-top: 2.5em;
+  margin-bottom: 0.6em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border);
+}
+
+.case-study-h3 {
+  font-family: var(--font-fraunces), var(--font-syne), system-ui, serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+.case-study-p {
+  margin-bottom: 1em;
+}
+
+.case-study-p:first-of-type {
+  font-size: 1.125rem;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.case-study-strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.case-study-ul,
+.case-study-ol {
+  margin-top: 0.75em;
+  margin-bottom: 1.25em;
+  padding-left: 1.5em;
+}
+
+.case-study-li {
+  margin-bottom: 0.4em;
+  padding-left: 0.25em;
+}
+
+.case-study-li::marker {
+  color: var(--accent);
+}
+
+.case-study-inline-code {
+  font-family: var(--font-dm-mono), ui-monospace, monospace;
+  font-size: 0.85em;
+  padding: 0.15em 0.4em;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--accent);
+}
+
+.case-study-pre {
+  margin-top: 1em;
+  margin-bottom: 1.5em;
+  padding: 1.25em 1.5em;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.case-study-pre code {
+  font-family: var(--font-dm-mono), ui-monospace, monospace;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--muted);
+}
+
+.case-study-hr {
+  margin-top: 2.5em;
+  margin-bottom: 2.5em;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Descendant selectors (for HTML content like blog) ── */
+
+.case-study h2 {
+  font-family: var(--font-fraunces), var(--font-syne), system-ui, serif;
+  font-size: 1.625rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-top: 2.5em;
+  margin-bottom: 0.6em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border);
+}
+
+.case-study h3 {
+  font-family: var(--font-fraunces), var(--font-syne), system-ui, serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+}
+
+.case-study p {
+  margin-bottom: 1em;
+}
+
+.case-study > p:first-of-type {
+  font-size: 1.125rem;
+  color: var(--text);
+  line-height: 1.7;
+}
+
+.case-study strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.case-study ul,
+.case-study ol {
+  margin-top: 0.75em;
+  margin-bottom: 1.25em;
+  padding-left: 1.5em;
+}
+
+.case-study li {
+  margin-bottom: 0.4em;
+  padding-left: 0.25em;
+}
+
+.case-study li::marker {
+  color: var(--accent);
+}
+
+.case-study code {
+  font-family: var(--font-dm-mono), ui-monospace, monospace;
+  font-size: 0.85em;
+  padding: 0.15em 0.4em;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--accent);
+}
+
+.case-study pre {
+  margin-top: 1em;
+  margin-bottom: 1.5em;
+  padding: 1.25em 1.5em;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+
+.case-study pre code {
+  font-family: var(--font-dm-mono), ui-monospace, monospace;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--muted);
+}
+
+.case-study hr {
+  margin-top: 2.5em;
+  margin-bottom: 2.5em;
+  border: none;
+  border-top: 1px solid var(--border);
+}
+
+.case-study blockquote {
+  margin: 1.5em 0;
+  padding: 0.75em 1.25em;
+  border-left: 3px solid var(--accent);
+  background: var(--surface2);
+  border-radius: 0 8px 8px 0;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.case-study img {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 640px) {
+  .case-study {
+    font-size: 1rem;
+  }
+  .case-study h2,
+  .case-study-h2 {
+    font-size: 1.35rem;
+  }
+  .case-study h3,
+  .case-study-h3 {
+    font-size: 1.1rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

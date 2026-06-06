@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
@@ -6,10 +5,12 @@ import { Container, RevealOnScroll, Section } from "@temi/ui";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { AnimatedText } from "../../../../components/common/AnimatedText";
 import { getPosts, getPostBySlug } from "../../../../lib/blog";
 import { buildMetadata } from "../../../../lib/metadata";
 import { AskArticle } from "../../../../components/blog/AskArticle";
+import { ShareArticle } from "../../../../components/blog/ShareArticle";
 
 type Params = { slug: string };
 
@@ -42,8 +43,49 @@ export default async function BlogDetailPage({
   const { slug } = await params;
   const post = await getPostBySlug(slug);
 
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://temi.dev";
+
+  const blogPostingSchema = post
+    ? {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        headline: post.title,
+        description: post.excerpt,
+        image: post.image,
+        url: `${base}/blog/${slug}`,
+        datePublished: post.publishedAt ?? undefined,
+        keywords: post.tag,
+        timeRequired: `PT${post.readTime}M`,
+        mainEntityOfPage: { "@type": "WebPage", "@id": `${base}/blog/${slug}` },
+        author: { "@type": "Person", name: "Temitope Ogunrekun", url: base },
+        publisher: { "@type": "Person", name: "Temitope Ogunrekun", url: base },
+      }
+    : null;
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: base },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${base}/blog` },
+      ...(post ? [{ "@type": "ListItem", position: 3, name: post.title, item: `${base}/blog/${slug}` }] : []),
+    ],
+  };
+
   return (
     <main>
+      {blogPostingSchema && (
+        <script
+          type="application/ld+json"
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingSchema) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
       <Section>
         <Container>
           {!post ? (
@@ -88,22 +130,26 @@ export default async function BlogDetailPage({
                 />
               </div>
 
-              <div
-                className="prose prose-invert prose-lg max-w-none text-(--text)/90 leading-relaxed prose-p:my-6 prose-li:my-3 prose-ul:my-6 prose-ol:my-6 prose-blockquote:my-6 prose-pre:my-6 prose-pre:rounded-xl prose-pre:border prose-pre:border-(--border)/30 prose-pre:bg-(--surface2) prose-pre:p-5 prose-code:rounded prose-code:bg-(--surface2)/80 prose-code:px-1.5 prose-code:py-0.5 prose-code:font-mono"
-              >
-                {post.content ? (
-                  <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
+              {post.content ? (
+                <div className="case-study">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[
+                      [rehypeSanitize, { ...defaultSchema, attributes: { ...defaultSchema.attributes, code: ["className"], span: ["className"] } }],
+                      rehypeHighlight,
+                    ]}
+                  >
                     {post.content}
                   </ReactMarkdown>
-                ) : (
-                  <div className="space-y-4">
-                    <p className="lead text-xl text-(--text)">{post.excerpt}</p>
-                    <p className="text-sm text-(--muted)">
-                      Full content is not available for this post.
-                    </p>
-                  </div>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div className="case-study space-y-4">
+                  <p className="text-xl text-(--text)">{post.excerpt}</p>
+                  <p className="text-sm text-(--muted)">
+                    Full content is not available for this post.
+                  </p>
+                </div>
+              )}
 
 
               {post.id && (
@@ -111,6 +157,10 @@ export default async function BlogDetailPage({
                   <AskArticle articleId={post.id} articleTitle={post.title} />
                 </div>
               )}
+
+              <div className="mt-16 border-t border-(--border)/10 pt-8">
+                <ShareArticle slug={slug} title={post.title} />
+              </div>
 
               <div className="mt-16 border-t border-(--border)/10 pt-8">
                 <Link

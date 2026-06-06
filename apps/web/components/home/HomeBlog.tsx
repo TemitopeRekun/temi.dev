@@ -8,34 +8,23 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { TextReveal } from "../common/TextReveal";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
-
-type BlogPost = {
-  slug: string;
-  title: string;
-  tag: string;
-  excerpt: string;
-  image: string;
-  readTime: number;
-};
+import type { BlogPost } from "../../lib/blog";
 
 function apiBaseUrl(): string {
   const env = process.env.NEXT_PUBLIC_API_BASE_URL;
-  return (
-    env && env.trim().length > 0 ? env : "http://localhost:4000"
-  ) as string;
+  return (env && env.trim().length > 0 ? env : "http://localhost:4000") as string;
 }
 
-export function HomeBlog() {
+export function HomeBlog({ initialPosts }: { initialPosts?: BlogPost[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { data: posts = [] } = useQuery<BlogPost[]>({
     queryKey: ["public-blog-home"],
-    staleTime: 30_000,
+    staleTime: 60_000,
     retry: 1,
+    initialData: initialPosts,
     queryFn: async () => {
-      const res = await fetch(`${apiBaseUrl()}/api/blog?take=6`, {
-        cache: "no-store",
-      });
+      const res = await fetch(`${apiBaseUrl()}/api/blog?take=6`);
       if (!res.ok) return [];
       const data = await res.json();
       if (!data.items || !Array.isArray(data.items)) return [];

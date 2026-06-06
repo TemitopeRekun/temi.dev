@@ -9,15 +9,28 @@ export function HomeStackIntro() {
     <section className="relative z-10 py-16 sm:py-24">
       <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
         <RevealOnScroll>
-          <p className="text-xl sm:text-2xl font-light leading-relaxed text-(--muted) max-w-3xl">
-            People ask what I use to build things — and more recently, how I
-            actually use AI while building. I used to just list the tools. But a
-            list doesn{`'`}t tell you why I reach for NestJS over Express, or why
-            Zod became non-negotiable after a bad API response nearly broke a
-            payments flow mid-trip. So instead I wrote about each one — where it
-            showed up, what I learned, and how AI fits into the day-to-day
-            honestly.
-          </p>
+          <blockquote className="border-l-[3px] border-(--accent) pl-6 sm:pl-8 py-1">
+            <p className="text-xl sm:text-2xl font-light leading-relaxed text-(--muted) italic max-w-3xl">
+              Every engineering conversation eventually gets to: what&apos;s
+              your stack? I used to just answer with a list. But a list
+              doesn&apos;t tell you why I reach for{" "}
+              <span className="not-italic font-medium text-(--accent)">
+                NestJS over Express
+              </span>
+              , or why{" "}
+              <span className="not-italic font-medium text-(--accent)">
+                Zod
+              </span>{" "}
+              became non-negotiable after a bad API response nearly broke a{" "}
+              <span className="not-italic font-medium text-(--accent)">
+                payments flow mid-trip
+              </span>
+              . And lately the question&apos;s shifted too — people want to know
+              about the AI side: not just which tools, but how to actually split
+              the reasoning from the execution without torching your token budget
+              on the wrong model. So I wrote about all of it, honestly.
+            </p>
+          </blockquote>
         </RevealOnScroll>
 
         <RevealOnScroll delay={0.15}>

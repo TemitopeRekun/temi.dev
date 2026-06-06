@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 const SITE_NAME = "Temitope Ogunrekun";
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://temi.dev";
-const DEFAULT_OG = "https://picsum.photos/1200/630?grayscale&blur=0&seed=temi";
+const DEFAULT_OG = `${process.env.NEXT_PUBLIC_SITE_URL || "https://temi.dev"}/opengraph-image`;
 
 type MetaInput = {
   title: string;

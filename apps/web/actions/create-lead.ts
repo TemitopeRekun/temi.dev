@@ -35,8 +35,7 @@ export async function createLeadAction(
     }
 
     return { ok: true };
-  } catch (error) {
-    console.error("Lead submission error:", error);
+  } catch {
     return { ok: false, error: "Network error. Please try again later." };
   }
 }

@@ -41,7 +41,7 @@ export function FeaturedPost({ post }: Props) {
                 {post.excerpt}
               </p>
               <div>
-                <Link href={`/blog/${post.slug}`}>
+                <Link href={`/blog/${post.slug}`} prefetch={true}>
                   <Button variant="outline" className="mt-2">
                     Read Article
                   </Button>

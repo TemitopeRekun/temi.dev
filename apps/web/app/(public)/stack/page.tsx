@@ -148,12 +148,20 @@ const STACK: StackSection[] = [
     category: "AI in my workflow",
     items: [
       {
-        name: "GitHub Copilot",
-        body: "Copilot handles the repetitive layer of writing code — boilerplate, test stubs, the tenth variation of a similar function. At its best it finishes a line I was about to write anyway, which means I stay in flow instead of breaking off to type out something mechanical. I don't treat its suggestions as correct by default, but I've learned to read them quickly: useful 60% of the time, wrong in an interesting way 30% of the time, completely off 10%. The 60% is worth having.",
+        name: "Claude Code (CLI)",
+        body: "My primary thinking partner, used through Claude Code — Anthropic's CLI. This is the reasoning layer. Opus is where I go for architecture decisions, designing a new system from scratch, reviewing an implementation before it ships, debugging something that spans multiple files and layers, planning a migration strategy, or working through a tradeoff I haven't committed to yet. If the task requires holding a lot of context and reasoning carefully about correctness — that's the Opus tier. Sonnet handles the step below: refactoring decisions, documentation, explaining code I've inherited, lighter planning. The discipline is knowing which model the task actually earns. Claude reasons. Everything else executes.",
       },
       {
-        name: "Claude",
-        body: "I use Claude for the thinking-out-loud parts of development — explaining an unfamiliar codebase, talking through an architectural decision before committing to it, understanding why a TypeScript error is happening three layers deep. It's like having a well-read pair programming partner available at 2am when you're stuck on something. What I've found is that AI is genuinely good at breadth: it can explain an API I've never touched in minutes. But it still needs someone who understands the full system to decide what's actually correct for the situation. That's the part I focus on.",
+        name: "DeepSeek",
+        body: "DeepSeek changed my token cost calculus. V4 Flash is cheap enough that I stopped being conservative on tasks that don't need frontier reasoning. I reach for it when the design is already done and I'm just executing: writing CRUD endpoints from a spec, generating test fixtures, wiring up a service class Claude already designed, implementing repetitive variations of a known pattern, transforming data structures. The quality holds for that tier of work. When the task sits between pure execution and actual reasoning — a non-trivial refactor, a moderately complex feature where the spec exists but the edge cases aren't obvious — V4 Pro is the step up. It's still a fraction of frontier model cost, but it handles more ambiguity without needing hand-holding. My mental model: Claude Opus for decisions, DeepSeek V4 Pro for the in-between, V4 Flash for pure execution. It's not a compromise on output quality — it's not using a sledgehammer where a regular hammer is right. The cost savings mean I can afford to be more exploratory at the planning stage, because execution is cheap.",
+      },
+      {
+        name: "OpenCode + DeepSeek",
+        body: "OpenCode is where I run DeepSeek inside the editor. It handles the implementation layer — taking a plan that's already been reasoned through and turning it into working code. Where I reach for this: git commits, PR descriptions, routine refactors, renaming across a codebase, generating migration files from a known schema change, writing out GitHub Actions steps. Work that doesn't need frontier reasoning but needs more context and continuity than plain autocomplete. The combination of Claude Code for decisions and OpenCode + DeepSeek for execution is the closest I've gotten to a workflow that doesn't fight itself.",
+      },
+      {
+        name: "VS Code + GitHub Copilot",
+        body: "The ambient layer — in-line completions, quick debugging loops, staying in flow. The value isn't reasoning, it's zero friction. Where it earns its keep: mid-function completions where the next line is obvious, following an error through code without leaving the editor, writing the tenth variation of a similar handler, and staying inside a coding session without breaking concentration to open a chat window. Useful 60% of the time, wrong in an interesting way 30%, completely off 10% — the 60% is worth having. For anything that needs actual thinking, I switch to Claude Code. For everything that should just be fast, Copilot.",
       },
     ],
   },
@@ -171,9 +179,8 @@ export default function StackPage() {
               className="mb-6 text-3xl font-semibold text-(--text)"
             />
             <p className="mb-16 max-w-2xl text-lg text-(--muted)">
-              These are the tools I actually use to build things. Not a
-              wishlist — everything here shows up in real codebases I've
-              shipped.
+              Each tool here has a story — a real project where it showed up,
+              something it cost me to figure out, and a reason it stayed.
             </p>
           </RevealOnScroll>
 

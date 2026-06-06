@@ -4,7 +4,7 @@ import { ThemeProvider } from "../providers/ThemeProvider";
 import { LenisProvider } from "../providers/LenisProvider";
 import { PreloaderWrapper } from "../providers/PreloaderWrapper";
 import { QueryProvider } from "../providers/QueryProvider";
-import { DM_Mono, Syne } from "next/font/google";
+import { DM_Mono, Fraunces, Syne } from "next/font/google";
 
 const syne = Syne({
   subsets: ["latin"],
@@ -20,11 +20,18 @@ const dmMono = DM_Mono({
   variable: "--font-dm-mono",
 });
 
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-fraunces",
+});
+
 export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${syne.variable} ${dmMono.variable} bg-(--bg) text-(--text) antialiased`}
+        className={`${syne.variable} ${dmMono.variable} ${fraunces.variable} bg-(--bg) text-(--text) antialiased`}
       >
         <ThemeProvider>
           <LenisProvider>

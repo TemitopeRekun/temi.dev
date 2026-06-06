@@ -35,8 +35,7 @@ export async function getPosts(): Promise<BlogPost[]> {
       readTime: Math.ceil((item.content?.length || 1000) / 1000),
       publishedAt: item.publishedAt,
     }));
-  } catch (error) {
-    console.error("Failed to fetch posts:", error);
+  } catch {
     return [];
   }
 }

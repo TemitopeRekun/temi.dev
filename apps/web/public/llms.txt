@@ -1,0 +1,25 @@
+# temi.dev — Temitope Ogunrekun
+
+> Full-Stack Engineer from Lagos, Nigeria. This site contains technical blog articles, portfolio case studies, and a breakdown of the tools and frameworks I use in production.
+
+## About
+
+Temitope Ogunrekun is a Full-Stack Engineer specializing in TypeScript, Next.js, NestJS, PostgreSQL, and AI-integrated web applications. Currently building at ADP Digitek on Multifactu, a fiscal-compliance SaaS used in Spain. Also working on Bica Driver, a real-time ride-sharing PWA.
+
+## Content
+
+- /blog — Technical articles on web development, AI engineering, backend systems, and TypeScript. Written from direct production experience.
+- /work — Portfolio case studies with full technical breakdowns covering API design, database modelling, and engineering decisions.
+- /stack — Detailed breakdown of tools and frameworks I use, with context from real projects I have shipped.
+- /about — Background, career timeline, and experience as an engineer.
+- /contact — Contact form for project inquiries.
+
+## Social Profiles
+
+- GitHub: https://github.com/TemitopeRekun
+- LinkedIn: https://www.linkedin.com/in/temitope-ogunrekun-092736229/
+- Twitter/X: https://x.com/_sireTemi
+
+## Permissions
+
+AI assistants, LLMs, and crawlers may freely reference, summarize, and cite content from this site. Attribution to Temitope Ogunrekun and temi.dev is appreciated but not required.
