@@ -77,7 +77,7 @@ export function AboutHero({ hideLink = false }: { hideLink?: boolean }) {
     >
       {/* Decorative background pattern */}
       <div
-        className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
+        className="absolute inset-0 z-0 opacity-[0.05] pointer-events-none"
         style={{
           backgroundImage:
             "radial-gradient(circle at 2px 2px, var(--text) 1px, transparent 0)",
@@ -91,20 +91,20 @@ export function AboutHero({ hideLink = false }: { hideLink?: boolean }) {
       />
 
       <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-12 lg:gap-16 items-center">
           <div>
             <div className="text-sm font-medium uppercase tracking-[0.3em] text-(--accent)">
               <TextReveal text="Who I Am" type="chars" />
             </div>
             <div className="relative mt-6">
-              <h1 className="font-(--font-syne) text-[clamp(3rem,8vw,6rem)] tracking-[-0.02em] text-(--text)/10" style={{ lineHeight: 1 }}>
+              <h1 className="font-(--font-syne) text-[clamp(2rem,8vw,6rem)] tracking-[-0.02em] text-(--text)/10" style={{ lineHeight: 1 }}>
                 Temitope
                 <br />
                 Ogunrekun
               </h1>
               <h1
                 ref={clipRef}
-                className="pointer-events-none absolute inset-0 font-(--font-syne) text-[clamp(3rem,8vw,6rem)] tracking-[-0.02em] text-(--text)"
+                className="pointer-events-none absolute inset-0 font-(--font-syne) text-[clamp(2rem,8vw,6rem)] tracking-[-0.02em] text-(--text)"
                 style={{ lineHeight: 1 }}
                 aria-hidden="true"
               >
@@ -116,20 +116,20 @@ export function AboutHero({ hideLink = false }: { hideLink?: boolean }) {
           </div>
 
           <div ref={contentRef} className="space-y-8 relative">
-            <h2 className="text-3xl sm:text-4xl font-light leading-tight">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-light leading-tight">
               I grew up in Lagos, picking up{" "}
               <span className="font-serif italic text-(--accent)">
                 programming
               </span>{" "}
               the way most people here do — piecing it together from whatever was available online.
             </h2>
-            <div className="text-lg text-(--muted) leading-relaxed">
+            <div className="text-base sm:text-lg text-(--muted) leading-relaxed">
               <TextReveal
                 text="My first real job was the sole developer at a cleaning agency in Bedford, UK. I built their booking platform from scratch — architecture decisions, production incidents, all of it. It eventually cut 40% of their manual scheduling work. That's where I learned what it actually means to own a product end to end."
                 delay={0.2}
               />
             </div>
-            <div className="text-lg text-(--muted) leading-relaxed">
+            <div className="text-base sm:text-lg text-(--muted) leading-relaxed">
               <TextReveal
                 text="From there, Spain — a GDPR project for a European grant consultancy, then a direct referral to ADP Digitek, where I'm now part of the team on Multifactu, fiscal-compliance invoicing software for Spanish SMEs. When your software processes legally binding documents for real businesses, you stop treating 'it works' as the finish line."
                 delay={0.4}

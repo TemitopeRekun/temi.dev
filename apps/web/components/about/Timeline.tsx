@@ -107,7 +107,7 @@ function TimelineItem({
             <span className="text-sm font-medium text-(--accent) uppercase tracking-wider mb-2 block">
               {item.role}
             </span>
-            <h3 className="text-2xl font-semibold text-(--text) mb-4">
+            <h3 className="text-xl sm:text-2xl font-semibold text-(--text) mb-4">
               {item.title}
             </h3>
             <p className="text-(--muted) leading-relaxed mb-6">

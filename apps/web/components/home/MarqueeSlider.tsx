@@ -79,7 +79,7 @@ export function MarqueeSlider({
   }, []);
 
   return (
-    <div className="relative overflow-hidden py-8 sm:py-14 border-y border-(--border)/50 bg-(--surface)/30 backdrop-blur-sm">
+    <div className="relative overflow-hidden py-8 sm:py-14 border-y border-(--border) bg-(--surface-tint)">
       <div
         ref={slider}
         className="relative flex whitespace-nowrap will-change-transform"

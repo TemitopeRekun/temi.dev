@@ -10,7 +10,7 @@ export function HomeStackIntro() {
       <div className="mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8">
         <RevealOnScroll>
           <blockquote className="border-l-[3px] border-(--accent) pl-6 sm:pl-8 py-1">
-            <p className="text-xl sm:text-2xl font-light leading-relaxed text-(--muted) italic max-w-3xl">
+            <p className="text-base sm:text-xl md:text-2xl font-light leading-relaxed text-(--muted) italic max-w-3xl">
               Every engineering conversation eventually gets to: what&apos;s
               your stack? I used to just answer with a list. But a list
               doesn&apos;t tell you why I reach for{" "}

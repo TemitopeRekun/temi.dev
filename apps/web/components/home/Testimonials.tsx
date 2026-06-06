@@ -29,14 +29,14 @@ const TESTIMONIALS = [
 
 export function Testimonials() {
   return (
-    <Section className="bg-(--surface)">
+    <Section className="bg-(--surface-tint)">
       <Container>
         <RevealOnScroll>
           <div className="mb-12 text-center">
             <div className="mb-2 text-sm font-medium uppercase tracking-[0.2em] text-(--accent)">
               <TextReveal text="References" type="chars" />
             </div>
-            <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl text-(--text)">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-(--text)">
               <TextReveal
                 text="What colleagues say"
                 type="chars"
@@ -50,9 +50,9 @@ export function Testimonials() {
           {TESTIMONIALS.map((t) => (
             <div
               key={t.id}
-              className="flex flex-col rounded-2xl border border-(--border)/50 bg-(--bg) p-8 shadow-sm transition-shadow hover:shadow-md"
+              className="flex flex-col rounded-2xl border border-(--border) bg-(--surface) p-8 shadow-sm transition-shadow hover:shadow-md"
             >
-              <blockquote className="mb-6 flex-1 text-lg leading-relaxed text-(--text)">
+              <blockquote className="mb-6 flex-1 text-base sm:text-lg leading-relaxed text-(--text)">
                 "{t.content}"
               </blockquote>
               <div className="flex items-center gap-4">

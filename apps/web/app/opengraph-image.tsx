@@ -96,6 +96,8 @@ export default function OgImage() {
           {/* Name */}
           <div
             style={{
+              display: "flex",
+              flexDirection: "column",
               color: "#f5f5f5",
               fontSize: 88,
               fontWeight: 800,
@@ -103,8 +105,7 @@ export default function OgImage() {
               letterSpacing: "-3px",
             }}
           >
-            Temitope
-            <br />
+            <span>Temitope</span>
             <span style={{ color: "rgba(245,245,245,0.2)" }}>Ogunrekun.</span>
           </div>
 

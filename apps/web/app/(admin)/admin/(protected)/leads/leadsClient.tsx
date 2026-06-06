@@ -63,22 +63,6 @@ export default function LeadsClient({ token }: { token: string }) {
     },
   });
 
-  const [generatedReply, setGeneratedReply] = useState<string>("");
-
-  const replyMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`${apiBaseUrl()}/api/admin/leads/${id}/reply-draft`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error("Failed to generate reply");
-      return res.json() as Promise<{ reply: string }>;
-    },
-    onSuccess: (data) => {
-      setGeneratedReply(data.reply);
-    },
-  });
-
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
       const res = await fetch(`${apiBaseUrl()}/api/admin/leads/${id}`, {
@@ -222,19 +206,6 @@ export default function LeadsClient({ token }: { token: string }) {
                 </div>
               </div>
 
-                {generatedReply && (
-                  <div className="animate-in fade-in slide-in-from-bottom-2">
-                    <label className="text-xs font-medium text-(--accent)">AI Suggested Reply</label>
-                    <div className="mt-2 rounded-lg border border-(--accent)/20 bg-(--accent)/5 p-4 text-sm leading-relaxed text-(--text)">
-                      <textarea 
-                        className="w-full bg-transparent border-none focus:outline-none resize-none h-48"
-                        value={generatedReply}
-                        readOnly
-                      />
-                    </div>
-                  </div>
-                )}
-
               <div className="flex items-end justify-between border-t border-(--border)/10 pt-6">
                 <div className="flex items-center gap-4">
                   <div>
@@ -256,16 +227,6 @@ export default function LeadsClient({ token }: { token: string }) {
                 </div>
 
                 <div className="flex gap-2">
-                  {!generatedReply && (
-                    <Button
-                      magnetic={false}
-                      variant="ghost"
-                      className="text-(--accent) hover:bg-(--accent)/10"
-                      onClick={() => replyMutation.mutate(selectedLead.id)}
-                    >
-                      {replyMutation.isPending ? "Generating..." : "Draft Reply"}
-                    </Button>
-                  )}
                   <Button
                     magnetic={false}
                     variant="ghost"
@@ -282,7 +243,6 @@ export default function LeadsClient({ token }: { token: string }) {
                     magnetic={false}
                     onClick={() => {
                       setSelectedLead(null);
-                      setGeneratedReply("");
                     }}
                   >
                     Done

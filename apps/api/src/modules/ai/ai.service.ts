@@ -2,8 +2,6 @@ import { Injectable, BadRequestException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../../prisma/prisma.service";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { readFile } from "fs/promises";
-import { resolve } from "path";
 
 type TableName = "BlogPost" | "Project";
 
@@ -20,9 +18,9 @@ export class AiService {
   ) {
     this.apiKey = this.config.get<string>("GEMINI_API_KEY") ?? "";
     this.embeddingModel =
-      this.config.get<string>("GEMINI_EMBEDDING_MODEL") ?? "text-embedding-004";
+      this.config.get<string>("GEMINI_EMBEDDING_MODEL") ?? "text-embedding-005";
     this.generationModel =
-      this.config.get<string>("GEMINI_MODEL") ?? "gemini-1.5-flash";
+      this.config.get<string>("GEMINI_MODEL") ?? "gemini-2.5-flash";
     this.genAI = this.apiKey ? new GoogleGenerativeAI(this.apiKey) : null;
   }
 
@@ -32,7 +30,6 @@ export class AiService {
       const model = this.genAI.getGenerativeModel({
         model: this.embeddingModel,
       });
-      const started = Date.now();
       const res = await model.embedContent(text);
       const values = res.embedding?.values ?? [];
       if (!Array.isArray(values) || values.length === 0) return [];
@@ -78,81 +75,6 @@ Question: ${question}
     return this.callGemini(fullPrompt);
   }
 
-  async generateBlogPost(topic: string): Promise<{
-    title: string;
-    slug: string;
-    excerpt: string;
-    content: string;
-    tags: string[];
-    imagePrompt: string;
-  }> {
-    const prompt = `Write a comprehensive technical blog post about "${topic}".
-The post should be engaging, easy to understand for developers, and SEO-friendly.
-Include code snippets where relevant (in markdown).
-Return a valid JSON object with the following fields:
-- title: A catchy title.
-- slug: A URL-friendly kebab-case string based on the title.
-- excerpt: A short summary (1-2 sentences) for SEO.
-- content: The full blog post body in Markdown format.
-- tags: An array of 3-5 relevant tags.
-- imagePrompt: A descriptive prompt for an AI image generator to create a header image for this post.
-
-Do not wrap the JSON in markdown code blocks. Just return the raw JSON.`;
-
-    const raw = await this.callGemini(prompt, {
-      responseMimeType: "application/json",
-      maxOutputTokens: 4096,
-    });
-
-    try {
-      const json = JSON.parse(raw);
-      return {
-        title: json.title || topic,
-        slug: json.slug || topic.toLowerCase().replace(/\s+/g, "-"),
-        excerpt: json.excerpt || "",
-        content: json.content || "",
-        tags: json.tags || [],
-        imagePrompt: json.imagePrompt || `Abstract tech illustration of ${topic}`,
-      };
-    } catch {
-      const extracted = raw.match(/\{[\s\S]*\}/)?.[0] ?? "";
-      if (extracted) {
-        try {
-          const json = JSON.parse(extracted);
-          return {
-            title: json.title || topic,
-            slug: json.slug || topic.toLowerCase().replace(/\s+/g, "-"),
-            excerpt: json.excerpt || "",
-            content: json.content || "",
-            tags: json.tags || [],
-            imagePrompt:
-              json.imagePrompt || `Abstract tech illustration of ${topic}`,
-          };
-        } catch {
-          // fall through to error below
-        }
-      }
-      const sample = raw.slice(0, 200).replace(/\s+/g, " ").trim();
-      throw new BadRequestException(
-        `Failed to parse blog JSON from Gemini. Sample: ${sample}`,
-      );
-    }
-  }
-
-  async generateLeadReply(
-    leadMessage: string,
-    context?: string,
-  ): Promise<string> {
-    const prompt = [
-      "You are Temitope Ogunrekun, a professional software engineer.",
-      "Write a polite, concise, and helpful email reply to this inquiry.",
-      `Inquiry: "${leadMessage}"`,
-      context ? `Context: ${context}` : "",
-      "Tone: Friendly but professional. Invite a call or further discussion if relevant.",
-    ].join("\n\n");
-    return this.callGemini(prompt);
-  }
-
   private async callGemini(
     prompt: string,
     config: { responseMimeType?: string; maxOutputTokens?: number } = {},
@@ -162,7 +84,6 @@ Do not wrap the JSON in markdown code blocks. Just return the raw JSON.`;
       const model = this.genAI.getGenerativeModel({
         model: this.generationModel,
       });
-      const started = Date.now();
       const res = await model.generateContent({
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         generationConfig: {
@@ -183,6 +104,51 @@ Do not wrap the JSON in markdown code blocks. Just return the raw JSON.`;
         "An unknown error occurred while generating the AI response.",
       );
     }
+  }
+
+  async *callGeminiStream(
+    prompt: string,
+  ): AsyncGenerator<string> {
+    if (!this.genAI) throw new BadRequestException("GEMINI_API_KEY missing");
+    try {
+      const model = this.genAI.getGenerativeModel({
+        model: this.generationModel,
+      });
+      const result = await model.generateContentStream({
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+      });
+      for await (const chunk of result.stream) {
+        const text = chunk.text();
+        if (text) yield text;
+      }
+    } catch (error) {
+      console.error("AI Stream Error:", error);
+      if (error instanceof Error) {
+        throw new BadRequestException(error.message);
+      }
+      throw new BadRequestException("Stream error occurred");
+    }
+  }
+
+  async *generateDigitalBrainResponseStream(
+    question: string,
+    context: string,
+  ): AsyncGenerator<string> {
+    const fullPrompt = `You are Temitope's Digital Brain, an AI assistant representing Temitope Ogunrekun (a Senior Full-Stack Engineer).
+Answer the user's question based on the provided context (which includes my blog posts and projects).
+If the context is relevant, use it to provide specific details.
+If the context is empty or irrelevant, use your general knowledge to answer helpfuly, but clarify that this is general advice not specific to my writing.
+Maintain a professional, technical, and encouraging tone.
+Format your response using Markdown.
+
+Context:
+---
+${context}
+---
+
+Question: ${question}
+`;
+    yield* this.callGeminiStream(fullPrompt);
   }
 
   async semanticSearch(

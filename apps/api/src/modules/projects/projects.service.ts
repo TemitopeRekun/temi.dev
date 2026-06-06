@@ -5,6 +5,7 @@ import { ProjectDto } from "./dto/project.dto";
 import { CreateProjectDto } from "./dto/create-project.dto";
 import { UpdateProjectDto } from "./dto/update-project.dto";
 import { AiService } from "../ai/ai.service";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class ProjectsService {
@@ -108,10 +109,10 @@ export class ProjectsService {
     if (this.ai) {
       const emb = await this.ai.generateEmbedding(dto.description);
       if (emb.length > 0) {
-        const vec = `'[${emb.map((v) => (Number.isFinite(v) ? v.toFixed(6) : 0)).join(", ")}]'::vector`;
-        await this.prisma.$executeRawUnsafe(
-          `UPDATE "Project" SET embedding = ${vec} WHERE id = '${created.id}'`,
-        );
+        const vec = `'[${emb.filter((v) => Number.isFinite(v)).map((v) => v.toFixed(6)).join(", ")}]'::vector`;
+        await this.prisma.$executeRaw`
+          UPDATE "Project" SET embedding = ${Prisma.raw(vec)} WHERE id = ${created.id}
+        `;
       }
     }
     return created.id;
@@ -148,10 +149,10 @@ export class ProjectsService {
       const content = dto.description ?? prev?.description ?? "";
       const emb = await this.ai.generateEmbedding(content);
       if (emb.length > 0) {
-        const vec = `'[${emb.map((v) => (Number.isFinite(v) ? v.toFixed(6) : 0)).join(", ")}]'::vector`;
-        await this.prisma.$executeRawUnsafe(
-          `UPDATE "Project" SET embedding = ${vec} WHERE id = '${id}'`,
-        );
+        const vec = `'[${emb.filter((v) => Number.isFinite(v)).map((v) => v.toFixed(6)).join(", ")}]'::vector`;
+        await this.prisma.$executeRaw`
+          UPDATE "Project" SET embedding = ${Prisma.raw(vec)} WHERE id = ${id}
+        `;
       }
     }
     return { id };

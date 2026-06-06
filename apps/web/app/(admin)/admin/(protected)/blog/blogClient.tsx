@@ -44,14 +44,8 @@ export default function BlogClient({ token }: { token: string }) {
   const [isEditorOpen, setIsEditorOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<BlogSummary | null>(null);
   const [activeTab, setActiveTab] = useState<"edit" | "preview">("edit");
-  
-  // AI Generation State
-  const [isGeneratingOpen, setIsGeneratingOpen] = useState(false);
-  const [generateTopic, setGenerateTopic] = useState("");
-  const suppressCloseRef = useRef(false);
   const publishToastRef = useRef(false);
 
-  // Form state
   const [formData, setFormData] = useState<CreateBlogPostDto>({
     slug: "",
     title: "",
@@ -66,106 +60,10 @@ export default function BlogClient({ token }: { token: string }) {
     queryKey: ["admin-blog-posts"],
     queryFn: async () => {
       const res = await fetch(`${apiBaseUrl()}/api/admin/blog/list`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch posts");
       return (await res.json()) as BlogSummary[];
-    },
-  });
-
-  const {
-    data: trendingTopics = [],
-    isLoading: isTrendingLoading,
-    error: trendingError,
-    refetch: refetchTrending,
-  } = useQuery({
-    queryKey: ["admin-blog-trending"],
-    queryFn: async () => {
-      const res = await fetch(`${apiBaseUrl()}/api/admin/blog/trending`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) return [];
-      return (await res.json()) as string[];
-    },
-    enabled: isGeneratingOpen, // Only fetch when generating
-  });
-
-  const generateMutation = useMutation({
-    mutationFn: async (vars: { topic: string; publishNow: boolean }) => {
-      const res = await fetch(`${apiBaseUrl()}/api/admin/blog/generate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ topic: vars.topic }),
-      });
-      if (!res.ok) {
-        const text = await res.text();
-        throw new Error(text || "Failed to generate post");
-      }
-      return res.json();
-    },
-    onSuccess: (data, vars) => {
-      queryClient.invalidateQueries({ queryKey: ["admin-blog-posts"] });
-      setIsGeneratingOpen(false);
-      setGenerateTopic("");
-      const publishNow = vars.publishNow;
-      
-      // Auto-open editor with generated content
-      setFormData({
-        slug: data.slug,
-        title: data.title,
-        excerpt: data.excerpt || "",
-        content: data.content,
-        tags: data.tags || [],
-        published: true,
-        coverImage: "",
-      });
-      // We don't have an ID for editingPost since it's a new draft, 
-      // but we need to know if we are updating an existing one or creating new.
-      // The generate endpoint actually CREATES a post in the DB.
-      // So we should set it as editingPost.
-      setEditingPost({
-        id: data.id,
-        slug: data.slug,
-        title: data.title,
-        excerpt: data.excerpt,
-        tags: data.tags || [],
-        publishedAt: null,
-        viewCount: 0,
-        coverImage: null,
-      });
-      setIsEditorOpen(true);
-
-      if (publishNow) {
-        suppressCloseRef.current = true;
-        publishToastRef.current = true;
-        updateMutation.mutate(
-          {
-            id: data.id,
-            data: {
-              title: data.title,
-              excerpt: data.excerpt || "",
-              content: data.content || "",
-              tags: data.tags || [],
-              published: true,
-              coverImage: "",
-            },
-          },
-          {
-            onSuccess: () => {
-              queryClient.invalidateQueries({ queryKey: ["admin-blog-posts"] });
-            },
-          },
-        );
-      }
-    },
-    onError: (err) => {
-      console.error("Generate failed:", err);
-      alert(err instanceof Error ? err.message : "Failed to generate post");
     },
   });
 
@@ -184,14 +82,6 @@ export default function BlogClient({ token }: { token: string }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-blog-posts"] });
-      if (suppressCloseRef.current) {
-        suppressCloseRef.current = false;
-        if (publishToastRef.current) {
-          toast.success("Post published.");
-          publishToastRef.current = false;
-        }
-        return;
-      }
       if (publishToastRef.current) {
         toast.success("Post published.");
         publishToastRef.current = false;
@@ -229,9 +119,7 @@ export default function BlogClient({ token }: { token: string }) {
     mutationFn: async (id: string) => {
       const res = await fetch(`${apiBaseUrl()}/api/admin/blog/${id}`, {
         method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to delete post");
       return res.json();
@@ -240,17 +128,6 @@ export default function BlogClient({ token }: { token: string }) {
       queryClient.invalidateQueries({ queryKey: ["admin-blog-posts"] });
     },
   });
-
-  const handleGenerate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!generateTopic.trim()) return;
-    generateMutation.mutate({ topic: generateTopic, publishNow: false });
-  };
-
-  const handlePublishNow = () => {
-    if (!generateTopic.trim()) return;
-    generateMutation.mutate({ topic: generateTopic, publishNow: true });
-  };
 
   const resetForm = () => {
     setFormData({
@@ -267,24 +144,20 @@ export default function BlogClient({ token }: { token: string }) {
 
   const handleEdit = async (post: BlogSummary) => {
     setEditingPost(post);
-    // Initial state with summary data
     setFormData({
       slug: post.slug,
       title: post.title,
       excerpt: post.excerpt || "",
-      content: "", // Will be populated
+      content: "",
       tags: post.tags,
       published: !!post.publishedAt,
       coverImage: post.coverImage || "",
     });
     setIsEditorOpen(true);
 
-    // Fetch full content
     try {
       const res = await fetch(`${apiBaseUrl()}/api/blog/${post.slug}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
         const fullPost = await res.json();
@@ -308,14 +181,13 @@ export default function BlogClient({ token }: { token: string }) {
         data: {
           title: formData.title,
           excerpt: formData.excerpt,
-          content: formData.content, // This might be empty if we didn't fetch full post
+          content: formData.content,
           tags: formData.tags,
           published: formData.published,
           coverImage: formData.coverImage,
         },
       });
     } else {
-      publishToastRef.current = formData.published;
       createMutation.mutate(formData);
     }
   };
@@ -326,93 +198,16 @@ export default function BlogClient({ token }: { token: string }) {
         <p className="text-sm text-(--muted)">
           Published posts are shown on the public blog.
         </p>
-        <div className="flex gap-2">
-          <Button
-            magnetic={false}
-            onClick={() => setIsGeneratingOpen(!isGeneratingOpen)}
-            className="bg-transparent border border-(--border)/20 hover:bg-(--surface)/80"
-          >
-            {isGeneratingOpen ? "Cancel AI" : "Generate with AI"}
-          </Button>
-          <Button
-            magnetic={false}
-            onClick={() => {
-              resetForm();
-              setIsEditorOpen(true);
-            }}
-          >
-            New Post
-          </Button>
-        </div>
+        <Button
+          magnetic={false}
+          onClick={() => {
+            resetForm();
+            setIsEditorOpen(true);
+          }}
+        >
+          New Post
+        </Button>
       </div>
-
-      {isGeneratingOpen && (
-        <div className="mb-8 p-6 rounded-xl border border-(--border) bg-(--surface)">
-          <h3 className="text-lg font-semibold mb-4 text-(--text)">Generate Blog Post</h3>
-          <form onSubmit={handleGenerate} className="flex gap-2 mb-4">
-            <input
-              type="text"
-              value={generateTopic}
-              onChange={(e) => setGenerateTopic(e.target.value)}
-              placeholder="Enter a topic (e.g. 'React Server Components vs Client Components')..."
-              className="flex-1 rounded-md border border-(--border) bg-(--bg) p-2 text-(--text)"
-              disabled={generateMutation.isPending}
-            />
-            <Button
-              magnetic={false}
-              type="submit"
-              disabled={generateMutation.isPending || !generateTopic.trim()}
-            >
-              {generateMutation.isPending ? "Generating..." : "Generate Draft"}
-            </Button>
-            <Button
-              magnetic={false}
-              type="button"
-              onClick={handlePublishNow}
-              disabled={generateMutation.isPending || !generateTopic.trim()}
-              className="bg-transparent border border-(--border)/20 hover:bg-(--surface)/80"
-            >
-              {generateMutation.isPending ? "Generating..." : "Publish Now"}
-            </Button>
-          </form>
-          
-          {trendingTopics.length > 0 && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between gap-2">
-                <p className="text-sm text-(--muted)">Trending Topics:</p>
-                <Button
-                  type="button"
-                  magnetic={false}
-                  onClick={() => refetchTrending()}
-                  disabled={isTrendingLoading}
-                  className="bg-transparent border border-(--border)/20 hover:bg-(--surface)/80 px-3 py-1 text-xs"
-                >
-                  {isTrendingLoading ? "Refreshing..." : "Refresh"}
-                </Button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {trendingTopics.map((topic) => (
-                  <button
-                    key={topic}
-                    onClick={() => setGenerateTopic(topic)}
-                    className="px-3 py-1 text-xs rounded-full bg-(--accent)/10 text-(--accent) hover:bg-(--accent)/20 transition-colors"
-                  >
-                    {topic}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-          {isTrendingLoading && trendingTopics.length === 0 && (
-            <p className="text-sm text-(--muted)">Loading trending topics...</p>
-          )}
-          {trendingError && (
-            <p className="text-sm text-red-400" role="alert">
-              Failed to load trending topics.
-            </p>
-          )}
-        </div>
-      )}
 
       {isEditorOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">

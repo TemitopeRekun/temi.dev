@@ -50,14 +50,14 @@ export function HomeStatsRow() {
     <section
       ref={sectionRef}
       id="stats"
-      className="relative z-10 py-16 sm:py-24 border-y border-(--border)/50 bg-(--surface)/30 backdrop-blur-sm"
+      className="relative z-10 py-16 sm:py-24 border-y border-(--border) bg-(--surface-tint)"
     >
       <Container>
         <Grid cols={1} md={3} gap="gap-8 md:gap-12" className="divide-y md:divide-y-0 md:divide-x divide-(--border)/50">
           <RevealOnScroll>
             <div className="flex flex-col items-center justify-center p-6 text-center md:items-start md:text-left">
               <Briefcase className="mb-6 h-10 w-10 text-(--accent) opacity-80" />
-              <div className="text-6xl font-(family-name:--font-fraunces) font-bold tracking-tight text-(--text)">
+              <div className="text-4xl sm:text-5xl md:text-6xl font-(family-name:--font-fraunces) font-bold tracking-tight text-(--text)">
                 {counts[0]}
                 <span className="text-(--accent)">{NUMERIC_STATS[0].suffix}</span>
               </div>
@@ -69,7 +69,7 @@ export function HomeStatsRow() {
           <RevealOnScroll delay={0.1}>
             <div className="flex flex-col items-center justify-center p-6 text-center md:items-start md:text-left">
               <Code2 className="mb-6 h-10 w-10 text-(--accent) opacity-80" />
-              <div className="text-6xl font-(family-name:--font-fraunces) font-bold tracking-tight text-(--text)">
+              <div className="text-4xl sm:text-5xl md:text-6xl font-(family-name:--font-fraunces) font-bold tracking-tight text-(--text)">
                 {counts[1]}
                 <span className="text-(--accent)">{NUMERIC_STATS[1].suffix}</span>
               </div>
@@ -81,7 +81,7 @@ export function HomeStatsRow() {
           <RevealOnScroll delay={0.2}>
             <div className="flex flex-col items-center justify-center p-6 text-center md:items-start md:text-left">
               <Cpu className="mb-6 h-10 w-10 text-(--accent) opacity-80" />
-              <div className="text-6xl font-(family-name:--font-fraunces) font-bold tracking-tight text-(--text)">
+              <div className="text-4xl sm:text-5xl md:text-6xl font-(family-name:--font-fraunces) font-bold tracking-tight text-(--text)">
                 <TextReveal text="2" type="chars" delay={0.4} />
               </div>
               <div className="mt-3 text-sm font-medium uppercase tracking-[0.15em] text-(--muted)">

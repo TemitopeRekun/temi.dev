@@ -10,6 +10,7 @@ import { BlogDetailDto } from "./dto/blog-detail.dto";
 import { CreateBlogPostDto } from "./dto/create-blog-post.dto";
 import { UpdateBlogPostDto } from "./dto/update-blog-post.dto";
 import { AiService } from "../ai/ai.service";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class BlogService {
@@ -110,10 +111,10 @@ export class BlogService {
     if (created.published && this.ai) {
       const emb = await this.ai.generateEmbedding(created.content);
       if (emb.length > 0) {
-        const vec = `'[${emb.map((v) => (Number.isFinite(v) ? v.toFixed(6) : 0)).join(", ")}]'::vector`;
-        await this.prisma.$executeRawUnsafe(
-          `UPDATE "BlogPost" SET embedding = ${vec} WHERE id = '${created.id}'`,
-        );
+        const vec = `'[${emb.filter((v) => Number.isFinite(v)).map((v) => v.toFixed(6)).join(", ")}]'::vector`;
+        await this.prisma.$executeRaw`
+          UPDATE "BlogPost" SET embedding = ${Prisma.raw(vec)} WHERE id = ${created.id}
+        `;
       }
     }
     return { id: created.id };
@@ -150,10 +151,10 @@ export class BlogService {
     ) {
       const emb = await this.ai.generateEmbedding(updated.content);
       if (emb.length > 0) {
-        const vec = `'[${emb.map((v) => (Number.isFinite(v) ? v.toFixed(6) : 0)).join(", ")}]'::vector`;
-        await this.prisma.$executeRawUnsafe(
-          `UPDATE "BlogPost" SET embedding = ${vec} WHERE id = '${updated.id}'`,
-        );
+        const vec = `'[${emb.filter((v) => Number.isFinite(v)).map((v) => v.toFixed(6)).join(", ")}]'::vector`;
+        await this.prisma.$executeRaw`
+          UPDATE "BlogPost" SET embedding = ${Prisma.raw(vec)} WHERE id = ${updated.id}
+        `;
       }
     }
     return { id };
@@ -170,55 +171,4 @@ export class BlogService {
     return { id };
   }
 
-  async adminGenerate(topic: string): Promise<any> {
-    if (!this.ai) throw new BadRequestException("AI service not available");
-
-    const generated = await this.ai.generateBlogPost(topic);
-
-    // 2. Ensure unique slug
-    let slug = generated.slug;
-    const existing = await this.prisma.blogPost.findUnique({
-      where: { slug },
-      select: { id: true },
-    });
-    if (existing) {
-      slug = `${slug}-${Date.now().toString().slice(-4)}`;
-    }
-
-    // 3. Create Draft Post
-    const created = await this.prisma.blogPost.create({
-      data: {
-        slug,
-        title: generated.title,
-        excerpt: generated.excerpt,
-        content: generated.content,
-        tags: generated.tags,
-        published: false, // Draft by default
-        publishedAt: null,
-      },
-      select: { 
-        id: true, 
-        slug: true,
-        title: true,
-        excerpt: true,
-        content: true,
-        tags: true,
-        published: true,
-        publishedAt: true,
-      },
-    });
-
-    // 4. Generate Embedding for the draft
-    if (this.ai) {
-      const emb = await this.ai.generateEmbedding(created.content);
-      if (emb.length > 0) {
-        const vec = `'[${emb.map((v) => (Number.isFinite(v) ? v.toFixed(6) : 0)).join(", ")}]'::vector`;
-        await this.prisma.$executeRawUnsafe(
-          `UPDATE "BlogPost" SET embedding = ${vec} WHERE id = '${created.id}'`,
-        );
-      }
-    }
-
-    return created;
-  }
 }

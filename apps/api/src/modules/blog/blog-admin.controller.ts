@@ -1,4 +1,4 @@
-import { Body, BadRequestException, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { AdminGuard } from "../auth/guards/admin.guard";
@@ -40,13 +40,4 @@ export class BlogAdminController {
     return this.blog.adminRemove(id);
   }
 
-  @Post("generate")
-  @ApiOperation({ summary: "Admin: generate a blog post draft from a topic" })
-  @ApiResponse({ status: 201 })
-  async generate(@Body() body: { topic: string }): Promise<any> {
-    if (!body?.topic || !body.topic.trim()) {
-      throw new BadRequestException("Topic is required");
-    }
-    return this.blog.adminGenerate(body.topic);
-  }
 }

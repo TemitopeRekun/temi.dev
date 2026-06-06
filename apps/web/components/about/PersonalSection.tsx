@@ -41,10 +41,10 @@ export function PersonalSection() {
     <div ref={containerRef} className="relative py-24 overflow-hidden">
       <div className="mb-16 max-w-2xl">
         <RevealOnScroll>
-          <h2 className="text-3xl font-semibold text-(--text) mb-6">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-(--text) mb-6">
             Beyond the Code
           </h2>
-          <p className="text-lg text-(--muted) leading-relaxed">
+          <p className="text-base sm:text-lg text-(--muted) leading-relaxed">
             When I'm not writing code, I'm usually cycling around Lagos, reading
             sci-fi, or taking photos of things that catch my eye — mostly
             architecture and street scenes. The cycling especially. Long rides

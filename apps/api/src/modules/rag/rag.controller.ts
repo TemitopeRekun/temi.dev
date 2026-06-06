@@ -1,5 +1,7 @@
-import { Body, Controller, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Post, Res, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { Throttle } from "@nestjs/throttler";
+import type { FastifyReply } from "fastify";
 import { RagService } from "./rag.service";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { AskArticleDto } from "./dto/ask-article.dto";
@@ -9,6 +11,7 @@ import { EmbedArticleDto } from "./dto/embed-article.dto";
 import { EmbedProjectDto } from "./dto/embed-project.dto";
 
 @ApiTags("RAG")
+@Throttle({ default: { limit: 5, ttl: 60_000 } })
 @Controller("api/rag")
 export class RagController {
   constructor(private readonly rag: RagService) {}
@@ -25,6 +28,54 @@ export class RagController {
   @ApiResponse({ status: 200 })
   async askWebsite(@Body() dto: AskWebsiteDto): Promise<{ answer: string; sources: Array<{ title: string; similarity: number }> }> {
     return this.rag.askWebsite(dto.question);
+  }
+
+  @Post("ask-article-stream")
+  @ApiOperation({ summary: "Streamed Q&A about a specific article" })
+  async askArticleStream(
+    @Body() dto: AskArticleDto,
+    @Res({ passthrough: false }) reply: FastifyReply,
+  ): Promise<void> {
+    const raw = reply.raw;
+    raw.writeHead(200, {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+    });
+    try {
+      for await (const chunk of this.rag.askArticleStream(dto.articleId, dto.question)) {
+        raw.write(`data: ${JSON.stringify({ text: chunk })}\n\n`);
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Stream error";
+      raw.write(`data: ${JSON.stringify({ error: msg })}\n\n`);
+    }
+    raw.write("data: [DONE]\n\n");
+    raw.end();
+  }
+
+  @Post("ask-website-stream")
+  @ApiOperation({ summary: "Streamed Q&A across site content via semantic search" })
+  async askWebsiteStream(
+    @Body() dto: AskWebsiteDto,
+    @Res({ passthrough: false }) reply: FastifyReply,
+  ): Promise<void> {
+    const raw = reply.raw;
+    raw.writeHead(200, {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+    });
+    try {
+      for await (const chunk of this.rag.askWebsiteStream(dto.question)) {
+        raw.write(`data: ${JSON.stringify({ text: chunk })}\n\n`);
+      }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Stream error";
+      raw.write(`data: ${JSON.stringify({ error: msg })}\n\n`);
+    }
+    raw.write("data: [DONE]\n\n");
+    raw.end();
   }
 
   @Post("summarize")

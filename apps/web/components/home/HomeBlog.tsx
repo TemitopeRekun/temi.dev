@@ -68,10 +68,10 @@ export function HomeBlog({ initialPosts }: { initialPosts?: BlogPost[] }) {
             <div className="mb-2 text-sm font-medium uppercase tracking-[0.2em] text-(--accent)">
               <TextReveal text="Latest Insight" type="chars" />
             </div>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-(--text) sm:text-4xl">
+            <h2 className="mt-4 text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-(--text)">
               <TextReveal text="Blog" type="chars" delay={0.2} />
             </h2>
-            <p className="mt-4 max-w-lg text-lg text-(--muted)">
+            <p className="mt-4 max-w-lg text-base sm:text-lg text-(--muted)">
               Stay updated with the latest articles, tips, and insights from my
               engineering journey.
             </p>

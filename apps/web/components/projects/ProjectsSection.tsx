@@ -179,7 +179,7 @@ export function ProjectsSection({ initialProjects }: { initialProjects?: Project
               <div className="mb-2 text-sm font-medium uppercase tracking-[0.2em] text-(--accent)">
                 <TextReveal text="Selected Works" type="chars" />
               </div>
-              <h2 className="text-4xl font-semibold tracking-tight sm:text-5xl">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight">
                 <TextReveal text="Recent Projects" type="chars" delay={0.2} />
               </h2>
             </div>

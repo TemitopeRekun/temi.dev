@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Container, Section, RevealOnScroll } from "@temi/ui";
 import { Sparkles, Send, Loader2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
@@ -13,42 +13,64 @@ export function AskAI() {
   const [answer, setAnswer] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!question.trim()) return;
+    if (!question.trim() || loading) return;
 
     setLoading(true);
     setError(null);
-    setAnswer(null);
+    setAnswer("");
+
+    const base =
+      process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+
+    abortRef.current?.abort();
+    const abort = new AbortController();
+    abortRef.current = abort;
 
     try {
-      const base =
-        process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
-
-      // Basic validation for API URL
-      if (!base) {
-        throw new Error("API configuration missing");
-      }
-
-      const res = await fetch(`${base}/api/rag/ask-website`, {
+      const res = await fetch(`${base}/api/rag/ask-website-stream`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question }),
+        signal: abort.signal,
       });
 
       if (!res.ok) {
-        // Try to get error message from response
         const errData = await res.json().catch(() => ({}));
         throw new Error(errData.message || "Failed to get AI response");
       }
 
-      const data = await res.json();
-      if (!data.answer) {
-        throw new Error("No answer received from AI");
+      const reader = res.body?.getReader();
+      if (!reader) throw new Error("Stream not available");
+
+      const decoder = new TextDecoder();
+      let accumulated = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        const lines = chunk.split("\n");
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const data = line.slice(6);
+          if (data === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(data);
+            if (parsed.error) throw new Error(parsed.error);
+            if (parsed.text) {
+              accumulated += parsed.text;
+              setAnswer(accumulated);
+            }
+          } catch {}
+        }
       }
-      setAnswer(data.answer);
     } catch (err) {
+      if (abort.signal.aborted) return;
       console.error(err);
       setError(
         err instanceof Error
@@ -57,6 +79,7 @@ export function AskAI() {
       );
     } finally {
       setLoading(false);
+      abortRef.current = null;
     }
   };
 

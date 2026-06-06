@@ -33,7 +33,7 @@ export function BlogList({ posts }: Props) {
           <div className="max-w-md">
             <AnimatedText
               phrase="Latest Articles"
-              className="mb-4 text-3xl font-bold text-(--text)"
+              className="mb-4 text-2xl sm:text-3xl font-bold text-(--text)"
             />
             <p className="mb-6 text-(--muted)">
               Explore thoughts on technology, design, and AI engineering.

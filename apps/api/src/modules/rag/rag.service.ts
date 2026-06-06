@@ -7,6 +7,7 @@ import { PrismaService } from "../../prisma/prisma.service";
 import { AiService } from "../ai/ai.service";
 import { readFile } from "fs/promises";
 import { resolve } from "path";
+import { Prisma } from "@prisma/client";
 
 @Injectable()
 export class RagService {
@@ -14,6 +15,25 @@ export class RagService {
     private readonly prisma: PrismaService,
     private readonly ai: AiService,
   ) {}
+
+  private async searchContext(question: string): Promise<{
+    context: string;
+    sources: Array<{ title: string; similarity: number }>;
+  }> {
+    const blogMatches = await this.ai.semanticSearch(question, "BlogPost", 5);
+    const projectMatches = await this.ai.semanticSearch(question, "Project", 5);
+    const combined = [...blogMatches, ...projectMatches]
+      .sort((a, b) => b.similarity - a.similarity)
+      .slice(0, 8);
+    const context = combined
+      .map((m) => `Title: ${m.title}\n\n${m.content}`)
+      .join("\n\n---\n\n");
+    const sources = combined.map((m) => ({
+      title: m.title,
+      similarity: m.similarity,
+    }));
+    return { context, sources };
+  }
 
   async askArticle(
     articleId: string,
@@ -35,20 +55,29 @@ export class RagService {
     sources: Array<{ title: string; similarity: number }>;
   }> {
     if (!question) throw new BadRequestException("question is required");
-    const blogMatches = await this.ai.semanticSearch(question, "BlogPost", 5);
-    const projectMatches = await this.ai.semanticSearch(question, "Project", 5);
-    const combined = [...blogMatches, ...projectMatches]
-      .sort((a, b) => b.similarity - a.similarity)
-      .slice(0, 8);
-    const context = combined
-      .map((m) => `Title: ${m.title}\n\n${m.content}`)
-      .join("\n\n---\n\n");
+    const { context, sources } = await this.searchContext(question);
     const answer = await this.ai.generateDigitalBrainResponse(question, context);
-    const sources = combined.map((m) => ({
-      title: m.title,
-      similarity: m.similarity,
-    }));
     return { answer, sources };
+  }
+
+  async *askArticleStream(
+    articleId: string,
+    question: string,
+  ): AsyncGenerator<string> {
+    if (!articleId || !question)
+      throw new BadRequestException("articleId and question are required");
+    const post = await this.prisma.blogPost.findUnique({
+      where: { id: articleId },
+      select: { id: true, title: true, content: true },
+    });
+    if (!post) throw new NotFoundException("Article not found");
+    yield* this.ai.generateDigitalBrainResponseStream(question, post.content);
+  }
+
+  async *askWebsiteStream(question: string): AsyncGenerator<string> {
+    if (!question) throw new BadRequestException("question is required");
+    const { context } = await this.searchContext(question);
+    yield* this.ai.generateDigitalBrainResponseStream(question, context);
   }
 
   async summarizeArticle(articleId: string): Promise<{ summary: string }> {
@@ -80,16 +109,15 @@ export class RagService {
     const embedding = await this.ai.generateEmbedding(post.content);
     if (!embedding || embedding.length === 0)
       throw new BadRequestException("Embedding failed");
-    const vecLiteral = `'[${embedding.map((v) => (Number.isFinite(v) ? v.toFixed(6) : 0)).join(", ")}]'::vector`;
-    const sql = `UPDATE "BlogPost" SET embedding = ${vecLiteral} WHERE id = '${post.id}'`;
-    try {
-      await this.prisma.$executeRawUnsafe(sql);
-      return { ok: true };
-    } catch {
+    const vecLiteral = `'[${embedding.filter((v) => Number.isFinite(v)).map((v) => v.toFixed(6)).join(", ")}]'::vector`;
+    await this.prisma.$executeRaw`
+      UPDATE "BlogPost" SET embedding = ${Prisma.raw(vecLiteral)} WHERE id = ${post.id}
+    `.catch(() => {
       throw new BadRequestException(
         "Failed to store embedding. Ensure pgvector and column exist.",
       );
-    }
+    });
+    return { ok: true };
   }
 
   async embedProject(projectId: string): Promise<{ ok: boolean }> {
@@ -102,15 +130,14 @@ export class RagService {
     const embedding = await this.ai.generateEmbedding(project.description);
     if (!embedding || embedding.length === 0)
       throw new BadRequestException("Embedding failed");
-    const vecLiteral = `'[${embedding.map((v) => (Number.isFinite(v) ? v.toFixed(6) : 0)).join(", ")}]'::vector`;
-    const sql = `UPDATE "Project" SET embedding = ${vecLiteral} WHERE id = '${project.id}'`;
-    try {
-      await this.prisma.$executeRawUnsafe(sql);
-      return { ok: true };
-    } catch {
+    const vecLiteral = `'[${embedding.filter((v) => Number.isFinite(v)).map((v) => v.toFixed(6)).join(", ")}]'::vector`;
+    await this.prisma.$executeRaw`
+      UPDATE "Project" SET embedding = ${Prisma.raw(vecLiteral)} WHERE id = ${project.id}
+    `.catch(() => {
       throw new BadRequestException(
         "Failed to store embedding. Ensure pgvector and column exist.",
       );
-    }
+    });
+    return { ok: true };
   }
 }
