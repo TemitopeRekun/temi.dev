@@ -15,7 +15,8 @@
     "prisma:migrate:dev": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "backfill:embeddings": "nest build && node dist/scripts/backfill-embeddings.js"
+    "backfill:embeddings": "nest build && node dist/scripts/backfill-embeddings.js",
+    "push:projects": "ts-node --transpile-only src/scripts/push-projects.ts"
   },
   "dependencies": {
     "@fastify/cors": "^11.2.0",

@@ -23,7 +23,7 @@ const scaleAnim = {
   },
 };
 
-import type { Project } from "../../lib/projects";
+import type { Project, RawProject } from "../../lib/projects";
 
 export function WorkList({ initialProjects }: { initialProjects?: Project[] }) {
   const { data: dbProjects = [] } = useQuery({
@@ -39,21 +39,30 @@ export function WorkList({ initialProjects }: { initialProjects?: Project[] }) {
     staleTime: 60 * 1000,
   });
 
-  const projects = useMemo(() => {
-    return dbProjects.map((p: any) => ({
-      id: p.id,
-      slug: p.slug || p.id,
-      title: p.title,
-      year: p.year || new Date(p.createdAt).getFullYear(),
-      category: p.category || "Other",
-      tags: p.techStack || [],
-      description: p.description,
-      image: p.coverImage || "",
-      liveUrl: p.liveUrl || "",
-      repoUrl: p.repoUrl || "",
-      featured: p.featured,
-      order: p.order,
-    })).sort((a: any, b: any) => a.order - b.order);
+  const projects = useMemo<Project[]>(() => {
+    return (dbProjects as RawProject[])
+      .map(
+        (p): Project => ({
+          id: p.id,
+          slug: p.slug || p.id,
+          title: p.title,
+          year:
+            p.year ||
+            (p.createdAt
+              ? new Date(p.createdAt).getFullYear()
+              : new Date().getFullYear()),
+          category: p.category || "Other",
+          tags: p.techStack || [],
+          description: p.description || "",
+          body: p.body || "",
+          image: p.coverImage || "",
+          liveUrl: p.liveUrl || "",
+          repoUrl: p.repoUrl || "",
+          featured: p.featured || false,
+          order: p.order || 0,
+        }),
+      )
+      .sort((a, b) => a.order - b.order);
   }, [dbProjects]);
 
   const [modal, setModal] = useState({ active: false, index: 0 });
@@ -116,7 +125,7 @@ export function WorkList({ initialProjects }: { initialProjects?: Project[] }) {
       onMouseMove={(e) => moveAll(e.clientX, e.clientY)}
     >
       <div className="divide-y divide-(--border)">
-        {projects.map((p: any, i: number) => (
+        {projects.map((p, i) => (
           <Link
             key={p.slug}
             href={`/work/${p.slug}` as Route}
@@ -151,7 +160,7 @@ export function WorkList({ initialProjects }: { initialProjects?: Project[] }) {
           style={{ top: modal.index * -100 + "%" }}
           className="relative h-full w-full transition-[top] duration-500 ease-[cubic-bezier(0.76,0,0.24,1)]"
         >
-          {projects.map((p: any, index: number) => (
+          {projects.map((p, index) => (
             <div
               key={`modal_${index}`}
               className="flex h-full w-full items-center justify-center bg-(--surface)"

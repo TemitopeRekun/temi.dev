@@ -48,10 +48,6 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
   const initialPath = `M0 0 L${dim.w} 0 L${dim.w} ${dim.h} Q${dim.w / 2} ${
     dim.h + 300
   } 0 ${dim.h} L0 0`;
-  const targetPath = `M0 0 L${dim.w} 0 L${dim.w} ${dim.h} Q${dim.w / 2} ${
-    dim.h
-  } 0 ${dim.h} L0 0`;
-
   const curve: Variants = {
     initial: {
       d: initialPath,

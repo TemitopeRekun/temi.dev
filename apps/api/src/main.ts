@@ -7,7 +7,6 @@ import {
   NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 import helmet from "@fastify/helmet";
-import cors from "@fastify/cors";
 import multipart from "@fastify/multipart";
 import fastifyStatic from "@fastify/static";
 import { join } from "path";

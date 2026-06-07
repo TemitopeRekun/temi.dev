@@ -8,7 +8,6 @@ export const metadata = buildMetadata({
   title: "Blog — Temitope Ogunrekun",
   description: "Thoughts on AI, web, backend systems, and product engineering.",
   path: "/blog",
-  image: "https://picsum.photos/1200/630?seed=blog-og",
   type: "website",
 });
 

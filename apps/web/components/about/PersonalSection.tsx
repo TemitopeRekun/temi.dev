@@ -1,29 +1,29 @@
 "use client";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import Image from "next/image";
+import { Camera, Bike, BookOpen } from "lucide-react";
 import { RevealOnScroll } from "@temi/ui";
 
 const HOBBIES = [
   {
     title: "Photography",
     description:
-      "Capturing moments and light. Exploring street photography and architecture.",
-    image: "https://picsum.photos/seed/photo/600/800",
+      "Street scenes and architecture, mostly. I like noticing the light other people walk past.",
+    icon: Camera,
     rotation: -2,
   },
   {
     title: "Cycling",
     description:
-      "Clearing the mind on long rides. Exploring new routes and pushing endurance.",
-    image: "https://picsum.photos/seed/cycle/600/800",
+      "Long rides around Lagos. It's where I do my best thinking — most of my hardest problems get solved away from the keyboard.",
+    icon: Bike,
     rotation: 3,
   },
   {
     title: "Reading",
     description:
-      "Constant learning. Sci-fi, philosophy, and technical deep dives.",
-    image: "https://picsum.photos/seed/read/600/800",
+      "Sci-fi, philosophy, and technical deep dives. Constant input keeps the output sharp.",
+    icon: BookOpen,
     rotation: -1,
   },
 ];
@@ -54,34 +54,55 @@ export function PersonalSection() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-        {HOBBIES.map((hobby, index) => (
-          <motion.div
-            key={hobby.title}
-            style={{
-              rotate: hobby.rotation,
-              y: index % 2 === 0 ? y : 0, // Parallax effect on odd items
-            }}
-            className="group relative"
-          >
-            <div className="relative aspect-[4/3] md:aspect-[3/4] overflow-hidden rounded-2xl border border-(--border) bg-(--surface) shadow-lg transition-transform duration-500 group-hover:scale-[1.02]">
-              <Image
-                src={hobby.image}
-                alt={hobby.title}
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-                sizes="(max-width: 768px) 100vw, 33vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-80" />
+        {HOBBIES.map((hobby, index) => {
+          const Icon = hobby.icon;
+          return (
+            <motion.div
+              key={hobby.title}
+              style={{
+                rotate: hobby.rotation,
+                y: index % 2 === 0 ? y : 0, // Parallax effect on alternating items
+              }}
+              className="group relative"
+            >
+              <div className="relative aspect-[4/5] overflow-hidden rounded-2xl border border-(--border) bg-(--surface) shadow-lg transition-transform duration-500 group-hover:scale-[1.02]">
+                {/* Accent gradient wash */}
+                <div className="absolute inset-0 bg-linear-to-br from-(--accent)/10 via-transparent to-(--accent2)/10" />
+                {/* Soft accent glow */}
+                <div
+                  className="absolute -top-12 -right-12 h-40 w-40 rounded-full bg-(--accent) opacity-10 blur-3xl transition-opacity duration-500 group-hover:opacity-20"
+                  aria-hidden="true"
+                />
+                {/* Dot pattern */}
+                <div
+                  className="absolute inset-0 opacity-[0.04] pointer-events-none"
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(circle at 2px 2px, var(--text) 1px, transparent 0)",
+                    backgroundSize: "28px 28px",
+                  }}
+                  aria-hidden="true"
+                />
 
-              <div className="absolute bottom-0 left-0 p-6 text-white">
-                <h3 className="text-xl font-bold mb-2">{hobby.title}</h3>
-                <p className="text-sm text-white/80 leading-relaxed opacity-0 transform translate-y-4 transition-all duration-300 group-hover:opacity-100 group-hover:translate-y-0">
-                  {hobby.description}
-                </p>
+                <div className="relative flex h-full flex-col justify-between p-8">
+                  <Icon
+                    className="h-12 w-12 text-(--accent)"
+                    strokeWidth={1.5}
+                    aria-hidden="true"
+                  />
+                  <div>
+                    <h3 className="text-xl font-bold text-(--text) mb-2">
+                      {hobby.title}
+                    </h3>
+                    <p className="text-sm text-(--muted) leading-relaxed">
+                      {hobby.description}
+                    </p>
+                  </div>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ))}
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );

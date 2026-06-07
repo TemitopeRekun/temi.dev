@@ -2,7 +2,7 @@
 
 # temi.dev
 
-### The AI-Powered Portfolio & Content Platform of Temitope Rekun
+### The AI-Powered Portfolio & Content Platform of Temitope Ogunrekun
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/)
@@ -38,8 +38,7 @@ temi.dev/
 ├── packages/
 │   ├── ui/           # Shared React component library
 │   ├── types/        # Shared TypeScript type definitions
-│   ├── config/       # Shared ESLint / TS configs
-│   └── ai/prompts/   # Centralized AI prompt templates
+│   └── config/       # Shared ESLint / TS configs
 ├── turbo.json        # Turborepo pipeline config
 ├── pnpm-workspace.yaml
 └── package.json
@@ -82,18 +81,14 @@ A robust **NestJS 11** API served on **Fastify** with JWT authentication, Prisma
 
 | Module | Description |
 |---|---|
-| `auth` | JWT-based authentication & authorization |
-| `blog` | Blog post CRUD with real-time data endpoints |
+| `auth` | JWT-based authentication & authorization (admin-only) |
+| `blog` | Blog post CRUD with public and admin endpoints |
 | `ai` | AI service integration (Google Gemini) |
-| `rag` | Retrieval-Augmented Generation for intelligent search |
+| `rag` | Retrieval-Augmented Generation over posts & projects using pgvector embeddings |
 | `projects` | Portfolio project management with database & embeddings |
-| `leads` | Contact/lead capture and management |
-| `job-leads` | Job inquiry tracking |
-| `proposals` | Client proposal management |
-| `career-analytics` | Career and profile analytics |
+| `leads` | Contact/lead capture and admin management |
 | `dashboard` | Admin dashboard data aggregation |
-| `outreach` | Email outreach automation |
-| `email` | Transactional email service |
+| `email` | Transactional email service (Resend) |
 | `upload` | File upload management via Supabase Storage |
 
 **Backend Tech Highlights:**
@@ -105,7 +100,10 @@ A robust **NestJS 11** API served on **Fastify** with JWT authentication, Prisma
 - `@fastify/helmet` — HTTP security headers
 - `@fastify/multipart` — multipart file upload support
 - `@supabase/supabase-js` — cloud file storage
-- `@google/generative-ai` — Gemini AI integration
+- `@google/generative-ai` — Gemini AI integration (chat + `text-embedding-005`)
+- `pgvector` — PostgreSQL vector embeddings powering RAG search
+- `Resend` — transactional email
+- `@sentry/nestjs` — error monitoring
 - `bcryptjs` — password hashing
 - `class-validator` + `class-transformer` — request validation and transformation
 
@@ -118,22 +116,22 @@ A robust **NestJS 11** API served on **Fastify** with JWT authentication, Prisma
 | `@temi/ui` | Shared React component library used across apps |
 | `@temi/types` | Shared TypeScript interfaces and types |
 | `@temi/config` | Shared ESLint and TypeScript configuration |
-| `@temi/ai/prompts` | Centralized AI prompt templates for consistency |
 
 ---
 
 ## Key Features
 
-- **AI-Powered RAG Search** — Intelligent semantic search over blog posts and projects using embeddings
-- **3D Interactive Portfolio** — Immersive Three.js WebGL scenes throughout the site
+- **AI-Powered RAG Search** — Semantic search over blog posts and projects using Gemini embeddings stored in pgvector
+- **3D Interactive Portfolio** — Three.js WebGL scenes throughout the site
 - **Advanced Animations** — GSAP scroll animations + Framer Motion transitions
 - **Technical Blog** — Full markdown rendering with code syntax highlighting
 - **Real-Time Data Fetching** — TanStack Query with live blog and project data
-- **Lead & CRM System** — Admin dashboard to manage contacts, proposals, and job inquiries
-- **Email Outreach** — Automated transactional and outreach email flows
+- **Lead Capture & Admin Dashboard** — Public contact form feeding an admin-only dashboard to manage leads
+- **Transactional Email** — Resend-powered notifications on new leads
 - **Supabase File Storage** — Cloud-hosted media and project assets
-- **JWT Auth** — Secure admin-only routes for CRM and dashboard
-- **Swagger API Docs** — Auto-generated REST API documentation
+- **JWT Auth** — Secure admin-only routes for the dashboard
+- **Swagger API Docs** — Auto-generated REST API documentation at `/api/docs`
+- **Error Monitoring** — Sentry integration across the API
 - **Dark / Light Mode** — System-aware theming via next-themes
 - **Monorepo Architecture** — Turborepo pipelines for fast, cached builds
 
@@ -166,10 +164,28 @@ pnpm install
 
 ```env
 DATABASE_URL=your_postgresql_connection_string
+
+# Email (Resend)
+RESEND_API_KEY=your_resend_api_key
+EMAIL_FROM="Temitope <hello@temi.dev>"
+
+# Auth
 JWT_SECRET=your_jwt_secret
-GOOGLE_GEMINI_API_KEY=your_gemini_api_key
+ADMIN_EMAIL=admin@temi.dev
+ADMIN_PASSWORD_HASH=your_bcrypt_password_hash
+
+# AI (Gemini)
+GEMINI_API_KEY=your_gemini_api_key
+GEMINI_MODEL=gemini-2.5-flash
+GEMINI_EMBEDDING_MODEL=text-embedding-005
+
+# Supabase Storage
 SUPABASE_URL=your_supabase_project_url
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+SUPABASE_BUCKET=uploads
+
+# Error monitoring (Sentry) — leave empty to disable
+SENTRY_DSN=
 ```
 
 ### Database Setup
@@ -193,7 +209,7 @@ pnpm dev
 
 # Run individual apps
 pnpm --filter web dev     # Frontend on http://localhost:3000
-pnpm --filter api dev     # Backend on http://localhost:3001
+pnpm --filter api dev     # Backend on http://localhost:4000 (Swagger at /api/docs)
 ```
 
 ### Build
@@ -217,11 +233,12 @@ pnpm build
 
 ## Author
 
-**Temitope Rekun** — Full-Stack Engineer & Startup Builder
+**Temitope Ogunrekun** — Full-Stack Engineer
 
 - Portfolio: [temi.dev](https://temi.dev)
 - GitHub: [@TemitopeRekun](https://github.com/TemitopeRekun)
-- LinkedIn: [linkedin.com/in/temitoperekun](https://linkedin.com/in/temitoperekun)
+- LinkedIn: [temitope-ogunrekun](https://www.linkedin.com/in/temitope-ogunrekun-092736229/)
+- X: [@_sireTemi](https://x.com/_sireTemi)
 
 ---
 

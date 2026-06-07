@@ -10,7 +10,6 @@ export const metadata = buildMetadata({
   description:
     "Currently open to remote mid-level full-stack or backend roles. Get in touch.",
   path: "/contact",
-  image: "https://picsum.photos/1200/630?seed=contact-og",
 });
 
 export default function ContactPage() {

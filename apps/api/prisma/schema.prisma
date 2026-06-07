@@ -21,6 +21,7 @@ model Project {
   slug        String   @unique @default(cuid())
   title       String
   description String
+  body        String?
   category    String   @default("Other")
   year        Int      @default(2025)
   techStack   String[]

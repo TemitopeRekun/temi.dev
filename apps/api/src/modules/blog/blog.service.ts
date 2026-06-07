@@ -85,16 +85,6 @@ export class BlogService {
       select: { id: true },
     });
     if (existing) throw new BadRequestException("Slug already exists");
-    const data = {
-      slug: dto.slug,
-      title: dto.title,
-      excerpt: dto.excerpt ?? null,
-      content: dto.content,
-      tags: dto.tags,
-      coverImage: dto.coverImage ?? null,
-      published: dto.published,
-      publishedAt: dto.published ? new Date() : null,
-    };
     const created = await this.prisma.blogPost.create({
       data: {
         slug: dto.slug,

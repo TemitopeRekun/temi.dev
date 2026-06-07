@@ -171,7 +171,7 @@ export default async function WorkDetailPage({
                   hr: () => <hr className="case-study-hr" />,
                 }}
               >
-                {project.description}
+                {project.body || project.description}
               </ReactMarkdown>
             </div>
 

@@ -16,7 +16,6 @@ export const metadata = buildMetadata({
   description:
     "Full-stack engineer from Lagos. TypeScript, Next.js, NestJS, PostgreSQL. Open to remote mid-level roles.",
   path: "/",
-  image: "https://picsum.photos/1200/630?seed=home-og",
   type: "website",
 });
 
@@ -40,10 +39,16 @@ export default async function HomePage() {
               "https://www.linkedin.com/in/temitope-ogunrekun-092736229/",
               "https://x.com/_sireTemi",
             ],
-            worksFor: {
-              "@type": "Organization",
-              name: "ADP Digitek",
-            },
+            worksFor: [
+              {
+                "@type": "Organization",
+                name: "ADP Digitek",
+              },
+              {
+                "@type": "Organization",
+                name: "Bica Driver",
+              },
+            ],
             knowsAbout: [
               "TypeScript",
               "Next.js",

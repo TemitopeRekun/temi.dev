@@ -7,7 +7,6 @@ export const metadata = buildMetadata({
   description:
     "The tools I actually use to build things. TypeScript, Next.js, NestJS, PostgreSQL, Docker, and more — with context from real projects.",
   path: "/stack",
-  image: "https://picsum.photos/1200/630?seed=stack-og",
 });
 
 type StackItem = {

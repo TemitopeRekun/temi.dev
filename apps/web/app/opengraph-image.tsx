@@ -128,7 +128,7 @@ export default function OgImage() {
 
         {/* Bottom row — stack tags */}
         <div style={{ display: "flex", gap: 10 }}>
-          {["Node.js", "TypeScript", "React", "NestJS", "React Native", "AI/LLM"].map(
+          {["TypeScript", "Next.js", "NestJS", "PostgreSQL", "React", "AI/LLM"].map(
             (tag) => (
               <div
                 key={tag}

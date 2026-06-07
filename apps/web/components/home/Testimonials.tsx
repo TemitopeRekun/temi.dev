@@ -8,7 +8,7 @@ const TESTIMONIALS = [
     id: 1,
     content: "Across our collaborations, Temitope showed strong programming fundamentals, the ability to navigate complex codebases and documentation, and a rare mix of curiosity, communication, and growth mindset—making him a developer we would confidently recommend to any team looking for motivated, technically capable talent.",
     author: "Salem Etohokpan",
-    role: "Owner, Talent Global Services",
+    role: "Owner, Talent Group Services",
     avatar: "SE",
   },
   {

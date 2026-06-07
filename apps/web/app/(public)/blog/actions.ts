@@ -23,7 +23,7 @@ export async function likePostAction(slug: string): Promise<ActionState> {
     
     revalidatePath(`/blog/${slug}`);
     return { success: true };
-  } catch (error) {
+  } catch {
     return { success: false, message: "Network error" };
   }
 }
@@ -54,7 +54,7 @@ export async function addCommentAction(
 
     revalidatePath(`/blog/${slug}`);
     return { success: true };
-  } catch (error) {
+  } catch {
     return { success: false, message: "Network error" };
   }
 }

@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { Container, Grid, RevealOnScroll, WarmCard } from "@temi/ui";
+import { Container, Grid, RevealOnScroll } from "@temi/ui";
 import { Briefcase, Code2, Cpu } from "lucide-react";
 import { TextReveal } from "../common/TextReveal";
 
 const NUMERIC_STATS = [
-  { value: 5, suffix: "+", label: "Years Building", icon: Briefcase },
+  { value: 4, suffix: "+", label: "Years Building", icon: Briefcase },
   { value: 40, suffix: "%", label: "Scheduling Work Eliminated", icon: Code2 },
 ] as const;
 
@@ -82,10 +82,10 @@ export function HomeStatsRow() {
             <div className="flex flex-col items-center justify-center p-6 text-center md:items-start md:text-left">
               <Cpu className="mb-6 h-10 w-10 text-(--accent) opacity-80" />
               <div className="text-4xl sm:text-5xl md:text-6xl font-(family-name:--font-fraunces) font-bold tracking-tight text-(--text)">
-                <TextReveal text="2" type="chars" delay={0.4} />
+                <TextReveal text="3" type="chars" delay={0.4} />
               </div>
               <div className="mt-3 text-sm font-medium uppercase tracking-[0.15em] text-(--muted)">
-                <TextReveal text="Countries Worked In" type="chars" delay={0.5} />
+                <TextReveal text="Countries Shipped For" type="chars" delay={0.5} />
               </div>
             </div>
           </RevealOnScroll>

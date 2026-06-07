@@ -10,6 +10,19 @@ export type BlogPost = {
   publishedAt?: string;
 };
 
+// Raw shape returned by the API before mapping to `BlogPost`.
+export type RawBlogItem = {
+  id?: string;
+  slug: string;
+  title: string;
+  tags?: string[];
+  excerpt?: string;
+  coverImage?: string;
+  image?: string;
+  content?: string;
+  publishedAt?: string;
+};
+
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
 
 export async function getPosts(): Promise<BlogPost[]> {
@@ -22,7 +35,7 @@ export async function getPosts(): Promise<BlogPost[]> {
     const data = await res.json();
     if (!data.items || !Array.isArray(data.items)) return [];
 
-    return data.items.map((item: any) => ({
+    return data.items.map((item: RawBlogItem) => ({
       id: item.id,
       slug: item.slug,
       title: item.title,

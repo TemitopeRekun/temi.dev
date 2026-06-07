@@ -5,7 +5,7 @@ import Image from "next/image";
 import type { Route } from "next";
 import { useQuery } from "@tanstack/react-query";
 import { Container, RevealOnScroll, Section, StaggerReveal } from "@temi/ui";
-import { type Project } from "../../lib/projects";
+import { type Project, type RawProject } from "../../lib/projects";
 import { gsap, registerGSAP } from "../../lib/gsap";
 import { TextReveal } from "../common/TextReveal";
 
@@ -149,20 +149,29 @@ export function ProjectsSection({ initialProjects }: { initialProjects?: Project
   });
 
   const projects: Project[] = useMemo(() => {
-    return dbProjects.map((p: any) => ({
-      id: p.id,
-      slug: p.slug || p.id,
-      title: p.title,
-      year: p.year || new Date(p.createdAt).getFullYear(),
-      category: p.category || "Other",
-      tags: p.techStack || [],
-      description: p.description,
-      image: p.coverImage || "",
-      liveUrl: p.liveUrl || "",
-      repoUrl: p.repoUrl || "",
-      featured: p.featured,
-      order: p.order,
-    })).sort((a: any, b: any) => a.order - b.order);
+    return (dbProjects as RawProject[])
+      .map(
+        (p): Project => ({
+          id: p.id,
+          slug: p.slug || p.id,
+          title: p.title,
+          year:
+            p.year ||
+            (p.createdAt
+              ? new Date(p.createdAt).getFullYear()
+              : new Date().getFullYear()),
+          category: p.category || "Other",
+          tags: p.techStack || [],
+          description: p.description || "",
+          body: p.body || "",
+          image: p.coverImage || "",
+          liveUrl: p.liveUrl || "",
+          repoUrl: p.repoUrl || "",
+          featured: p.featured || false,
+          order: p.order || 0,
+        }),
+      )
+      .sort((a, b) => a.order - b.order);
   }, [dbProjects]);
 
   useEffect(() => {

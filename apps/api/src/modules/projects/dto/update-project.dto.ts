@@ -31,6 +31,12 @@ export class UpdateProjectDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @MaxLength(50000)
+  body?: string | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
   @MaxLength(50)
   category?: string;
 

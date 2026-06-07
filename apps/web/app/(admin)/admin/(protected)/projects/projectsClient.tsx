@@ -10,6 +10,7 @@ type Project = {
   slug: string;
   title: string;
   description: string;
+  body?: string | null;
   category: string;
   year: number;
   techStack: string[];
@@ -24,6 +25,7 @@ type CreateProjectDto = {
   slug: string;
   title: string;
   description: string;
+  body?: string | null;
   category: string;
   year: number;
   techStack: string[];
@@ -52,6 +54,7 @@ export default function ProjectsClient({ token }: { token: string }) {
     slug: "",
     title: "",
     description: "",
+    body: "",
     category: "Other",
     year: new Date().getFullYear(),
     techStack: [],
@@ -141,6 +144,7 @@ export default function ProjectsClient({ token }: { token: string }) {
       slug: "",
       title: "",
       description: "",
+      body: "",
       category: "Other",
       year: new Date().getFullYear(),
       techStack: [],
@@ -159,6 +163,7 @@ export default function ProjectsClient({ token }: { token: string }) {
       slug: project.slug,
       title: project.title,
       description: project.description,
+      body: project.body || "",
       category: project.category,
       year: project.year,
       techStack: project.techStack,
@@ -287,6 +292,28 @@ export default function ProjectsClient({ token }: { token: string }) {
                     setFormData({ ...formData, description: e.target.value })
                   }
                 />
+                <p className="mt-1 text-xs text-(--muted)">
+                  Short blurb shown on cards and search results.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">
+                  Case Study (Markdown)
+                </label>
+                <textarea
+                  rows={12}
+                  className="w-full rounded-lg border border-(--border) bg-transparent px-3 py-2 font-mono text-sm"
+                  value={formData.body || ""}
+                  onChange={(e) =>
+                    setFormData({ ...formData, body: e.target.value })
+                  }
+                  placeholder={"## The Problem\n\nWrite the full case study here in Markdown…"}
+                />
+                <p className="mt-1 text-xs text-(--muted)">
+                  Full case-study body rendered on the project detail page. Falls
+                  back to the description if left empty.
+                </p>
               </div>
 
               <div>

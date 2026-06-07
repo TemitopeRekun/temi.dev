@@ -3,6 +3,7 @@ export class ProjectDto {
   slug!: string;
   title!: string;
   description!: string;
+  body?: string | null;
   category!: string;
   year!: number;
   techStack!: string[];

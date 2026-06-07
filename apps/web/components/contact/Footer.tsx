@@ -4,8 +4,6 @@ import { useScroll, useTransform, motion } from "framer-motion";
 import { AnimatedText } from "../common/AnimatedText";
 import { RoundedButton } from "../common/RoundedButton";
 import { MagneticWrapper } from "@temi/ui";
-import { ArrowRight } from "lucide-react";
-import Link from "next/link";
 import Image from "next/image";
 import { ContactForm, type LeadState } from "./ContactForm";
 

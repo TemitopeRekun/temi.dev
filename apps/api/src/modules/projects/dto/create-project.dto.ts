@@ -25,6 +25,12 @@ export class CreateProjectDto {
   @MaxLength(5000)
   description!: string;
 
+  @ApiProperty({ required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(50000)
+  body?: string | null;
+
   @ApiProperty()
   @IsString()
   @MaxLength(50)

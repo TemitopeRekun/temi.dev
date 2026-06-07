@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { TextReveal } from "../common/TextReveal";
 import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
-import type { BlogPost } from "../../lib/blog";
+import type { BlogPost, RawBlogItem } from "../../lib/blog";
 
 function apiBaseUrl(): string {
   const env = process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -28,7 +28,7 @@ export function HomeBlog({ initialPosts }: { initialPosts?: BlogPost[] }) {
       if (!res.ok) return [];
       const data = await res.json();
       if (!data.items || !Array.isArray(data.items)) return [];
-      return data.items.map((item: any) => ({
+      return data.items.map((item: RawBlogItem) => ({
         slug: item.slug,
         title: item.title,
         tag: item.tags?.[0] || "Tech",

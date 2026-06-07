@@ -8,11 +8,30 @@ export type Project = {
   category: ProjectCategory;
   tags: string[];
   description: string;
+  body: string;
   image: string;
   liveUrl: string;
   repoUrl: string;
   featured: boolean;
   order: number;
+};
+
+// Raw shape returned by the API before mapping to `Project`.
+export type RawProject = {
+  id: string;
+  slug?: string;
+  title: string;
+  year?: number;
+  createdAt?: string;
+  category?: string;
+  techStack?: string[];
+  description?: string;
+  body?: string | null;
+  coverImage?: string;
+  liveUrl?: string;
+  repoUrl?: string;
+  featured?: boolean;
+  order?: number;
 };
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
@@ -43,15 +62,20 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   }
 }
 
-function mapProject(data: any): Project {
+function mapProject(data: RawProject): Project {
   return {
     id: data.id,
     slug: data.slug || data.id,
     title: data.title,
-    year: data.year || new Date(data.createdAt).getFullYear(),
+    year:
+      data.year ||
+      (data.createdAt
+        ? new Date(data.createdAt).getFullYear()
+        : new Date().getFullYear()),
     category: data.category || "Other",
     tags: data.techStack || [],
-    description: data.description,
+    description: data.description || "",
+    body: data.body || "",
     image: data.coverImage || "",
     liveUrl: data.liveUrl || "",
     repoUrl: data.repoUrl || "",

@@ -1,6 +1,5 @@
 import {
   Injectable,
-  BadRequestException,
   InternalServerErrorException,
   OnModuleInit,
   Logger,
@@ -34,9 +33,7 @@ export class UploadService implements OnModuleInit {
     if (!this.supabase) return;
 
     try {
-      const { data, error } = await this.supabase.storage.getBucket(
-        this.bucket,
-      );
+      const { error } = await this.supabase.storage.getBucket(this.bucket);
       if (error && error.message.includes("not found")) {
         this.logger.log(`Bucket '${this.bucket}' not found. Creating...`);
         const { error: createError } = await this.supabase.storage.createBucket(
@@ -69,7 +66,7 @@ export class UploadService implements OnModuleInit {
     filename: string,
     mimetype: string,
   ): Promise<string> {
-    const { data, error } = await this.supabase.storage
+    const { error } = await this.supabase.storage
       .from(this.bucket)
       .upload(filename, fileBuffer, {
         contentType: mimetype,

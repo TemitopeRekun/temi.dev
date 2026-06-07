@@ -11,7 +11,6 @@ export const metadata = buildMetadata({
   description:
     "From Lagos to shipping fiscal-compliance software in Spain. A look at my timeline, stack, and how I got here.",
   path: "/about",
-  image: "https://picsum.photos/1200/630?seed=about-og",
 });
 
 export default function AboutPage() {

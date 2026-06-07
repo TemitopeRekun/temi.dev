@@ -9,7 +9,6 @@ export const metadata = buildMetadata({
   description:
     "Selected systems I've built across fintech, mobility, AI infrastructure, and full-stack engineering.",
   path: "/work",
-  image: "https://picsum.photos/1200/630?seed=work-og",
 });
 
 export default async function WorkPage() {
