@@ -39,7 +39,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
 export async function getProjects(): Promise<Project[]> {
   try {
     const res = await fetch(`${API_URL}/api/projects`, {
-      next: { revalidate: 60 }, // Revalidate every minute
+      next: { revalidate: 30 },
+      cache: process.env.NODE_ENV === "development" ? "no-store" : "default",
     });
     if (!res.ok) return [];
     const data = await res.json();
@@ -52,7 +53,8 @@ export async function getProjects(): Promise<Project[]> {
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
   try {
     const res = await fetch(`${API_URL}/api/projects/slug/${slug}`, {
-      next: { revalidate: 60 },
+      next: { revalidate: 30 },
+      cache: process.env.NODE_ENV === "development" ? "no-store" : "default",
     });
     if (!res.ok) return null;
     const data = await res.json();

@@ -57,8 +57,9 @@ export async function getPostBySlug(
   slug: string,
 ): Promise<BlogPost | undefined> {
   try {
+    const isDev = process.env.NODE_ENV !== "production";
     const res = await fetch(`${API_URL}/api/blog/${slug}`, {
-      next: { revalidate: 60 },
+      ...(isDev ? { cache: "no-store" } : { next: { revalidate: 60 } }),
     });
     if (res.ok) {
       const item = await res.json();
