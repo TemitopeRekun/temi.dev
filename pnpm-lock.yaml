@@ -188,8 +188,8 @@ importers:
         version: 0.183.1
     devDependencies:
       '@next/bundle-analyzer':
-        specifier: ^14.2.18
-        version: 14.2.35
+        specifier: ^15.0.0
+        version: 15.5.19
       '@tailwindcss/postcss':
         specifier: ^4.2.1
         version: 4.2.1
@@ -868,8 +868,8 @@ packages:
       '@nestjs/core': ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
       reflect-metadata: ^0.1.13 || ^0.2.0
 
-  '@next/bundle-analyzer@14.2.35':
-    resolution: {integrity: sha512-br772Uozk44eJq3a0Z+sTyNII+29d7ue1a0s4xd+9MlUQl3HhKo/wLqxZPFngMbwr6YnAWh/uKoVEpEOV35Fzw==}
+  '@next/bundle-analyzer@15.5.19':
+    resolution: {integrity: sha512-A+hYYxRIo5ykAkw7+pDTQA9dBp+yXmz70/jdTSm87uVP14oHQmV0lC1jXe212O6+v06WB8fwZFEgz1A+uPeHrA==}
 
   '@next/env@15.5.12':
     resolution: {integrity: sha512-pUvdJN1on574wQHjaBfNGDt9Mz5utDSZFsIIQkMzPgNS8ZvT4H2mwOrOIClwsQOb6EGx5M76/CZr6G8i6pSpLg==}
@@ -4103,7 +4103,7 @@ snapshots:
       '@nestjs/core': 11.1.14(@nestjs/common@11.1.14(class-transformer@0.5.1)(class-validator@0.14.3)(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
       reflect-metadata: 0.2.2
 
-  '@next/bundle-analyzer@14.2.35':
+  '@next/bundle-analyzer@15.5.19':
     dependencies:
       webpack-bundle-analyzer: 4.10.1
     transitivePeerDependencies:

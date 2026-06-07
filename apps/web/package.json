@@ -35,7 +35,7 @@
     "three": "^0.183.1"
   },
   "devDependencies": {
-    "@next/bundle-analyzer": "^14.2.18",
+    "@next/bundle-analyzer": "^15.0.0",
     "@tailwindcss/postcss": "^4.2.1",
     "@temi/config": "workspace:*",
     "@temi/types": "workspace:*",
