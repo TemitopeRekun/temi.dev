@@ -1,7 +1,15 @@
-import { Body, Controller, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
-import type { FastifyReply } from "fastify";
+import type { FastifyReply, FastifyRequest } from "fastify";
+
+const ALLOWED_ORIGINS = ["https://temi.dev", "https://www.temi.dev"];
+
+function resolveCorsOrigin(origin: string | undefined): string {
+  if (!origin) return "*";
+  const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+  return isLocalhost || ALLOWED_ORIGINS.includes(origin) ? origin : "";
+}
 import { RagService } from "./rag.service";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { AskArticleDto } from "./dto/ask-article.dto";
@@ -34,13 +42,19 @@ export class RagController {
   @ApiOperation({ summary: "Streamed Q&A about a specific article" })
   async askArticleStream(
     @Body() dto: AskArticleDto,
+    @Req() req: FastifyRequest,
     @Res({ passthrough: false }) reply: FastifyReply,
   ): Promise<void> {
     const raw = reply.raw;
+    const corsOrigin = resolveCorsOrigin(req.headers.origin);
     raw.writeHead(200, {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
       Connection: "keep-alive",
+      ...(corsOrigin && {
+        "Access-Control-Allow-Origin": corsOrigin,
+        "Access-Control-Allow-Credentials": "true",
+      }),
     });
     try {
       for await (const chunk of this.rag.askArticleStream(dto.articleId, dto.question)) {
@@ -58,13 +72,19 @@ export class RagController {
   @ApiOperation({ summary: "Streamed Q&A across site content via semantic search" })
   async askWebsiteStream(
     @Body() dto: AskWebsiteDto,
+    @Req() req: FastifyRequest,
     @Res({ passthrough: false }) reply: FastifyReply,
   ): Promise<void> {
     const raw = reply.raw;
+    const corsOrigin = resolveCorsOrigin(req.headers.origin);
     raw.writeHead(200, {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
       Connection: "keep-alive",
+      ...(corsOrigin && {
+        "Access-Control-Allow-Origin": corsOrigin,
+        "Access-Control-Allow-Credentials": "true",
+      }),
     });
     try {
       for await (const chunk of this.rag.askWebsiteStream(dto.question)) {

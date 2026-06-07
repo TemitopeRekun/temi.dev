@@ -2,6 +2,8 @@ import { Injectable, BadRequestException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../../prisma/prisma.service";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { readFile } from "fs/promises";
+import { resolve } from "path";
 
 type TableName = "BlogPost" | "Project";
 
@@ -11,6 +13,7 @@ export class AiService {
   private readonly embeddingModel: string;
   private readonly generationModel: string;
   private readonly genAI: GoogleGenerativeAI | null;
+  private persona: string | null = null;
 
   constructor(
     private readonly config: ConfigService,
@@ -22,6 +25,17 @@ export class AiService {
     this.generationModel =
       this.config.get<string>("GEMINI_MODEL") ?? "gemini-2.5-flash";
     this.genAI = this.apiKey ? new GoogleGenerativeAI(this.apiKey) : null;
+  }
+
+  private async getPersona(): Promise<string> {
+    if (this.persona) return this.persona;
+    try {
+      const path = resolve(process.cwd(), "../../packages/ai/prompts/digital-brain-persona.txt");
+      this.persona = await readFile(path, "utf8");
+    } catch {
+      this.persona = "You are Temitope's Digital Brain, an AI assistant representing Temitope Ogunrekun, a Full-Stack Engineer based in Lagos, Nigeria.";
+    }
+    return this.persona;
   }
 
   async generateEmbedding(text: string): Promise<number[]> {
@@ -58,18 +72,10 @@ Question: ${prompt}
     question: string,
     context: string,
   ): Promise<string> {
-    const fullPrompt = `You are Temitope's Digital Brain, an AI assistant representing Temitope Ogunrekun (a Senior Full-Stack Engineer).
-Answer the user's question based on the provided context (which includes my blog posts and projects).
-If the context is relevant, use it to provide specific details.
-If the context is empty or irrelevant, use your general knowledge to answer helpfuly, but clarify that this is general advice not specific to my writing.
-Maintain a professional, technical, and encouraging tone.
-Format your response using Markdown.
+    const persona = await this.getPersona();
+    const fullPrompt = `${persona}
 
-Context:
----
-${context}
----
-
+${context ? `== ADDITIONAL CONTEXT FROM MY BLOG & PROJECTS ==\n---\n${context}\n---\n` : ""}
 Question: ${question}
 `;
     return this.callGemini(fullPrompt);
@@ -134,18 +140,10 @@ Question: ${question}
     question: string,
     context: string,
   ): AsyncGenerator<string> {
-    const fullPrompt = `You are Temitope's Digital Brain, an AI assistant representing Temitope Ogunrekun (a Senior Full-Stack Engineer).
-Answer the user's question based on the provided context (which includes my blog posts and projects).
-If the context is relevant, use it to provide specific details.
-If the context is empty or irrelevant, use your general knowledge to answer helpfuly, but clarify that this is general advice not specific to my writing.
-Maintain a professional, technical, and encouraging tone.
-Format your response using Markdown.
+    const persona = await this.getPersona();
+    const fullPrompt = `${persona}
 
-Context:
----
-${context}
----
-
+${context ? `== ADDITIONAL CONTEXT FROM MY BLOG & PROJECTS ==\n---\n${context}\n---\n` : ""}
 Question: ${question}
 `;
     yield* this.callGeminiStream(fullPrompt);

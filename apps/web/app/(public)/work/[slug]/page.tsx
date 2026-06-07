@@ -52,7 +52,7 @@ export default async function WorkDetailPage({
     name: project.title,
     description: project.description,
     image: project.image || undefined,
-    url: project.liveUrl || `${base}/work/${slug}`,
+    url: `${base}/work/${slug}`,
     dateCreated: String(project.year),
     keywords: project.tags.join(", "),
     creator: { "@type": "Person", name: "Temitope Ogunrekun", url: base },
@@ -110,16 +110,6 @@ export default async function WorkDetailPage({
                 </div>
 
                 <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-                  {project.liveUrl && (
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center rounded-full border border-(--border) px-6 py-2 text-sm font-medium transition-colors hover:bg-(--surface2) hover:text-(--accent)"
-                    >
-                      Visit Live Site ↗
-                    </a>
-                  )}
                   {project.repoUrl && (
                     <a
                       href={project.repoUrl}

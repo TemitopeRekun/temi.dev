@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useRef, useMemo, useState } from "react";
 import { useTheme } from "next-themes";
+import { motion } from "framer-motion";
 import { gsap } from "../../lib/gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { FullscreenNav } from "./FullscreenNav";
@@ -104,7 +105,7 @@ export function Navbar() {
             <Image src="/icon" width={32} height={32} alt="Temitope Ogunrekun" />
           </Link>
 
-          {/* Desktop links — hidden on mobile (burger covers all) */}
+          {/* Desktop links — hidden on mobile */}
           <div className="hidden items-center gap-8 md:flex">
             {(
               [
@@ -117,40 +118,48 @@ export function Navbar() {
             ).map((l) => (
               <NavLinkItem key={l.label} href={l.href} label={l.label} />
             ))}
-
-            {/* Theme toggle */}
-            <button
-              aria-label="Toggle theme"
-              onClick={() => setTheme(isDark ? "light" : "dark")}
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-current text-(--text)"
-            >
-              <span aria-hidden>
-                {mounted ? (
-                  isDark ? (
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M12 4.5a1 1 0 001-1V2a1 1 0 10-2 0v1.5a1 1 0 001 1ZM5.636 6.05a1 1 0 000-1.414L4.573 3.573a1 1 0 10-1.414 1.414l1.063 1.063a1 1 0 001.414 0ZM4.5 13a1 1 0 100-2H3a1 1 0 100 2h1.5zm15.5 0a1 1 0 100-2H18.5a1 1 0 100 2H20ZM19.95 6.05a1 1 0 001.414-1.414L20.3 3.573a1 1 0 00-1.414 1.414l1.063 1.063ZM12 6.5A5.5 5.5 0 1 1 6.5 12 5.507 5.507 0 0 1 12 6.5Z" />
-                    </svg>
-                  ) : (
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
-                    >
-                      <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 1 0 9.79 9.79Z" />
-                    </svg>
-                  )
-                ) : (
-                  <span className="block h-4 w-4" />
-                )}
-              </span>
-            </button>
           </div>
+
+          {/* Theme toggle pill — always visible */}
+          <button
+            aria-label="Toggle theme"
+            onClick={() => setTheme(isDark ? "light" : "dark")}
+            className="relative flex h-8 w-[60px] shrink-0 items-center justify-between rounded-full border border-(--text)/20 bg-(--text)/8 px-1"
+          >
+            {/* sliding thumb */}
+            {mounted && (
+              <motion.span
+                aria-hidden
+                className="absolute top-1 h-6 w-6 rounded-full bg-(--text) shadow-sm"
+                animate={{ left: isDark ? 32 : 4 }}
+                transition={{ type: "spring", stiffness: 500, damping: 38, mass: 0.7 }}
+              />
+            )}
+            {/* Sun icon */}
+            <span
+              aria-hidden
+              className={[
+                "relative z-10 flex h-6 w-6 shrink-0 items-center justify-center transition-colors duration-300",
+                mounted && !isDark ? "text-(--bg)" : "text-(--text)/40",
+              ].join(" ")}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 4.5a1 1 0 001-1V2a1 1 0 10-2 0v1.5a1 1 0 001 1ZM5.636 6.05a1 1 0 000-1.414L4.573 3.573a1 1 0 10-1.414 1.414l1.063 1.063a1 1 0 001.414 0ZM4.5 13a1 1 0 100-2H3a1 1 0 100 2h1.5zm15.5 0a1 1 0 100-2H18.5a1 1 0 100 2H20ZM19.95 6.05a1 1 0 001.414-1.414L20.3 3.573a1 1 0 00-1.414 1.414l1.063 1.063ZM12 6.5A5.5 5.5 0 1 1 6.5 12 5.507 5.507 0 0 1 12 6.5Z" />
+              </svg>
+            </span>
+            {/* Moon icon */}
+            <span
+              aria-hidden
+              className={[
+                "relative z-10 flex h-6 w-6 shrink-0 items-center justify-center transition-colors duration-300",
+                mounted && isDark ? "text-(--bg)" : "text-(--text)/40",
+              ].join(" ")}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 1 0 9.79 9.79Z" />
+              </svg>
+            </span>
+          </button>
         </nav>
       </header>
 

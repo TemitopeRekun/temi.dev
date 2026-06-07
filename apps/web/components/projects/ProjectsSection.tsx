@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import type { Route } from "next";
 import { useQuery } from "@tanstack/react-query";
 import { Container, RevealOnScroll, Section, StaggerReveal } from "@temi/ui";
@@ -10,6 +11,7 @@ import { gsap, registerGSAP } from "../../lib/gsap";
 import { TextReveal } from "../common/TextReveal";
 
 function ProjectCard({ project }: { project: Project }) {
+  const router = useRouter();
   const imgRef = useRef<HTMLDivElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const hoverTl = useRef<gsap.core.Timeline | null>(null);
@@ -57,7 +59,11 @@ function ProjectCard({ project }: { project: Project }) {
 
   return (
     <div
-      className="group overflow-hidden rounded-2xl border border-(--border,rgba(0,0,0,0.08)) bg-(--surface)"
+      role="link"
+      tabIndex={0}
+      onClick={() => router.push(`/work/${project.slug}` as Route)}
+      onKeyDown={(e) => e.key === "Enter" && router.push(`/work/${project.slug}` as Route)}
+      className="group block cursor-pointer overflow-hidden rounded-2xl border border-(--border,rgba(0,0,0,0.08)) bg-(--surface)"
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
     >
@@ -103,31 +109,17 @@ function ProjectCard({ project }: { project: Project }) {
             ))}
           </div>
         </div>
-        <div className="flex shrink-0 items-center gap-3">
-          {project.liveUrl && (
-            <Link
-              href={project.liveUrl as never}
-              className="text-sm text-(--text) underline-offset-4 hover:underline"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Live
-            </Link>
-          )}
-          {project.liveUrl && project.repoUrl && (
-            <span className="text-(--muted)">·</span>
-          )}
-          {project.repoUrl && (
-            <Link
-              href={project.repoUrl as never}
-              className="text-sm text-(--text) underline-offset-4 hover:underline"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Repo
-            </Link>
-          )}
-        </div>
+        {project.repoUrl && (
+          <a
+            href={project.repoUrl}
+            onClick={(e) => e.stopPropagation()}
+            className="shrink-0 text-sm text-(--text) underline-offset-4 hover:underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            View Code ↗
+          </a>
+        )}
       </div>
     </div>
   );

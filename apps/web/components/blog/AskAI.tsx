@@ -99,10 +99,10 @@ export function AskAI() {
               phrase="Ask my Digital Brain"
               className="mb-4 text-center text-2xl font-bold text-(--text) md:text-3xl"
             />
-            
+
             <p className="mb-8 text-center text-(--muted) text-sm md:text-base">
-              I've trained this AI on my blog posts and projects. You can ask about my specific work, 
-              or general software engineering questions, career advice, and technical concepts.
+              Ask me anything — my career path, how I'd approach a technical problem, what stack to learn,
+              how to land your first remote role, or anything about software engineering from someone who's actually doing it.
             </p>
 
             <form onSubmit={handleSubmit} className="relative mb-8">
@@ -110,7 +110,7 @@ export function AskAI() {
                 type="text"
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
-                placeholder="How do I become a senior engineer? What is RAG? Tell me about your stack..."
+                placeholder="How do I break into remote work? What stack should I learn in 2025? How did you go from self-taught to production?"
                 className="w-full rounded-2xl border border-(--border) bg-(--bg) p-4 pr-12 text-base md:text-sm text-(--text) shadow-sm transition-all focus:border-(--accent) focus:outline-none focus:ring-1 focus:ring-(--accent)"
                 disabled={loading}
               />
