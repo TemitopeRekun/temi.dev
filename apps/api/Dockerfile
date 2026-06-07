@@ -1,4 +1,5 @@
 FROM node:20-alpine AS base
+RUN apk add --no-cache openssl
 RUN corepack enable && corepack prepare pnpm@9 --activate
 WORKDIR /app
 
@@ -11,7 +12,7 @@ RUN pnpm install --frozen-lockfile --filter api
 COPY apps/api/ ./apps/api/
 COPY packages/config/ ./packages/config/
 
-RUN cd apps/api && npx prisma generate && npx nest build
+RUN pnpm --filter api prisma:generate && pnpm --filter api build
 
 EXPOSE 4000
 CMD ["node", "apps/api/dist/main.js"]
