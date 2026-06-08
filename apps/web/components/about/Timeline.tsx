@@ -11,7 +11,7 @@ const TIMELINE = [
     title: "Lagos, the beginning",
     role: "Self-taught Developer",
     description:
-      "Pieced it together from whatever was available online. Started with tutorials, then documentation, then building things just to see if I could. Turns out I could.",
+      "Started with tutorials, moved to documentation, then just started building things. Some worked. Most didn't. That gap between 'I understand this' and 'I can actually ship this' — closing it took about two years of building things nobody asked for.",
     tech: ["HTML", "CSS", "JavaScript"],
   },
   {
@@ -20,7 +20,7 @@ const TIMELINE = [
     title: "First product, first real stakes",
     role: "Web Developer · Talent Group Services · Remote (Bedford, UK)",
     description:
-      "Hired as the only developer at a cleaning agency in Bedford. Built their booking platform from scratch — it scaled to 300 monthly active users and cut 40% of the team's manual scheduling work. That's where I learned what it means to own a product end to end: architecture decisions, production incidents, performance bottlenecks, all of it.",
+      "Hired as the only developer at a cleaning agency in Bedford. I built their booking platform from scratch — it scaled to 300 monthly active users and eliminated 40% of their manual scheduling overhead. First time I owned a product end to end: the architecture decisions, the 2am incidents, the performance bottlenecks nobody warned you about. Bedford taught me that there's a version of 'it works' that's actually just 'it hasn't broken yet.'",
     tech: ["TypeScript", "Node.js", "PostgreSQL", "REST APIs"],
   },
   {
@@ -29,7 +29,7 @@ const TIMELINE = [
     title: "Crossing into Europe",
     role: "Full-Stack Developer · Martínez & Company · Remote (Spain)",
     description:
-      "Built a GDPR-compliant website for a European grant consultancy, then wired up analytics and lead capture tooling that actually moved numbers. The quality of the work got me a direct referral to a SaaS company.",
+      "Built a GDPR-compliant platform for a European grant consultancy — analytics, lead capture, the full stack. Delivered it. Then the CTO referred me directly to a SaaS engineering team in Palma. That referral said more about the work than I could.",
     tech: ["Next.js", "TypeScript", "GDPR compliance", "Analytics"],
   },
   {
@@ -38,16 +38,16 @@ const TIMELINE = [
     title: "Production-grade complexity",
     role: "Full-Stack Developer · ADP Digitek (AINVID Coding S.L.) · Remote (Palma, Spain)",
     description:
-      "On the engineering team for Multifactu — a fiscal-compliance invoicing platform for Spanish SMEs, built as a TypeScript monorepo on Next.js, NestJS, and PostgreSQL. I work on signed XML generation that satisfies Spanish tax authority standards, OpenAPI documentation, Docker-based CI/CD, and Playwright test suites. When your software processes legally binding documents for real businesses, 'it works' stops being the finish line.",
+      "Engineering team for Multifactu — a fiscal-compliance invoicing platform for Spanish SMEs. TypeScript monorepo, NestJS, PostgreSQL, Docker, Playwright. I work on the signed XML generation that has to satisfy Spanish tax authority standards, and the OpenAPI contracts that keep the whole stack honest. This is software that processes legally binding documents for real businesses. The bar isn't 'does it work.' The bar is 'can you prove it.'",
     tech: ["TypeScript", "Next.js", "NestJS", "PostgreSQL", "Docker", "Playwright"],
   },
   {
     year: "2026",
     period: "2026 – Present",
-    title: "A second role, in real-time",
+    title: "Bica Driver",
     role: "Frontend Engineer · Bica Driver",
     description:
-      "Alongside ADP Digitek, I build a real-time ride-sharing PWA with native mobile capabilities via Capacitor — namespaced Socket.io for driver, owner, and admin roles, the payment state machine, car verification flow, offline-first connectivity layer, and Firebase push notifications.",
+      "Alongside ADP Digitek, I joined the team building Bica Driver — a real-time ride-sharing PWA with native mobile via Capacitor. I own the real-time layer: namespaced Socket.io for driver, owner, and admin roles, the payment state machine, the offline-first connectivity, Firebase push notifications. The interesting problem here isn't the features — it's that everything has to work when the network doesn't.",
     tech: ["React", "TypeScript", "Socket.io", "Capacitor", "Zustand"],
   },
   {
@@ -56,7 +56,7 @@ const TIMELINE = [
     title: "Looking for what's next",
     role: "Open to remote mid-level roles",
     description:
-      "I'm looking for a remote full-stack or backend role — somewhere with a strong engineering culture where the work is real and the expectations are high. If that sounds like where you work, I'd like to hear about it.",
+      "I'm looking for a remote full-stack or backend role at a company that ships real software to real users — ideally somewhere the engineering culture has opinions about how things should be built, not just whether they ship. If that sounds like where you work, I'd like to talk.",
     tech: ["TypeScript", "Next.js", "NestJS", "PostgreSQL", "Docker"],
   },
 ];
