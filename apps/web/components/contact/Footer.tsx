@@ -222,16 +222,17 @@ export function Footer({ action }: Props) {
               <p>Lagos, NG</p>
             </span>
           </div>
-          <div className="flex flex-wrap items-center justify-start gap-6 sm:justify-end">
+          <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3 sm:gap-5">
             {SOCIALS.map((s) => (
               <MagneticWrapper key={s.label}>
                 <a
                   href={s.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-white transition-colors cursor-pointer"
+                  aria-label={s.label}
+                  className="flex items-center justify-center w-8 h-8 rounded-full border border-white/20 text-white/60 hover:text-white hover:border-white/50 transition-colors"
                 >
-                  {s.label}
+                  {s.icon}
                 </a>
               </MagneticWrapper>
             ))}
