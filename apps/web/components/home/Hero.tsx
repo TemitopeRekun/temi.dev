@@ -152,7 +152,7 @@ export function Hero() {
 
       <div
         ref={contentRef}
-        className="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center justify-center px-3 pt-0 pb-16 text-center sm:px-4 sm:py-4 lg:px-8"
+        className="pointer-events-none relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center justify-center px-3 pt-0 pb-16 text-center sm:px-4 sm:py-4 lg:px-8"
       >
         <div ref={overlineWrapperRef} className="mb-3 sm:mb-5">
           <div
@@ -223,7 +223,7 @@ export function Hero() {
           </div>
         </div>
 
-        <div ref={ctasWrapperRef} className="mt-6 sm:mt-8">
+        <div ref={ctasWrapperRef} className="pointer-events-auto mt-6 sm:mt-8">
           <div
             ref={ctasRef}
             className="flex flex-wrap items-center justify-center gap-4"

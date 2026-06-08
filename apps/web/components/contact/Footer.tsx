@@ -200,7 +200,7 @@ export function Footer({ action }: Props) {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-8 pt-8 border-t border-white/10 text-sm text-white/60">
+        <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-8 pt-8 pb-5 border-t border-white/10 text-sm text-white/60">
           <div className="flex flex-wrap gap-8 sm:gap-10">
             <span>
               <p className="text-white/80 mb-1 font-medium">Version</p>
