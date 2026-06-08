@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  @page { margin: 16mm 20mm; }
   * { margin: 0; padding: 0; box-sizing: border-box; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
-  body { font-family: 'Inter', -apple-system, sans-serif; font-size: 10.5px; line-height: 1.55; color: #1a1a1a; padding: 16mm 20mm; }
+  body { font-family: 'Inter', -apple-system, sans-serif; font-size: 10.5px; line-height: 1.55; color: #1a1a1a; }
   .header { margin-bottom: 18px; text-align: center; }
   .name { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; color: #0d7377; margin-bottom: 3px; }
   .tagline { font-size: 11px; color: #4a4a4a; margin-bottom: 6px; }
@@ -30,7 +31,9 @@
   .project-meta { font-size: 9.5px; color: #5a7d8a; font-style: italic; margin-bottom: 3px; }
   .project ul { padding-left: 16px; margin: 3px 0; }
   .project li { font-size: 10px; margin-bottom: 2px; line-height: 1.5; }
-  .project-links { font-size: 9.5px; margin-top: 3px; }
+  .project-links { font-size: 9.5px; margin-top: 3px; color: #4a4a4a; }
+  .project-links a { color: #0d7377; text-decoration: none; }
+  .ref-contact { font-size: 9.5px; color: #4a4a4a; margin-bottom: 2px; }
   .two-col { display: flex; gap: 24px; }
   .two-col > div { flex: 1; }
   .info-item { font-size: 10px; margin-bottom: 3px; line-height: 1.5; }
@@ -47,6 +50,8 @@
     <span>Lagos, Nigeria (Remote)</span>
     <span>olalekanogunrekun@gmail.com</span>
     <span>+234 901 785 7885</span>
+  </div>
+  <div class="contact" style="margin-top:3px;">
     <span><a href="https://temi.dev">temi.dev</a></span>
     <span><a href="https://github.com/TemitopeRekun">github.com/TemitopeRekun</a></span>
     <span><a href="https://linkedin.com/in/temi-dev">linkedin.com/in/temi-dev</a></span>
@@ -164,7 +169,7 @@
       <li>Engineered a RAG-powered blog system with "Ask this article" contextual chat, AI-generated summaries, and pgvector-backed semantic search using LangChain and OpenAI embeddings</li>
       <li>Built an AI lead scoring engine that prioritises inbound contacts by deal likelihood and generates personalised outreach drafts</li>
     </ul>
-    <div class="project-links contact"><a href="https://temi.dev">temi.dev</a> &middot; <a href="https://github.com/TemitopeRekun/temi.dev">github.com/TemitopeRekun/temi.dev</a></div>
+    <div class="project-links"><a href="https://temi.dev">temi.dev</a> &middot; <a href="https://github.com/TemitopeRekun/temi.dev">github.com/TemitopeRekun/temi.dev</a></div>
   </div>
 
   <div class="project" style="margin-top:8px">
@@ -177,7 +182,7 @@
       <li>Integrated Paystack split payments with fee gross-up, subaccount routing, and idempotent processing via idempotencyKey</li>
       <li>Designed the payment lifecycle (PENDING &rarr; ACTIVE &rarr; COMPLETED / DEFAULTED / FAILED) with full audit trail recording before/after snapshots on every financial event</li>
     </ul>
-    <div class="project-links contact"><a href="https://github.com/TemitopeRekun/Lopay">github.com/TemitopeRekun/Lopay</a> &middot; <a href="https://github.com/TemitopeRekun/lopay-backend">github.com/TemitopeRekun/lopay-backend</a></div>
+    <div class="project-links"><a href="https://github.com/TemitopeRekun/Lopay">github.com/TemitopeRekun/Lopay</a> &middot; <a href="https://github.com/TemitopeRekun/lopay-backend">github.com/TemitopeRekun/lopay-backend</a></div>
   </div>
 </div>
 
@@ -190,12 +195,12 @@
   <div class="section-title">Professional References</div>
   <div style="margin-bottom:6px">
     <div class="info-item"><span class="info-label">Aina Maria Perell&ograve;</span> &mdash; Chief Technology Officer, Mart&iacute;nez Company (Spain)</div>
-    <div class="contact" style="margin-bottom:2px">admin@martinezcompany.eu &middot; martinezcompany.eu/english</div>
+    <div class="ref-contact">admin@martinezcompany.eu &middot; martinezcompany.eu/english</div>
     <div class="ref-quote">&ldquo;His work contributed to the digital implementation aspects of grant-funded initiatives&hellip; I would not hesitate to work with Temitope again.&rdquo;</div>
   </div>
   <div>
     <div class="info-item"><span class="info-label">Pedro Mart&iacute;nez Dopico</span> &mdash; Managing Director, ADP Digitek / AINVID CODING S.L. (Spain)</div>
-    <div class="contact" style="margin-bottom:2px">admin@adpdigitek.com &middot; Palma, Illes Balears, Spain</div>
+    <div class="ref-contact">admin@adpdigitek.com &middot; Palma, Illes Balears, Spain</div>
     <div class="ref-quote">&ldquo;He showed a clear ability to adapt to modern development environments and to quickly familiarise himself with unfamiliar systems.&rdquo;</div>
   </div>
 </div>
