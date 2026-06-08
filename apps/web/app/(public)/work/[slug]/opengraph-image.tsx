@@ -85,7 +85,7 @@ export default async function Image({
           <span
             style={{ color: "rgba(245,245,245,0.5)", fontSize: 18, letterSpacing: "0.08em" }}
           >
-            temi.dev
+            temitope.live
           </span>
           {category && (
             <>

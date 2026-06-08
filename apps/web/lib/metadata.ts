@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 const SITE_NAME = "Temitope Ogunrekun";
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://temi.dev";
-const DEFAULT_OG = `${process.env.NEXT_PUBLIC_SITE_URL || "https://temi.dev"}/opengraph-image`;
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.temitope.live";
+const DEFAULT_OG = `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.temitope.live"}/opengraph-image`;
 
 type MetaInput = {
   title: string;

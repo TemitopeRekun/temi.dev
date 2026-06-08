@@ -2,7 +2,7 @@
 
 **Full-Stack Developer** — TypeScript & Node.js — SaaS Systems  
 Lagos, Nigeria (Remote) · olalekanogunrekun@gmail.com · +234 901 785 7885  
-[temi.dev](https://temi.dev) · [github.com/TemitopeRekun](https://github.com/TemitopeRekun) · [linkedin.com/in/temi-dev](https://linkedin.com/in/temi-dev)
+[temitope.live](https://www.temitope.live) · [github.com/TemitopeRekun](https://github.com/TemitopeRekun) · [linkedin.com/in/temi-dev](https://linkedin.com/in/temi-dev)
 
 ---
 

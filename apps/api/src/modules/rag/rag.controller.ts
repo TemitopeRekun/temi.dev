@@ -3,7 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
 import type { FastifyReply, FastifyRequest } from "fastify";
 
-const ALLOWED_ORIGINS = ["https://temi.dev", "https://www.temi.dev"];
+const ALLOWED_ORIGINS = ["https://temitope.live", "https://www.temitope.live"];
 
 function resolveCorsOrigin(origin: string | undefined): string {
   if (!origin) return "*";

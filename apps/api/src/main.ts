@@ -32,8 +32,8 @@ async function bootstrap() {
       }
 
       const allowedOrigins = [
-        "https://temi.dev",
-        "https://www.temi.dev",
+        "https://temitope.live",
+        "https://www.temitope.live",
       ];
 
       const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);

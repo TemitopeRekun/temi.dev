@@ -88,7 +88,7 @@ export default async function Image({
               letterSpacing: "0.08em",
             }}
           >
-            temi.dev
+            temitope.live
           </span>
           {tag && (
             <>
@@ -207,7 +207,7 @@ export default async function Image({
               background: "rgba(245,245,245,0.15)",
             }}
           />
-          <span>temi.dev</span>
+          <span>temitope.live</span>
         </div>
       </div>
     ),

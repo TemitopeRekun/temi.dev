@@ -43,7 +43,7 @@ export default async function BlogDetailPage({
   const { slug } = await params;
   const post = await getPostBySlug(slug);
 
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://temi.dev";
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.temitope.live";
 
   const blogPostingSchema = post
     ? {

@@ -21,7 +21,7 @@ type Props = {
   title: string;
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://temi.dev";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.temitope.live";
 
 export function ShareArticle({ slug, title }: Props) {
   const [copied, setCopied] = useState(false);

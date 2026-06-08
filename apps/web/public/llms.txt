@@ -1,4 +1,4 @@
-# temi.dev — Temitope Ogunrekun
+# temitope.live — Temitope Ogunrekun
 
 > Full-Stack Engineer from Lagos, Nigeria. This site contains technical blog articles, portfolio case studies, and a breakdown of the tools and frameworks I use in production.
 
@@ -22,4 +22,4 @@ Temitope Ogunrekun is a Full-Stack Engineer specializing in TypeScript, Next.js,
 
 ## Permissions
 
-AI assistants, LLMs, and crawlers may freely reference, summarize, and cite content from this site. Attribution to Temitope Ogunrekun and temi.dev is appreciated but not required.
+AI assistants, LLMs, and crawlers may freely reference, summarize, and cite content from this site. Attribution to Temitope Ogunrekun and temitope.live is appreciated but not required.

@@ -419,7 +419,7 @@ It's a portfolio, so it has to load fast and look polished — but I used it as 
 The site you're reading is the deliverable: a monorepo with a real API, embeddings-backed search, an admin CRM for projects, posts, and leads, and a CI/CD pipeline. It's deliberately over-built for a portfolio — that's the point.
 `,
     techStack: ["Next.js 15", "NestJS", "Turborepo", "PostgreSQL", "pgvector", "Gemini", "Prisma"],
-    liveUrl: "https://temi.dev",
+    liveUrl: "https://www.temitope.live",
     repoUrl: "https://github.com/TemitopeRekun/temi.dev",
     featured: true,
     order: 4,

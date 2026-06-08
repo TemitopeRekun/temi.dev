@@ -3,7 +3,7 @@ import { getProjects } from "../lib/projects";
 import { getPosts } from "../lib/blog";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://temi.dev";
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.temitope.live";
   const now = new Date();
   const [posts, projects] = await Promise.all([getPosts(), getProjects()]);
 

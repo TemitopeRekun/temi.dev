@@ -24,11 +24,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "temi.dev",
+        hostname: "temitope.live",
       },
       {
         protocol: "https",
-        hostname: "www.temi.dev",
+        hostname: "www.temitope.live",
       },
       {
         protocol: "https",

@@ -72,7 +72,7 @@ export default function OgImage() {
               letterSpacing: "0.08em",
             }}
           >
-            temi.dev
+            temitope.live
           </span>
         </div>
 

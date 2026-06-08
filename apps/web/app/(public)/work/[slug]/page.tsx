@@ -44,7 +44,7 @@ export default async function WorkDetailPage({
     notFound();
   }
 
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://temi.dev";
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.temitope.live";
 
   const creativeWorkSchema = {
     "@context": "https://schema.org",

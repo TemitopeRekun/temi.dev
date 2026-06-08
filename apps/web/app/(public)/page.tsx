@@ -32,7 +32,7 @@ export default async function HomePage() {
             "@context": "https://schema.org",
             "@type": "Person",
             name: "Temitope Ogunrekun",
-            url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://temi.dev") + "/",
+            url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.temitope.live") + "/",
             jobTitle: "Full-Stack Engineer",
             sameAs: [
               "https://github.com/TemitopeRekun",
