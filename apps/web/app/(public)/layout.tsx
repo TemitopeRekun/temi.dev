@@ -7,7 +7,7 @@ export default function PublicLayout(props: Readonly<{ children: ReactNode }>) {
   return (
     <>
       <Navbar />
-      <div className="relative z-10 bg-[var(--bg)]">
+      <div id="main-content" className="relative z-10 bg-[var(--bg)]">
         <div className="pt-16 min-h-screen">{props.children}</div>
       </div>
       <Footer action={createLeadAction} />

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { Container, RevealOnScroll, Section } from "@temi/ui";
 import { ContactForm } from "../../../components/contact/ContactForm";
 import { createLeadAction } from "../../../actions/create-lead";
@@ -33,24 +32,30 @@ export default function ContactPage() {
                 <div className="mt-6 space-y-2 text-sm">
                   <div className="text-(--text)">hello@temi.dev</div>
                   <div className="flex items-center gap-4">
-                    <Link
+                    <a
                       href="https://github.com/TemitopeRekun"
+                      target="_blank"
+                      rel="noreferrer"
                       className="text-(--muted) underline-offset-4 hover:underline"
                     >
                       GitHub
-                    </Link>
-                    <Link
+                    </a>
+                    <a
                       href="https://www.linkedin.com/in/temitope-ogunrekun-092736229/"
+                      target="_blank"
+                      rel="noreferrer"
                       className="text-(--muted) underline-offset-4 hover:underline"
                     >
                       LinkedIn
-                    </Link>
-                    <Link
+                    </a>
+                    <a
                       href="https://x.com/_sireTemi"
+                      target="_blank"
+                      rel="noreferrer"
                       className="text-(--muted) underline-offset-4 hover:underline"
                     >
                       Twitter
-                    </Link>
+                    </a>
                   </div>
                 </div>
               </div>

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { NavLink } from "./NavLink";
 import { NavCurve } from "./NavCurve";
 import { MagneticWrapper } from "@temi/ui";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 const NAV_ITEMS = [
   { title: "Home", href: "/" },
@@ -37,6 +38,7 @@ export function FullscreenNav() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndicator, setSelectedIndicator] = useState(pathname);
+  const trapRef = useFocusTrap(isOpen);
   const [hash, setHash] = useState("");
   const [atTop, setAtTop] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -117,6 +119,7 @@ export function FullscreenNav() {
       <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
+            ref={trapRef}
             id="fullscreen-nav"
             role="dialog"
             aria-modal="true"

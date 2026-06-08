@@ -4,9 +4,26 @@ import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { registerGSAP, gsap } from "../../lib/gsap";
 
+function GradientFallback() {
+  return (
+    <div
+      aria-hidden
+      className="absolute inset-0 animate-pulse"
+      style={{
+        background: `
+          radial-gradient(ellipse 70% 55% at 15% 40%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 60%),
+          radial-gradient(ellipse 55% 50% at 85% 65%, color-mix(in oklab, var(--accent2) 18%, transparent), transparent 55%),
+          radial-gradient(ellipse 45% 40% at 60% 20%, color-mix(in oklab, var(--accent) 10%, transparent), transparent 50%),
+          var(--bg)
+        `,
+      }}
+    />
+  );
+}
+
 const Scene = dynamic<{ scrollProgress: number }>(() => import("./Hero3D"), {
   ssr: false,
-  loading: () => null,
+  loading: () => <GradientFallback />,
 });
 
 type HeroBackgroundProps = {

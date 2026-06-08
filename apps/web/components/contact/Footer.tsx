@@ -6,6 +6,7 @@ import { RoundedButton } from "../common/RoundedButton";
 import { MagneticWrapper } from "@temi/ui";
 import Image from "next/image";
 import { ContactForm, type LeadState } from "./ContactForm";
+import { useFocusTrap } from "../../hooks/useFocusTrap";
 
 const SOCIALS = [
   { label: "GitHub", href: "https://github.com/TemitopeRekun" },
@@ -21,6 +22,7 @@ export function Footer({ action }: Props) {
   const container = useRef<HTMLDivElement>(null);
   const [showBrief, setShowBrief] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const trapRef = useFocusTrap(showBrief);
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 640);
@@ -241,7 +243,7 @@ export function Footer({ action }: Props) {
             onClick={() => setShowBrief(false)}
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           />
-          <div className="relative w-full max-w-xl rounded-3xl border border-white/10 bg-(--surface) p-6 sm:p-8 text-(--text) shadow-2xl">
+          <div ref={trapRef} className="relative w-full max-w-xl rounded-3xl border border-white/10 bg-(--surface) p-6 sm:p-8 text-(--text) shadow-2xl">
             <div className="flex items-start justify-between gap-6">
               <div>
                 <p className="text-(--muted) text-xs uppercase tracking-[0.2em] mb-2">

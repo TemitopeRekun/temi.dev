@@ -71,7 +71,7 @@ export function AskAI() {
       }
     } catch (err) {
       if (abort.signal.aborted) return;
-      console.error(err);
+      if (process.env.NODE_ENV !== "production") console.error(err);
       setError(
         err instanceof Error
           ? err.message

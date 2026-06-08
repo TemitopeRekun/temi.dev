@@ -33,6 +33,12 @@ export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
       <body
         className={`${syne.variable} ${dmMono.variable} ${fraunces.variable} bg-(--bg) text-(--text) antialiased`}
       >
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[9999] focus:rounded-full focus:bg-(--accent) focus:px-5 focus:py-2.5 focus:text-sm focus:font-medium focus:text-black focus:shadow-lg"
+        >
+          Skip to main content
+        </a>
         <ThemeProvider>
           <LenisProvider>
             <QueryProvider>
