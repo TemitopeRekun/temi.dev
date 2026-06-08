@@ -5,13 +5,22 @@ import { AnimatedText } from "../common/AnimatedText";
 import { RoundedButton } from "../common/RoundedButton";
 import { MagneticWrapper } from "@temi/ui";
 import Image from "next/image";
+import { Github, Linkedin } from "lucide-react";
 import { ContactForm, type LeadState } from "./ContactForm";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
 
+function XIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className="h-4 w-4" aria-hidden>
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  );
+}
+
 const SOCIALS = [
-  { label: "GitHub", href: "https://github.com/TemitopeRekun" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/temitope-ogunrekun-092736229/" },
-  { label: "Twitter", href: "https://x.com/_sireTemi" },
+  { label: "GitHub", href: "https://github.com/TemitopeRekun", icon: <Github className="h-4 w-4" /> },
+  { label: "LinkedIn", href: "https://www.linkedin.com/in/temitope-ogunrekun-092736229/", icon: <Linkedin className="h-4 w-4" /> },
+  { label: "Twitter", href: "https://x.com/_sireTemi", icon: <XIcon /> },
 ];
 
 type Props = {

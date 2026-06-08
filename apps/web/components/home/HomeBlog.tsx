@@ -112,10 +112,10 @@ export function HomeBlog({ initialPosts }: { initialPosts?: BlogPost[] }) {
           <div className="min-w-0 lg:mr-[calc(40%-50vw)] lg:w-auto lg:flex-1">
             <div
               ref={scrollRef}
-              className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth -mx-4 px-4 pb-4"
+              className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory pb-4"
             >
               {posts.length === 0 && (
-                <div className="w-80 shrink-0">
+                <div className="w-[calc(100vw-2rem)] sm:w-80 shrink-0">
                   <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-(--border)/40 bg-(--surface) p-6 text-center">
                     <div className="mb-3 text-2xl">🍳</div>
                     <p className="text-sm text-(--text)">
@@ -130,7 +130,7 @@ export function HomeBlog({ initialPosts }: { initialPosts?: BlogPost[] }) {
               {posts.map((post) => (
                 <div
                   key={post.slug}
-                  className="w-90 bg-(--surface) rounded-xl shadow-lg overflow-hidden shrink-0"
+                  className="w-[calc(100vw-2rem)] sm:w-80 bg-(--surface) rounded-xl shadow-lg overflow-hidden shrink-0 snap-start"
                 >
                   <Link
                     href={`/blog/${post.slug}`}

@@ -75,6 +75,21 @@ export function FullscreenNav() {
     return () => window.removeEventListener("keydown", onKey);
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen) {
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = "hidden";
+      if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
+    } else {
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+      document.body.style.paddingRight = "";
+    };
+  }, [isOpen]);
+
   const currentHref = `${pathname}${hash}`;
 
   useEffect(() => {
@@ -134,12 +149,12 @@ export function FullscreenNav() {
             <NavCurve />
 
             {/* Nav links */}
-            <div>
+            <div className="pt-14">
               <p className="text-xs uppercase tracking-[0.3em] text-(--muted) mb-10 pb-6 border-b border-(--border)">
                 Navigation
               </p>
               <nav
-                className="flex flex-col gap-2"
+                className="flex flex-col gap-5"
                 onMouseLeave={() => setSelectedIndicator(currentHref)}
               >
                 {NAV_ITEMS.map((item, i) => (
