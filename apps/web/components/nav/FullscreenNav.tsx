@@ -149,7 +149,7 @@ export function FullscreenNav() {
             <NavCurve />
 
             {/* Nav links */}
-            <div className="pt-6"
+            <div className="pt-6">
               <nav
                 className="flex flex-col gap-5"
                 onMouseLeave={() => setSelectedIndicator(currentHref)}
