@@ -149,7 +149,10 @@ export function FullscreenNav() {
             <NavCurve />
 
             {/* Nav links */}
-            <div className="pt-6">
+            <div className="pt-14">
+              <p className="text-xs uppercase tracking-[0.3em] text-(--muted) mb-8 pb-6 border-b border-(--border)">
+                Navigation
+              </p>
               <nav
                 className="flex flex-col gap-5"
                 onMouseLeave={() => setSelectedIndicator(currentHref)}
@@ -166,7 +169,7 @@ export function FullscreenNav() {
             </div>
 
             {/* Social links footer inside nav */}
-            <div className="flex gap-6">
+            <div className="flex gap-3">
              {SOCIALS.map((s) => (
                            <MagneticWrapper key={s.label}>
                              <a
