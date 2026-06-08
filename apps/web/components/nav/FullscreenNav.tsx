@@ -19,7 +19,7 @@ const NAV_ITEMS = [
 const SOCIALS = [
   { label: "GitHub", href: "https://github.com/TemitopeRekun" },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/temitope-ogunrekun-092736229/" },
-  { label: "Twitter", href: "https://x.com/_sireTemi" },
+  { label: "Twitter", href: "https://x.com/sire_Temi" },
 ];
 
 const menuSlide = {

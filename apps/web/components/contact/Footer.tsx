@@ -20,7 +20,7 @@ function XIcon() {
 const SOCIALS = [
   { label: "GitHub", href: "https://github.com/TemitopeRekun", icon: <Github className="h-4 w-4" /> },
   { label: "LinkedIn", href: "https://www.linkedin.com/in/temitope-ogunrekun-092736229/", icon: <Linkedin className="h-4 w-4" /> },
-  { label: "Twitter", href: "https://x.com/_sireTemi", icon: <XIcon /> },
+  { label: "Twitter", href: "https://x.com/sire_Temi", icon: <XIcon /> },
 ];
 
 type Props = {
