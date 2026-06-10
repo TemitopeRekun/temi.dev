@@ -72,7 +72,7 @@ function ProjectCard({ project }: { project: Project }) {
           <Image
             src={
               project.image ||
-              `https://picsum.photos/seed/${project.slug}/1200/800`
+              `/work/${project.slug}/opengraph-image`
             }
             alt={project.title}
             width={1200}
