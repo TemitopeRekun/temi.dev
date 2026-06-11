@@ -44,7 +44,7 @@ export async function getPosts(): Promise<BlogPost[]> {
       image:
         item.coverImage ||
         item.image ||
-        `https://picsum.photos/1200/800?seed=${item.slug}`,
+        `/blog/${item.slug}/opengraph-image`,
       readTime: Math.ceil((item.content?.length || 1000) / 1000),
       publishedAt: item.publishedAt,
     }));
@@ -72,7 +72,7 @@ export async function getPostBySlug(
         image:
           item.coverImage ||
           item.image ||
-          `https://picsum.photos/1200/800?seed=${item.slug}`,
+          `/blog/${item.slug}/opengraph-image`,
         readTime: Math.ceil((item.content?.length || 1000) / 1000),
         content: item.content,
         publishedAt: item.publishedAt,

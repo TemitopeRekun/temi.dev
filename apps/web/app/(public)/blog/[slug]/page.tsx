@@ -132,13 +132,22 @@ export default async function BlogDetailPage({
 
               {post.content ? (
                 <div className="case-study">
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    rehypePlugins={[
-                      [rehypeSanitize, { ...defaultSchema, attributes: { ...defaultSchema.attributes, code: ["className"], span: ["className"] } }],
-                      rehypeHighlight,
-                    ]}
-                  >
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      rehypePlugins={[
+                        [rehypeSanitize, {
+                          ...defaultSchema,
+                          tagNames: [...(defaultSchema.tagNames || []), "div"],
+                          attributes: {
+                            ...defaultSchema.attributes,
+                            code: ["className"],
+                            span: ["className"],
+                            div: ["className"],
+                          },
+                        }],
+                        rehypeHighlight,
+                      ]}
+                    >
                     {post.content}
                   </ReactMarkdown>
                 </div>

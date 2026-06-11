@@ -36,7 +36,7 @@ export function HomeBlog({ initialPosts }: { initialPosts?: BlogPost[] }) {
         image:
           item.coverImage ||
           item.image ||
-          `https://picsum.photos/1200/800?seed=${item.slug}`,
+          `/blog/${item.slug}/opengraph-image`,
         readTime: Math.ceil((item.content?.length || 1000) / 1000),
       }));
     },
@@ -115,7 +115,7 @@ export function HomeBlog({ initialPosts }: { initialPosts?: BlogPost[] }) {
               className="flex gap-6 overflow-x-auto scrollbar-hide scroll-smooth snap-x snap-mandatory pb-4"
             >
               {posts.length === 0 && (
-                <div className="w-[calc(100vw-2rem)] sm:w-80 shrink-0">
+                <div className="w-[calc(100vw-2rem)] sm:w-80 lg:w-96 shrink-0">
                   <div className="flex h-full flex-col items-center justify-center rounded-2xl border border-(--border)/40 bg-(--surface) p-6 text-center">
                     <div className="mb-3 text-2xl">🍳</div>
                     <p className="text-sm text-(--text)">
@@ -130,7 +130,7 @@ export function HomeBlog({ initialPosts }: { initialPosts?: BlogPost[] }) {
               {posts.map((post) => (
                 <div
                   key={post.slug}
-                  className="w-[calc(100vw-2rem)] sm:w-80 bg-(--surface) rounded-xl shadow-lg overflow-hidden shrink-0 snap-start"
+                  className="w-[calc(100vw-2rem)] sm:w-80 lg:w-96 bg-(--surface) rounded-xl shadow-lg overflow-hidden shrink-0 snap-start"
                 >
                   <Link
                     href={`/blog/${post.slug}`}
