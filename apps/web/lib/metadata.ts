@@ -17,6 +17,7 @@ export function buildMetadata(input: MetaInput): Metadata {
   const image = input.image ?? DEFAULT_OG;
   const type = input.type ?? "website";
   return {
+    metadataBase: new URL(BASE_URL),
     title: input.title,
     description: input.description,
     alternates: { canonical: url },

@@ -1,25 +1,27 @@
 import { ImageResponse } from "next/og";
-import { getPostBySlug } from "../../../../lib/blog";
+import { getProjectBySlug } from "../../../../../lib/projects";
 
-export const size = { width: 1200, height: 630 };
-export const contentType = "image/png";
+// Plain Route Handler (not the `opengraph-image` metadata convention) because
+// dynamic metadata-image conventions 404 when nested inside a route group on
+// Next 15.5.x. This is referenced explicitly from generateMetadata + cards.
+const size = { width: 1200, height: 630 };
 
 function truncate(text: string, max: number) {
-  return text.length > max ? text.slice(0, max - 1) + "\u2026" : text;
+  return text.length > max ? text.slice(0, max - 1) + "…" : text;
 }
 
-export default async function Image({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ slug: string }> },
+) {
   const { slug } = await params;
-  const post = await getPostBySlug(slug);
+  const project = await getProjectBySlug(slug);
 
-  const title = truncate(post?.title ?? "Blog Post", 80);
-  const excerpt = truncate(post?.excerpt ?? "", 150);
-  const tag = post?.tag ?? "";
-  const readTime = post?.readTime ?? 3;
+  const title = truncate(project?.title ?? "Case Study", 80);
+  const description = truncate(project?.description ?? "", 130);
+  const category = project?.category ?? "";
+  const year = project?.year ? String(project.year) : "";
+  const tags = project?.tags?.slice(0, 4) ?? [];
 
   return new ImageResponse(
     (
@@ -90,7 +92,7 @@ export default async function Image({
           >
             temitope.live
           </span>
-          {tag && (
+          {category && (
             <>
               <span style={{ color: "rgba(245,245,245,0.2)", fontSize: 18 }}>
                 /
@@ -105,16 +107,13 @@ export default async function Image({
                   border: "1px solid rgba(226,201,126,0.2)",
                 }}
               >
-                {tag}
+                {category}
               </span>
-              <span
-                style={{
-                  color: "rgba(245,245,245,0.3)",
-                  fontSize: 14,
-                }}
-              >
-                {readTime} min read
-              </span>
+              {year && (
+                <span style={{ color: "rgba(245,245,245,0.3)", fontSize: 14 }}>
+                  {year}
+                </span>
+              )}
             </>
           )}
         </div>
@@ -128,7 +127,6 @@ export default async function Image({
             maxWidth: 900,
           }}
         >
-          {/* Eyebrow */}
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <div style={{ width: 32, height: 1, background: "#e2c97e" }} />
             <span
@@ -139,78 +137,80 @@ export default async function Image({
                 fontWeight: 500,
               }}
             >
-              BLOG
+              CASE STUDY
             </span>
           </div>
 
-          {/* Title */}
           <div
             style={{
               color: "#f5f5f5",
-              fontSize: 56,
+              fontSize: 60,
               fontWeight: 800,
-              lineHeight: 1.1,
+              lineHeight: 1.05,
               letterSpacing: "-2px",
-              display: "-webkit-box",
-              WebkitLineClamp: 3,
-              WebkitBoxOrient: "vertical",
-              overflow: "hidden",
             }}
           >
             {title}
           </div>
 
-          {/* Excerpt */}
-          {excerpt && (
+          {description && (
             <div
               style={{
                 color: "rgba(245,245,245,0.45)",
                 fontSize: 20,
                 fontWeight: 400,
-                letterSpacing: "-0.1px",
                 lineHeight: 1.5,
-                display: "-webkit-box",
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: "vertical",
-                overflow: "hidden",
               }}
             >
-              {excerpt}
+              {description}
             </div>
           )}
         </div>
 
-        {/* Bottom */}
+        {/* Bottom row — tech tags */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 16,
-            color: "rgba(245,245,245,0.25)",
-            fontSize: 13,
-            letterSpacing: "0.05em",
+            justifyContent: "space-between",
           }}
         >
-          <span>Temitope Ogunrekun</span>
-          <span
+          <div style={{ display: "flex", gap: 10 }}>
+            {tags.map((tag) => (
+              <div
+                key={tag}
+                style={{
+                  padding: "7px 16px",
+                  background: "rgba(245,245,245,0.05)",
+                  border: "1px solid rgba(245,245,245,0.1)",
+                  borderRadius: 6,
+                  color: "rgba(245,245,245,0.5)",
+                  fontSize: 14,
+                  letterSpacing: "0.05em",
+                }}
+              >
+                {tag}
+              </div>
+            ))}
+          </div>
+          <div
             style={{
-              width: 1,
-              height: 12,
-              background: "rgba(245,245,245,0.15)",
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              color: "rgba(245,245,245,0.25)",
+              fontSize: 13,
             }}
-          />
-          <span>Full-Stack Engineer</span>
-          <span
-            style={{
-              width: 1,
-              height: 12,
-              background: "rgba(245,245,245,0.15)",
-            }}
-          />
-          <span>temitope.live</span>
+          >
+            <span>Temitope Ogunrekun</span>
+            <span
+              style={{ width: 1, height: 12, background: "rgba(245,245,245,0.15)" }}
+            />
+            <span>Full-Stack Engineer</span>
+          </div>
         </div>
       </div>
     ),
-    { ...size },
+    { width: size.width, height: size.height },
   );
 }

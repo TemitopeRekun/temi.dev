@@ -42,9 +42,7 @@ export async function getPosts(): Promise<BlogPost[]> {
       tag: item.tags?.[0] || "Tech",
       excerpt: item.excerpt || "No excerpt available.",
       image:
-        item.coverImage ||
-        item.image ||
-        `/blog/${item.slug}/opengraph-image`,
+        item.coverImage || item.image || `/blog/${item.slug}/og`,
       readTime: Math.ceil((item.content?.length || 1000) / 1000),
       publishedAt: item.publishedAt,
     }));
@@ -70,9 +68,7 @@ export async function getPostBySlug(
         tag: item.tags?.[0] || "Tech",
         excerpt: item.excerpt || "",
         image:
-          item.coverImage ||
-          item.image ||
-          `/blog/${item.slug}/opengraph-image`,
+          item.coverImage || item.image || `/blog/${item.slug}/og`,
         readTime: Math.ceil((item.content?.length || 1000) / 1000),
         content: item.content,
         publishedAt: item.publishedAt,

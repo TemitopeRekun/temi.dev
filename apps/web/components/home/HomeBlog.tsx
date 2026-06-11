@@ -34,9 +34,7 @@ export function HomeBlog({ initialPosts }: { initialPosts?: BlogPost[] }) {
         tag: item.tags?.[0] || "Tech",
         excerpt: item.excerpt || "No excerpt available.",
         image:
-          item.coverImage ||
-          item.image ||
-          `/blog/${item.slug}/opengraph-image`,
+          item.coverImage || item.image || `/blog/${item.slug}/og`,
         readTime: Math.ceil((item.content?.length || 1000) / 1000),
       }));
     },

@@ -27,7 +27,7 @@ export async function generateMetadata({
     title: project ? `${project.title} — Work` : "Work Detail",
     description: project ? project.description : "Project details.",
     path: project ? `/work/${project.slug}` : "/work",
-    image: project?.image,
+    image: project ? `/work/${project.slug}/og` : undefined,
     type: "article",
   });
 }

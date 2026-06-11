@@ -30,7 +30,7 @@ export async function generateMetadata({
     title: post ? `${post.title} — Blog` : "Blog Post",
     description: post ? post.excerpt : "Blog post",
     path: post ? `/blog/${post.slug}` : "/blog",
-    image: post?.image,
+    image: post ? `/blog/${post.slug}/og` : undefined,
     type: "article",
   });
 }

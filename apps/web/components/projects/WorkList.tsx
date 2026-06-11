@@ -166,7 +166,7 @@ export function WorkList({ initialProjects }: { initialProjects?: Project[] }) {
               className="flex h-full w-full items-center justify-center bg-(--surface)"
             >
               <Image
-                src={p.image || `/work/${p.slug}/opengraph-image`}
+                src={p.image || `/work/${p.slug}/og`}
                 width={400}
                 height={300}
                 alt={p.title}

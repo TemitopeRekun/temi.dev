@@ -70,10 +70,7 @@ function ProjectCard({ project }: { project: Project }) {
       <div className="relative aspect-16/10 overflow-hidden">
         <div ref={imgRef} className="h-full w-full">
           <Image
-            src={
-              project.image ||
-              `/work/${project.slug}/opengraph-image`
-            }
+            src={project.image || `/work/${project.slug}/og`}
             alt={project.title}
             width={1200}
             height={800}
