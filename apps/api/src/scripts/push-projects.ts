@@ -68,6 +68,7 @@ async function main(): Promise<void> {
       techStack: p.techStack,
       liveUrl: p.liveUrl || null,
       repoUrl: p.repoUrl || null,
+      coverImage: p.coverImage || null,
       featured: p.featured,
       order: p.order,
     };

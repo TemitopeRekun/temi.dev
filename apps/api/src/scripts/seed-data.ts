@@ -129,6 +129,186 @@ const BLOG_POSTS = [
     published: true,
     viewCount: 110,
   },
+  {
+    slug: "barely-scratched-the-surface",
+    title: "I Built a Production App and Discovered I'd Barely Scratched the Surface of Learning",
+    tag: "Production",
+    excerpt:
+      "I didn't learn to code inside a company. No senior engineer reviewed my pull requests. No one mentioned over Slack that my database port was exposed. I learned alone — and the code worked. Then I found out what I'd missed.",
+    content: `
+I didn't learn to code inside a company. No senior engineer reviewed my pull requests. No one mentioned over Slack that my database port was exposed. No architecture meeting where someone said "we don't do it that way because last time we did, X happened." I learned from YouTube, docs, tutorials, AI — alone, without anyone who'd already been through what I was about to go through.
+
+Maybe that's you too. Not because of *how* you learned — plenty of people use the same resources and come out fine. But because of the environment you learned in. No senior developer nearby making decisions and explaining why. No institutional knowledge being passed down. Just you, the code, and the internet.
+
+The code worked. I shipped a real rideshare app — real users, real payments, real infrastructure, running in production in Nigeria. What I didn't know was how much I didn't know. Not about the code. About everything that has to exist *around* the code for it to survive contact with the real world.
+
+This is everything I wish someone had told me before I shipped.
+
+<div class="divider">lesson one</div>
+
+<div class="lesson">
+  <div class="lesson-num">Lesson 01</div>
+  <div class="lesson-title">Your database is exposed to the entire internet by default</div>
+  <p>Port 5432 — the default Postgres port — is open the moment you spin up a VPS, unless you explicitly close it. I was running a production database not knowing anyone with an internet connection could attempt to connect directly to it.</p>
+</div>
+
+When you run Postgres locally, it's protected by your machine. When you deploy it to a VPS, that protection disappears. The server is sitting on the public internet, and every port is reachable unless you configure a firewall to block it.
+
+Most tutorials show you how to connect to a database. None of them show you what you need to do to protect it afterward. The fix is a firewall rule:
+
+\`\`\`bash
+# Only allow Postgres connections from your app server's IP
+ufw allow from YOUR_APP_SERVER_IP to any port 5432
+ufw deny 5432
+
+# Never expose it to 0.0.0.0 (the entire internet)
+\`\`\`
+
+This is the difference between a VPS (the machine) and a VPC (the private network around the machine). One is the server. The other is the security perimeter. You need both. Services like Railway give you a VPC automatically — that's part of what you're paying for. A raw VPS gives you only the machine. The security is your responsibility.
+
+<div class="divider">lesson two</div>
+
+<div class="lesson">
+  <div class="lesson-num">Lesson 02</div>
+  <div class="lesson-title">Redis forgets everything when the server restarts</div>
+  <p>By default, Redis is an in-memory store. No persistence. If your server restarts — planned or not — every queued job, every cached value, every BullMQ task disappears. I learned this when a restart wiped a queue mid-processing.</p>
+</div>
+
+Redis has two persistence modes: RDB (periodic snapshots) and AOF (Append-Only File — logs every write operation). For job queues, AOF is what you want. It means Redis can reconstruct its entire state after a restart by replaying the write log.
+
+\`\`\`bash
+# redis.conf — the two lines that save your queue
+appendonly yes
+appendfsync everysec
+\`\`\`
+
+One configuration flag. It's not taught in any BullMQ tutorial I read. It's in the Redis documentation, quietly sitting there waiting for you to find it after your first incident.
+
+<div class="callout-danger">
+  <strong>The failure mode</strong>
+  BullMQ jobs appear to be running. Redis restarts (deployment, server maintenance, OOM kill). The queue is empty. The jobs never completed. Your users have no idea. You have no idea.
+</div>
+
+<div class="divider">lesson three</div>
+
+<div class="lesson">
+  <div class="lesson-num">Lesson 03</div>
+  <div class="lesson-title">Production bugs don't announce themselves</div>
+  <p>In local development, errors print to your terminal. In production, they vanish into silence unless you've built the infrastructure to catch them. Nobody emails you. You find out when a user complains — or you don't find out at all.</p>
+</div>
+
+The tool that changes this is error tracking. Sentry is the standard. Every unhandled exception in your NestJS app gets captured, grouped by type, and sent to a dashboard with the full stack trace, the request context, and the user who triggered it.
+
+The shift in mindset is significant: you go from reactive (fixing bugs users reported) to proactive (fixing bugs before users notice them). For a production app, that's not a luxury — it's a baseline.
+
+> "It works on my machine" stops being an excuse the moment your app is running on someone else's machine. That's what production is.
+
+<div class="divider">lesson four</div>
+
+<div class="lesson">
+  <div class="lesson-num">Lesson 04</div>
+  <div class="lesson-title">Your local environment lies to you</div>
+  <p>Your local Node version is probably not the same as your production Node version. Your local OS is not the same as your server OS. Dependencies that install cleanly locally can fail silently or differently on a Linux server. Docker exists to solve exactly this problem.</p>
+</div>
+
+A Docker container is a sealed environment. You define the exact Node version, the exact OS layer, the exact dependencies — and that definition ships with the code. The container that runs on your machine is the same container that runs in production.
+
+\`\`\`dockerfile
+FROM node:20.11-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --only=production
+COPY . .
+RUN npm run build
+CMD ["node", "dist/main.js"]
+\`\`\`
+
+"It works on my machine" disappears as a concept. Either the container works everywhere, or it works nowhere. That determinism is the entire point.
+
+<div class="divider">lesson five</div>
+
+<div class="lesson">
+  <div class="lesson-num">Lesson 05</div>
+  <div class="lesson-title">Database migrations can kill your app mid-deploy</div>
+  <p>Renaming a column while users are actively using the app means your old code will crash looking for the old column name — while your new code tries to read the new one. For a few seconds to a few minutes, neither works correctly. This is called a breaking migration, and it's entirely avoidable.</p>
+</div>
+
+The pattern that prevents it is called expand-contract migration. Instead of renaming in one step, you do it in three deployments:
+
+<div class="compare">
+  <div class="compare-col">
+    <div class="compare-head bad">Breaking approach</div>
+    <div class="compare-item">Deploy 1: Rename \`phone\` → \`phone_number\`</div>
+    <div class="compare-item">Old code crashes looking for \`phone\`</div>
+    <div class="compare-item">Downtime until rollback or hotfix</div>
+    <div class="compare-item">Users affected</div>
+  </div>
+  <div class="compare-col">
+    <div class="compare-head good">Expand-contract</div>
+    <div class="compare-item right">Deploy 1: Add \`phone_number\`, keep \`phone\`</div>
+    <div class="compare-item right">Deploy 2: Write to both columns, read from new</div>
+    <div class="compare-item right">Deploy 3: Drop old \`phone\` column</div>
+    <div class="compare-item right">Zero downtime. Users unaffected.</div>
+  </div>
+</div>
+
+Three deploys instead of one. The cost is a small amount of extra code in deploy 2. The reward is that your app never goes offline because of a schema change.
+
+<div class="divider">lesson six</div>
+
+<div class="lesson">
+  <div class="lesson-num">Lesson 06</div>
+  <div class="lesson-title">Payment success ≠ payment recorded</div>
+  <p>A payment can succeed on the provider's side and fail to be saved to your database. Your server crashes between receiving the webhook and completing the database write. The user paid. Your system shows no payment. This is an idempotency problem — and it's one of the most important concepts in fintech engineering.</p>
+</div>
+
+The solution is to treat every payment event as something that must be safely re-processable. Webhook handlers need to be idempotent — processing the same event twice should produce the same result as processing it once. You achieve this by storing the payment provider's unique event ID and checking for duplicates before writing:
+
+\`\`\`javascript
+// Before processing any payment webhook:
+const existing = await db.payment.findUnique({
+  where: { providerEventId: webhook.event_id }
+});
+
+if (existing) {
+  return; // Already processed. Safe to ignore.
+}
+
+// Only write if we haven't seen this event before
+await db.payment.create({
+  data: {
+    providerEventId: webhook.event_id,
+    amount: webhook.amount,
+    status: 'completed'
+  }
+});
+\`\`\`
+
+<div class="callout-danger">
+  <strong>Why this matters in Nigeria specifically</strong>
+  Network instability means webhook delivery is unreliable. Providers retry webhooks. Without idempotency, a single payment can be recorded multiple times — or not at all. Neither is acceptable when real money is involved.
+</div>
+
+<div class="divider">the real lesson</div>
+
+## The Gap Nobody Talks About
+
+Tutorials teach you the Application Layer — the code, the API, the database queries. But a production system has seven other layers sitting around that code: the data layer, the infrastructure layer, the delivery layer, the observability layer, the reliability layer, the process layer, and — depending on your industry — a compliance layer.
+
+Most self-taught developers build entirely in the Application Layer and call it production. Then they wonder why things break in ways their code can't explain.
+
+The lessons in this article aren't advanced concepts. They're table stakes. They're the things a senior developer thinks about automatically — not because they memorized a checklist, but because they've seen enough things break to know which questions to ask before deploying.
+
+> You don't need to implement all of this before you ship. But you do need to know the map, so you never make a local decision that accidentally breaks something global.
+
+The most valuable thing you can do after reading this isn't to immediately restructure your infrastructure. It's to look at what you've already built and ask the right questions: What happens to my queue if Redis restarts? What port is my database listening on, and who can reach it? What happens if my payment webhook fires twice?
+
+Those questions are what production engineering actually is. The code is the easy part.
+`,
+    image: "",
+    readTime: 12,
+    published: true,
+  },
 ];
 
 export const PROJECTS = [
@@ -196,6 +376,7 @@ Lopay runs as a modular monolith of ten feature modules, with unit and e2e tests
     techStack: ["React 19", "Capacitor", "NestJS", "PostgreSQL", "Prisma", "Socket.io", "Firebase Auth"],
     liveUrl: "",
     repoUrl: "https://github.com/TemitopeRekun/Lopay",
+    coverImage: "/images/LopayLogo.jpg",
     featured: true,
     order: 1,
   },
@@ -277,6 +458,7 @@ The system handles three roles, thirteen trip states, live tracking, split payme
     techStack: ["React 19", "Capacitor", "NestJS", "Fastify", "Socket.io", "Redis", "BullMQ", "PostgreSQL", "Monnify"],
     liveUrl: "https://bicadriver.netlify.app",
     repoUrl: "https://github.com/TemitopeRekun/Bica-Driver",
+    coverImage: "/images/BicaLogo.jpg",
     featured: true,
     order: 2,
   },
@@ -421,6 +603,7 @@ The site you're reading is the deliverable: a monorepo with a real API, embeddin
     techStack: ["Next.js 15", "NestJS", "Turborepo", "PostgreSQL", "pgvector", "Gemini", "Prisma"],
     liveUrl: "https://www.temitope.live",
     repoUrl: "https://github.com/TemitopeRekun/temi.dev",
+    coverImage: "/opengraph-image",
     featured: true,
     order: 4,
   },
@@ -488,6 +671,7 @@ async function main(): Promise<void> {
             techStack: project.techStack,
             liveUrl: project.liveUrl || null,
             repoUrl: project.repoUrl || null,
+            coverImage: project.coverImage || null,
             featured: project.featured,
             order: project.order,
         }
