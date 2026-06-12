@@ -12,7 +12,7 @@ import { AiService } from "../modules/ai/ai.service";
 })
 class ScriptModule {}
 
-const BLOG_POSTS = [
+export const BLOG_POSTS = [
   {
     slug: "ai-pipelines-at-scale",
     title: "Building Reliable AI Pipelines at Scale",
@@ -131,182 +131,186 @@ const BLOG_POSTS = [
   },
   {
     slug: "barely-scratched-the-surface",
-    title: "I Built a Production App and Discovered I'd Barely Scratched the Surface of Learning",
+    title:
+      "What I Discovered After Shipping a Production App (That No Tutorial Ever Taught Me)",
     tag: "Production",
+    tags: [
+      "Production",
+      "Backend",
+      "Self-Taught",
+      "Web Development",
+      "Node.js",
+    ],
     excerpt:
-      "I didn't learn to code inside a company. No senior engineer reviewed my pull requests. No one mentioned over Slack that my database port was exposed. I learned alone — and the code worked. Then I found out what I'd missed.",
+      "I thought knowing how to code was enough — projects, tutorials, APIs, deploys to Netlify. Then I shipped a real rideshare platform with real users, real payments, and real consequences when things broke, and discovered I'd been living in a comfortable illusion.",
     content: `
-I didn't learn to code inside a company. No senior engineer reviewed my pull requests. No one mentioned over Slack that my database port was exposed. No architecture meeting where someone said "we don't do it that way because last time we did, X happened." I learned from YouTube, docs, tutorials, AI — alone, without anyone who'd already been through what I was about to go through.
+I thought knowing how to code was enough.
 
-Maybe that's you too. Not because of *how* you learned — plenty of people use the same resources and come out fine. But because of the environment you learned in. No senior developer nearby making decisions and explaining why. No institutional knowledge being passed down. Just you, the code, and the internet.
+I'd built projects, followed tutorials, connected APIs, deployed things to Netlify. I felt ready. Then I shipped a real production application — a rideshare platform with real users, real payments, and real consequences when things broke — and discovered I had been living in a very comfortable illusion.
 
-The code worked. I shipped a real rideshare app — real users, real payments, real infrastructure, running in production in Nigeria. What I didn't know was how much I didn't know. Not about the code. About everything that has to exist *around* the code for it to survive contact with the real world.
+Tutorials teach you how to build features. Production teaches you how to survive after you've built them. These are completely different educations.
 
-This is everything I wish someone had told me before I shipped.
+Here's what I wish someone had told me before I shipped my first real app.
 
-<div class="divider">lesson one</div>
+## 1. Your Database Port Is Open to the Internet by Default
 
-<div class="lesson">
-  <div class="lesson-num">Lesson 01</div>
-  <div class="lesson-title">Your database is exposed to the entire internet by default</div>
-  <p>Port 5432 — the default Postgres port — is open the moment you spin up a VPS, unless you explicitly close it. I was running a production database not knowing anyone with an internet connection could attempt to connect directly to it.</p>
-</div>
+This one kept me up at night when I first understood it.
 
-When you run Postgres locally, it's protected by your machine. When you deploy it to a VPS, that protection disappears. The server is sitting on the public internet, and every port is reachable unless you configure a firewall to block it.
+When you spin up a PostgreSQL server on a raw VPS, port 5432 — the port Postgres listens on — is publicly accessible by default. That means anyone on the internet can attempt to connect directly to your database. Not to your API. To the database itself.
 
-Most tutorials show you how to connect to a database. None of them show you what you need to do to protect it afterward. The fix is a firewall rule:
+I was running a production application without knowing this was happening.
+
+The fix is a firewall rule that sounds simple but nobody in any tutorial ever mentioned it:
 
 \`\`\`bash
-# Only allow Postgres connections from your app server's IP
-ufw allow from YOUR_APP_SERVER_IP to any port 5432
+# Block all incoming traffic to Postgres from the public internet
 ufw deny 5432
 
-# Never expose it to 0.0.0.0 (the entire internet)
+# Only allow connections from localhost (your own server)
+ufw allow from 127.0.0.1 to any port 5432
 \`\`\`
 
-This is the difference between a VPS (the machine) and a VPC (the private network around the machine). One is the server. The other is the security perimeter. You need both. Services like Railway give you a VPC automatically — that's part of what you're paying for. A raw VPS gives you only the machine. The security is your responsibility.
+Or in Docker Compose, bind the port to localhost only:
 
-<div class="divider">lesson two</div>
+\`\`\`yaml
+postgres:
+  image: postgres:16-alpine
+  ports:
+    - "127.0.0.1:5432:5432"  # ✅ internal only
+    # NOT "5432:5432"         # ❌ this exposes to the public internet
+\`\`\`
 
-<div class="lesson">
-  <div class="lesson-num">Lesson 02</div>
-  <div class="lesson-title">Redis forgets everything when the server restarts</div>
-  <p>By default, Redis is an in-memory store. No persistence. If your server restarts — planned or not — every queued job, every cached value, every BullMQ task disappears. I learned this when a restart wiped a queue mid-processing.</p>
-</div>
+The broader lesson here is the difference between a VPS and a VPC — two terms that sound identical but mean completely different things. A VPS is the machine you rent. A VPC is the private network security boundary around it. When you use Railway or Render, they manage both for you. When you use a raw VPS, you get the machine but you're responsible for the security boundary yourself.
 
-Redis has two persistence modes: RDB (periodic snapshots) and AOF (Append-Only File — logs every write operation). For job queues, AOF is what you want. It means Redis can reconstruct its entire state after a restart by replaying the write log.
+Every production server needs both.
+
+## 2. Redis Doesn't Remember Anything After a Restart
+
+Redis is an in-memory database. That means when the server restarts — planned or unplanned — everything stored in memory is gone by default.
+
+If you're using BullMQ for background jobs (sending emails, processing payments, triggering notifications), every queued job disappears on restart. Users who were waiting for a confirmation email, payment jobs that hadn't completed, retry jobs for failed operations — all of it, silently gone.
+
+The fix is enabling AOF (Append Only File) persistence, which logs every write command to disk as it happens:
 
 \`\`\`bash
-# redis.conf — the two lines that save your queue
+# redis.conf
 appendonly yes
-appendfsync everysec
+appendfsync everysec  # flush to disk every second
 \`\`\`
 
-One configuration flag. It's not taught in any BullMQ tutorial I read. It's in the Redis documentation, quietly sitting there waiting for you to find it after your first incident.
+With AOF enabled, if Redis crashes and restarts, it replays every logged command and fully recovers the queue state. You lose at most one second of data instead of everything.
 
-<div class="callout-danger">
-  <strong>The failure mode</strong>
-  BullMQ jobs appear to be running. Redis restarts (deployment, server maintenance, OOM kill). The queue is empty. The jobs never completed. Your users have no idea. You have no idea.
-</div>
+This is the kind of configuration that nobody mentions in a "Getting Started with Redis" tutorial, but that will absolutely burn you in production without it.
 
-<div class="divider">lesson three</div>
+## 3. Bugs Don't Announce Themselves
 
-<div class="lesson">
-  <div class="lesson-num">Lesson 03</div>
-  <div class="lesson-title">Production bugs don't announce themselves</div>
-  <p>In local development, errors print to your terminal. In production, they vanish into silence unless you've built the infrastructure to catch them. Nobody emails you. You find out when a user complains — or you don't find out at all.</p>
-</div>
+In a tutorial project, when something breaks, you know immediately — you're sitting right there watching it.
 
-The tool that changes this is error tracking. Sentry is the standard. Every unhandled exception in your NestJS app gets captured, grouped by type, and sent to a dashboard with the full stack trace, the request context, and the user who triggered it.
+In production, a critical error can happen at 2am, affect dozens of users, and you won't know until someone tweets about it or a user messages support. By the time you find out, the problem has been happening for hours.
 
-The shift in mindset is significant: you go from reactive (fixing bugs users reported) to proactive (fixing bugs before users notice them). For a production app, that's not a luxury — it's a baseline.
+You need error monitoring software that catches exceptions automatically and alerts you before users do. Sentry is the standard. When your NestJS app throws an unhandled error, Sentry captures it with the full stack trace, the user's context, the sequence of events that led to it, and how many people were affected — all in real time.
 
-> "It works on my machine" stops being an excuse the moment your app is running on someone else's machine. That's what production is.
+The moment I added Sentry to my production app, I discovered errors I had no idea were happening. Not critical ones, but real failures that real users were experiencing silently. Without Sentry, I would never have known.
 
-<div class="divider">lesson four</div>
+Monitoring is not optional. It's how you find out your app is broken before your users tell you.
 
-<div class="lesson">
-  <div class="lesson-num">Lesson 04</div>
-  <div class="lesson-title">Your local environment lies to you</div>
-  <p>Your local Node version is probably not the same as your production Node version. Your local OS is not the same as your server OS. Dependencies that install cleanly locally can fail silently or differently on a Linux server. Docker exists to solve exactly this problem.</p>
-</div>
+## 4. "It Works on My Machine" Is a Real Production Crisis
 
-A Docker container is a sealed environment. You define the exact Node version, the exact OS layer, the exact dependencies — and that definition ships with the code. The container that runs on your machine is the same container that runs in production.
+Every developer has said this. It sounds like an excuse. In production, it's a genuine emergency.
 
-\`\`\`dockerfile
-FROM node:20.11-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY . .
-RUN npm run build
-CMD ["node", "dist/main.js"]
+Your local machine runs Node 18. Your server runs Node 20. Your local OS is macOS. Your server is Ubuntu. Your local environment has a \`.env\` file with certain variables. Your server has different ones, or is missing some entirely.
+
+Any one of these mismatches can cause behaviour that works perfectly locally and fails completely in production, with no obvious error message explaining why.
+
+Docker exists entirely to solve this problem. A Docker container packages your application with its exact runtime — the specific Node version, OS libraries, environment configuration — into an image. That image runs identically on your laptop, your teammate's Windows machine, and your Ubuntu server.
+
+The shift in thinking is: you're no longer deploying code. You're deploying an environment that contains your code. The environment is the same everywhere, which means "it works on my machine" and "it works in production" become the same statement.
+
+## 5. Database Migrations Can Kill Your App Mid-Deploy
+
+Imagine you have a column in your database called \`phone\`. You want to rename it to \`phoneNumber\`. You write a migration, deploy it, and your app crashes for every user currently using it.
+
+Why? Because while your new code is deploying, your old code is still running — and the old code is looking for a column called \`phone\` that no longer exists. You've broken production for the window between when the migration runs and when all old instances shut down.
+
+The solution is something called the Expand-Contract pattern, and it's one of those concepts that feels obvious in hindsight but that I had never heard of:
+
+\`\`\`text
+Deploy 1 (Expand):    Add new column phoneNumber. Write to BOTH
+                      columns in code. Old code still works.
+
+Deploy 2 (Backfill):  Copy all data from phone into phoneNumber
+                      for existing rows.
+
+Deploy 3 (Contract):  Remove old phone column. Clean up dual-write.
 \`\`\`
 
-"It works on my machine" disappears as a concept. Either the container works everywhere, or it works nowhere. That determinism is the entire point.
+Three deploys instead of one. Zero downtime. No users affected.
 
-<div class="divider">lesson five</div>
+The rule: your new database state must always be backwards-compatible with your currently running code. If the old code can't work with the new schema, your deploy window is a production outage.
 
-<div class="lesson">
-  <div class="lesson-num">Lesson 05</div>
-  <div class="lesson-title">Database migrations can kill your app mid-deploy</div>
-  <p>Renaming a column while users are actively using the app means your old code will crash looking for the old column name — while your new code tries to read the new one. For a few seconds to a few minutes, neither works correctly. This is called a breaking migration, and it's entirely avoidable.</p>
-</div>
+## 6. CI/CD Is the Difference Between "Deploy and Pray" and Actual Engineering
 
-The pattern that prevents it is called expand-contract migration. Instead of renaming in one step, you do it in three deployments:
+For a long time, my deploy process was: finish the feature, push to GitHub, SSH into the server, pull the code, restart the process, refresh the browser, hope nothing broke.
 
-<div class="compare">
-  <div class="compare-col">
-    <div class="compare-head bad">Breaking approach</div>
-    <div class="compare-item">Deploy 1: Rename \`phone\` → \`phone_number\`</div>
-    <div class="compare-item">Old code crashes looking for \`phone\`</div>
-    <div class="compare-item">Downtime until rollback or hotfix</div>
-    <div class="compare-item">Users affected</div>
-  </div>
-  <div class="compare-col">
-    <div class="compare-head good">Expand-contract</div>
-    <div class="compare-item right">Deploy 1: Add \`phone_number\`, keep \`phone\`</div>
-    <div class="compare-item right">Deploy 2: Write to both columns, read from new</div>
-    <div class="compare-item right">Deploy 3: Drop old \`phone\` column</div>
-    <div class="compare-item right">Zero downtime. Users unaffected.</div>
-  </div>
-</div>
+That's not a deployment process. That's a ritual.
 
-Three deploys instead of one. The cost is a small amount of extra code in deploy 2. The reward is that your app never goes offline because of a schema change.
+A CI/CD pipeline (Continuous Integration / Continuous Deployment) means that every push to your main branch automatically runs your tests, builds your Docker image, and deploys to your server — without you touching anything. More importantly, if the tests fail, the deploy never happens. Broken code never reaches production.
 
-<div class="divider">lesson six</div>
+With GitHub Actions, this looks like:
 
-<div class="lesson">
-  <div class="lesson-num">Lesson 06</div>
-  <div class="lesson-title">Payment success ≠ payment recorded</div>
-  <p>A payment can succeed on the provider's side and fail to be saved to your database. Your server crashes between receiving the webhook and completing the database write. The user paid. Your system shows no payment. This is an idempotency problem — and it's one of the most important concepts in fintech engineering.</p>
-</div>
+\`\`\`yaml
+name: Deploy
+on:
+  push:
+    branches: [main]
 
-The solution is to treat every payment event as something that must be safely re-processable. Webhook handlers need to be idempotent — processing the same event twice should produce the same result as processing it once. You achieve this by storing the payment provider's unique event ID and checking for duplicates before writing:
-
-\`\`\`javascript
-// Before processing any payment webhook:
-const existing = await db.payment.findUnique({
-  where: { providerEventId: webhook.event_id }
-});
-
-if (existing) {
-  return; // Already processed. Safe to ignore.
-}
-
-// Only write if we haven't seen this event before
-await db.payment.create({
-  data: {
-    providerEventId: webhook.event_id,
-    amount: webhook.amount,
-    status: 'completed'
-  }
-});
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm test          # if this fails, deploy stops here
+      - name: Deploy
+        run: npx @railway/cli up
+        env:
+          RAILWAY_TOKEN: \${{ secrets.RAILWAY_TOKEN }}
 \`\`\`
 
-<div class="callout-danger">
-  <strong>Why this matters in Nigeria specifically</strong>
-  Network instability means webhook delivery is unreliable. Providers retry webhooks. Without idempotency, a single payment can be recorded multiple times — or not at all. Neither is acceptable when real money is involved.
-</div>
+The psychological shift matters too. When you know tests run automatically on every push, you stop being afraid of deploying. Deploys become boring and frequent instead of stressful and rare. That's exactly what you want.
 
-<div class="divider">the real lesson</div>
+## 7. Technical Debt Is a Real Cost, Not Just Messy Code
 
-## The Gap Nobody Talks About
+Early in a project, you make shortcuts. You hardcode a value instead of making it configurable. You write a function that does three things instead of one. You skip the error handling because you're moving fast.
 
-Tutorials teach you the Application Layer — the code, the API, the database queries. But a production system has seven other layers sitting around that code: the data layer, the infrastructure layer, the delivery layer, the observability layer, the reliability layer, the process layer, and — depending on your industry — a compliance layer.
+That's fine. That's how products get shipped.
 
-Most self-taught developers build entirely in the Application Layer and call it production. Then they wonder why things break in ways their code can't explain.
+The problem is when those shortcuts accumulate invisibly. Every shortcut you take today adds time to the next feature that touches the same code. A module that took two hours to write with shortcuts might take eight hours to modify later, because nobody fully understands it anymore — including you.
 
-The lessons in this article aren't advanced concepts. They're table stakes. They're the things a senior developer thinks about automatically — not because they memorized a checklist, but because they've seen enough things break to know which questions to ask before deploying.
+This is technical debt. And unlike financial debt, it doesn't send you statements. It just silently makes everything slower.
 
-> You don't need to implement all of this before you ship. But you do need to know the map, so you never make a local decision that accidentally breaks something global.
+The thing I had to learn was how to talk about it — not to other developers, but to clients and product owners who don't care about code quality. The framing that actually works:
 
-The most valuable thing you can do after reading this isn't to immediately restructure your infrastructure. It's to look at what you've already built and ask the right questions: What happens to my queue if Redis restarts? What port is my database listening on, and who can reach it? What happens if my payment webhook fires twice?
+> "We can ship this payment feature in three days. But the code around it has some shortcuts from last month that will make every future payment feature take twice as long. If we take one extra day now to clean it up, the next four payment features each save a day. That's three days invested for twelve days recovered."
 
-Those questions are what production engineering actually is. The code is the easy part.
+Technical debt expressed as a business trade-off is a conversation stakeholders can engage with. Technical debt expressed as "the code is messy" is a conversation they'll dismiss.
+
+## The Real Lesson
+
+Every one of these things is invisible until something breaks. You don't go looking for Redis persistence documentation on a calm Tuesday afternoon. You find it at 2am when a deploy restarted your server and a queue full of payment jobs disappeared.
+
+That's how production teaches you — through failure, under pressure, with real consequences.
+
+Tutorials cannot replicate that. They can only teach you how to build features in ideal conditions. Production teaches you how to build systems that survive non-ideal ones.
+
+The gap between those two educations is enormous. And most self-taught developers don't even know the gap exists until they're standing in it.
+
+I'm documenting everything I learn as I go — the production failures, the configuration decisions, the architecture patterns that nobody explains until you need them. If you're a self-taught developer who suspects you might be missing something, you probably are. And that's completely okay. The first step is knowing what questions to ask.
+
+These lessons came from building a real rideshare application in production — handling payments, real-time location, background job queues, and third-party integrations. If any of this resonates, follow along for more.
 `,
     image: "",
-    readTime: 12,
+    readTime: 11,
     published: true,
   },
 ];
@@ -628,7 +632,7 @@ async function main(): Promise<void> {
           title: post.title,
           excerpt: post.excerpt,
           content: post.content,
-          tags: [post.tag],
+          tags: "tags" in post ? post.tags : [post.tag],
           published: post.published,
           publishedAt: new Date(),
         },

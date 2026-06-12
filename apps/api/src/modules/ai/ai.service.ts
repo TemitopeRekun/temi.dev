@@ -11,6 +11,7 @@ type TableName = "BlogPost" | "Project";
 export class AiService {
   private readonly apiKey: string;
   private readonly embeddingModel: string;
+  private readonly embeddingDim: number;
   private readonly generationModel: string;
   private readonly genAI: GoogleGenerativeAI | null;
   private persona: string | null = null;
@@ -21,7 +22,12 @@ export class AiService {
   ) {
     this.apiKey = this.config.get<string>("GEMINI_API_KEY") ?? "";
     this.embeddingModel =
-      this.config.get<string>("GEMINI_EMBEDDING_MODEL") ?? "text-embedding-005";
+      this.config.get<string>("GEMINI_EMBEDDING_MODEL") ??
+      "gemini-embedding-001";
+    // Must match the "vector(N)" column dimension in the Prisma schema.
+    this.embeddingDim = Number(
+      this.config.get<string>("GEMINI_EMBEDDING_DIM") ?? "768",
+    );
     this.generationModel =
       this.config.get<string>("GEMINI_MODEL") ?? "gemini-2.5-flash";
     this.genAI = this.apiKey ? new GoogleGenerativeAI(this.apiKey) : null;
@@ -39,17 +45,36 @@ export class AiService {
   }
 
   async generateEmbedding(text: string): Promise<number[]> {
-    if (!this.genAI) throw new BadRequestException("GEMINI_API_KEY missing");
+    if (!this.apiKey) throw new BadRequestException("GEMINI_API_KEY missing");
+    // The SDK (v0.24.1) can't request a reduced output dimensionality, so we
+    // call the REST endpoint directly with outputDimensionality set to match
+    // the vector(N) column. Errors are logged (not silently swallowed) and we
+    // return [] so callers fall back gracefully.
     try {
-      const model = this.genAI.getGenerativeModel({
-        model: this.embeddingModel,
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.embeddingModel}:embedContent?key=${this.apiKey}`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: `models/${this.embeddingModel}`,
+          content: { parts: [{ text }] },
+          outputDimensionality: this.embeddingDim,
+        }),
       });
-      const res = await model.embedContent(text);
-      const values = res.embedding?.values ?? [];
+      if (!res.ok) {
+        console.error(
+          `Embedding request failed (${this.embeddingModel}): ${res.status} ${await res.text()}`,
+        );
+        return [];
+      }
+      const data = (await res.json()) as {
+        embedding?: { values?: number[] };
+      };
+      const values = data.embedding?.values ?? [];
       if (!Array.isArray(values) || values.length === 0) return [];
-      const out = values.map((v) => Number(v));
-      return out;
-    } catch {
+      return values.map((v) => Number(v));
+    } catch (e) {
+      console.error("Embedding generation error:", e);
       return [];
     }
   }
