@@ -39,19 +39,19 @@ Engineering team for Multifactu, a fiscal-compliance invoicing platform for Span
 *Stack: TypeScript • NestJS • Fastify • GraphQL • PostgreSQL • Prisma • Turborepo • Docker • Playwright • AWS S3/KMS • SOAP*
 
 ### Full-Stack Developer • BicaDriver Limited • Remote, Lagos, Nigeria
-*2026 – Present*
+*Jan 2026 – Present*
 
-Built a real-time ride-hailing platform with a NestJS backend and a React Native + Capacitor client supporting driver, owner, and admin workflows.
+Built and launched a production ride-hailing platform — 13-state trip state machine, real-time GPS over namespaced Socket.io, and idempotent Monnify payment splits — serving 1,000+ vehicle owners and 50+ drivers with sub-150ms p95 API response times.
 
-- Designed a 10-state trip lifecycle with API-level transition validation to protect ride integrity and prevent invalid state changes.
-- Implemented a three-zone pricing engine with traffic-aware fare logic, nearest-50-naira rounding, and rate snapshotting at trip creation.
-- Built GPS-based fare settlement with a three-step fallback strategy: Google Roads API, Haversine calculation, and estimate fallback, with Redis-backed location accumulation over throttled WebSocket streams.
-- Developed OTP ride verification with 4-digit PIN flow, 5-attempt lockout, regeneration rate limiting, and brute-force protection.
-- Built a driver rating system with automated enforcement, where rating thresholds trigger 72-hour or 30-day suspensions with full audit logging.
-- Integrated Monnify payments with split transactions, SELECT FOR UPDATE row locking, 10-minute reconciliation jobs, and orphaned transaction recovery.
-- Built a namespaced Socket.io gateway with JWT-verified role-based rooms for live driver tracking, trip state updates, and FCM push notifications.
+- Modelled trip flow as a 13-state machine with server-enforced transitions, so two clients and the server stay in agreement regardless of connection quality.
+- Implemented three-zone pricing with traffic-aware fare logic and rate snapshotting at trip creation, so fares never drift when settings change mid-trip.
+- Built GPS fare settlement with a three-step fallback (Google Roads → Haversine → estimate) and 1/sec-throttled Redis list accumulation, avoiding Postgres writes on every location tick.
+- Designed failure-first reconnection: 401 errors suppressed during active trips so signal drops never log a driver out mid-ride, with `/rides/current` restoring full trip context on reconnect.
+- Implemented client-side `X-Idempotency-Key` on every mutating request and signature-verified Monnify webhooks with status normalisation — processing ₦2M+ in the first two months with zero duplicate charges.
+- Isolated Firebase push and Resend email to BullMQ queues so third-party slowness never blocks trip lifecycle API responses.
+- Built driver rating enforcement with automated 72-hour/30-day suspensions and full audit logging; OTP verification with 4-digit PIN, 5-attempt lockout, and brute-force protection.
 
-*Stack: TypeScript • React Native • NestJS • PostgreSQL • Prisma • Socket.io • Redis • Monnify API • Capacitor • FCM • Zustand*
+*Stack: TypeScript • React Native • NestJS • PostgreSQL • Prisma • Socket.io • Redis • BullMQ • Monnify API • Capacitor • FCM • Zustand*
 
 ### Full-Stack Developer • Martínez & Company • Remote, Spain
 *Jun 2024 – Dec 2024*
@@ -72,15 +72,6 @@ Built a real-time ride-hailing platform with a NestJS backend and a React Native
 - Managed production deployments, monitoring, incident response, and day-to-day platform reliability.
 
 *Stack: React • Next.js • TypeScript • Node.js • PostgreSQL • Vercel*
-
-### Freelance Full-Stack Developer • Self-Employed • Remote, Lagos, Nigeria
-*Feb 2021 – Present*
-
-- Delivered 10+ production projects across SaaS dashboards, e-commerce systems, internal tools, and mobile-enabled platforms for Nigerian and international clients.
-- Built temi.dev, a full-stack portfolio SaaS platform with AI-powered content, contextual article Q&A, lead management, and admin analytics.
-- Architected a multi-tenant monorepo using Turborepo, shared packages, PostgreSQL, Prisma, LangChain, and pgvector for semantic retrieval and content workflows.
-
-*Stack: React • Next.js • NestJS • Node.js • TypeScript • PostgreSQL • Redis • MongoDB • OpenAI API • LangChain • n8n • Supabase*
 
 ---
 

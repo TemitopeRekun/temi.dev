@@ -99,18 +99,18 @@
   <div class="role">
     <div class="role-header">
       <div><span class="role-title">Full-Stack Developer</span> <span class="role-company">&middot; BicaDriver Limited &middot; Remote, Lagos, Nigeria</span></div>
-      <span class="role-date">2026 &ndash; Present</span>
+      <span class="role-date">Jan 2026 &ndash; Present</span>
     </div>
-    <div class="role-stack">Stack: TypeScript &middot; React Native &middot; NestJS &middot; PostgreSQL &middot; Prisma &middot; Socket.io &middot; Redis &middot; Monnify API &middot; Capacitor &middot; FCM &middot; Zustand</div>
+    <div class="role-stack">Stack: TypeScript &middot; React Native &middot; NestJS &middot; PostgreSQL &middot; Prisma &middot; Socket.io &middot; Redis &middot; BullMQ &middot; Monnify API &middot; Capacitor &middot; FCM &middot; Zustand</div>
     <ul>
-      <li>Built a real-time ride-hailing platform with a NestJS backend and a React Native + Capacitor client supporting driver, owner, and admin workflows.</li>
-      <li>Designed a 10-state trip lifecycle with API-level transition validation to protect ride integrity and prevent invalid state changes.</li>
-      <li>Implemented a three-zone pricing engine with traffic-aware fare logic, nearest-50-naira rounding, and rate snapshotting at trip creation.</li>
-      <li>Built GPS-based fare settlement with a three-step fallback strategy: Google Roads API, Haversine calculation, and estimate fallback, with Redis-backed location accumulation over throttled WebSocket streams.</li>
-      <li>Developed OTP ride verification with 4-digit PIN flow, 5-attempt lockout, regeneration rate limiting, and brute-force protection.</li>
-      <li>Built a driver rating system with automated enforcement, where rating thresholds trigger 72-hour or 30-day suspensions with full audit logging.</li>
-      <li>Integrated Monnify payments with split transactions, SELECT FOR UPDATE row locking, 10-minute reconciliation jobs, and orphaned transaction recovery.</li>
-      <li>Built a namespaced Socket.io gateway with JWT-verified role-based rooms for live driver tracking, trip state updates, and FCM push notifications.</li>
+      <li>Built and launched a production ride-hailing platform &mdash; 13-state trip state machine, real-time GPS over namespaced Socket.io, and idempotent Monnify payment splits &mdash; serving 1,000+ vehicle owners and 50+ drivers with sub-150ms p95 API response times.</li>
+      <li>Modelled trip flow as a 13-state machine with server-enforced transitions, so two clients and the server stay in agreement regardless of connection quality.</li>
+      <li>Implemented three-zone pricing with traffic-aware fare logic and rate snapshotting at trip creation, so fares never drift when settings change mid-trip.</li>
+      <li>Built GPS fare settlement with a three-step fallback (Google Roads &rarr; Haversine &rarr; estimate) and 1/sec-throttled Redis list accumulation, avoiding Postgres writes on every location tick.</li>
+      <li>Designed failure-first reconnection: 401 errors suppressed during active trips so signal drops never log a driver out mid-ride, with <code>/rides/current</code> restoring full trip context on reconnect.</li>
+      <li>Implemented client-side <code>X-Idempotency-Key</code> on every mutating request and signature-verified Monnify webhooks with status normalisation &mdash; processing &#x20A6;2M+ in the first two months with zero duplicate charges.</li>
+      <li>Isolated Firebase push and Resend email to BullMQ queues so third-party slowness never blocks trip lifecycle API responses.</li>
+      <li>Built driver rating enforcement with automated 72-hour/30-day suspensions and full audit logging; OTP verification with 4-digit PIN, 5-attempt lockout, and brute-force protection.</li>
     </ul>
   </div>
 
@@ -142,18 +142,6 @@
     </ul>
   </div>
 
-  <div class="role">
-    <div class="role-header">
-      <div><span class="role-title">Freelance Full-Stack Developer</span> <span class="role-company">&middot; Self-Employed &middot; Remote, Lagos, Nigeria</span></div>
-      <span class="role-date">Feb 2021 &ndash; Present</span>
-    </div>
-    <div class="role-stack">Stack: React &middot; Next.js &middot; NestJS &middot; Node.js &middot; TypeScript &middot; PostgreSQL &middot; Redis &middot; MongoDB &middot; OpenAI API &middot; LangChain &middot; n8n &middot; Supabase</div>
-    <ul>
-      <li>Delivered 10+ production projects across SaaS dashboards, e-commerce systems, internal tools, and mobile-enabled platforms for Nigerian and international clients.</li>
-      <li>Built temi.dev, a full-stack portfolio SaaS platform with AI-powered content, contextual article Q&A, lead management, and admin analytics.</li>
-      <li>Architected a multi-tenant monorepo using Turborepo, shared packages, PostgreSQL, Prisma, LangChain, and pgvector for semantic retrieval and content workflows.</li>
-    </ul>
-  </div>
 </div>
 
 <div class="section">
