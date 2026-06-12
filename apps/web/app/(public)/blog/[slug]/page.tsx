@@ -4,6 +4,7 @@ import type { Route } from "next";
 import { Container, RevealOnScroll, Section } from "@temi/ui";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { AnimatedText } from "../../../../components/common/AnimatedText";
@@ -135,14 +136,16 @@ export default async function BlogDetailPage({
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       rehypePlugins={[
+                        rehypeRaw,
                         [rehypeSanitize, {
                           ...defaultSchema,
                           tagNames: [...(defaultSchema.tagNames || []), "div"],
                           attributes: {
                             ...defaultSchema.attributes,
-                            code: ["className"],
-                            span: ["className"],
-                            div: ["className"],
+                            "*": [...(defaultSchema.attributes?.["*"] ?? []), "class"],
+                            code: ["className", "class"],
+                            span: ["className", "class"],
+                            div: ["class"],
                           },
                         }],
                         rehypeHighlight,
