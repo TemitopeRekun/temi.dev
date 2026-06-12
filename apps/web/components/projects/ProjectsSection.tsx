@@ -153,7 +153,7 @@ export function ProjectsSection({ initialProjects }: { initialProjects?: Project
           tags: p.techStack || [],
           description: p.description || "",
           body: p.body || "",
-          image: p.coverImage || "",
+          image: p.coverImage || (p as unknown as { image?: string }).image || "",
           liveUrl: p.liveUrl || "",
           repoUrl: p.repoUrl || "",
           featured: p.featured || false,
