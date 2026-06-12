@@ -12,6 +12,7 @@ export class AiService {
   private readonly apiKey: string;
   private readonly embeddingModel: string;
   private readonly embeddingDim: number;
+  private readonly similarityFloor: number;
   private readonly generationModel: string;
   private readonly genAI: GoogleGenerativeAI | null;
   private persona: string | null = null;
@@ -27,6 +28,11 @@ export class AiService {
     // Must match the "vector(N)" column dimension in the Prisma schema.
     this.embeddingDim = Number(
       this.config.get<string>("GEMINI_EMBEDDING_DIM") ?? "768",
+    );
+    // Cosine-similarity floor for retrieval. Tuned for gemini-embedding-001,
+    // whose relevant matches sit around ~0.55–0.65 (lower than older models).
+    this.similarityFloor = Number(
+      this.config.get<string>("RAG_SIMILARITY_FLOOR") ?? "0.5",
     );
     this.generationModel =
       this.config.get<string>("GEMINI_MODEL") ?? "gemini-2.5-flash";
@@ -193,7 +199,7 @@ Question: ${question}
              1 - (${embeddingColumn} <=> ${vecLiteral}) AS similarity
       FROM ${table}
       WHERE ${embeddingColumn} IS NOT NULL
-        AND 1 - (${embeddingColumn} <=> ${vecLiteral}) >= 0.7
+        AND 1 - (${embeddingColumn} <=> ${vecLiteral}) >= ${this.similarityFloor}
       ORDER BY ${embeddingColumn} <=> ${vecLiteral} ASC
       LIMIT ${Math.max(1, Math.min(50, limit))}
     `;
