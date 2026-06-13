@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "highlight.js/styles/github-dark-dimmed.css";
 
 :root {
   --bg: #FFF4E6;
@@ -17,6 +16,22 @@
   --glass-bg: rgba(255, 244, 230, 0.65);
   --hero-ink: rgba(21, 17, 14, 0.45);
   --hero-ink-strong: rgba(21, 17, 14, 0.65);
+
+  /* Syntax highlighting tokens — GitHub light theme */
+  --hl-base: #24292e;
+  --hl-keyword: #d73a49;
+  --hl-entity: #6f42c1;
+  --hl-constant: #005cc5;
+  --hl-string: #032f62;
+  --hl-variable: #e36209;
+  --hl-comment: #6a737d;
+  --hl-tag: #22863a;
+  --hl-section: #005cc5;
+  --hl-bullet: #735c0f;
+  --hl-addition-fg: #22863a;
+  --hl-addition-bg: #f0fff4;
+  --hl-deletion-fg: #b31d28;
+  --hl-deletion-bg: #ffeef0;
 }
 
 .dark {
@@ -35,6 +50,22 @@
   --glass-bg: rgba(20, 18, 16, 0.70);
   --hero-ink: rgba(12, 11, 10, 0.25);
   --hero-ink-strong: rgba(12, 11, 10, 0.45);
+
+  /* Syntax highlighting tokens — GitHub Dark Dimmed theme */
+  --hl-base: #adbac7;
+  --hl-keyword: #f47067;
+  --hl-entity: #dcbdfb;
+  --hl-constant: #6cb6ff;
+  --hl-string: #96d0ff;
+  --hl-variable: #f69d50;
+  --hl-comment: #768390;
+  --hl-tag: #8ddb8c;
+  --hl-section: #316dca;
+  --hl-bullet: #eac55f;
+  --hl-addition-fg: #b4f1b4;
+  --hl-addition-bg: #1b4721;
+  --hl-deletion-fg: #ffd8d3;
+  --hl-deletion-bg: #78191b;
 }
 
 html {
@@ -425,6 +456,97 @@ pre {
   border: none;
   padding: 0;
   color: var(--muted);
+}
+
+/* ── Theme-aware syntax highlighting (highlight.js tokens) ──
+   Token colors switch with the active theme via --hl-* variables
+   (GitHub light in :root, GitHub Dark Dimmed in .dark). The code-block
+   background and base text stay on the case-study palette above. */
+.case-study .hljs-doctag,
+.case-study .hljs-keyword,
+.case-study .hljs-meta .hljs-keyword,
+.case-study .hljs-template-tag,
+.case-study .hljs-template-variable,
+.case-study .hljs-type,
+.case-study .hljs-variable.language_ {
+  color: var(--hl-keyword);
+}
+
+.case-study .hljs-title,
+.case-study .hljs-title.class_,
+.case-study .hljs-title.class_.inherited__,
+.case-study .hljs-title.function_ {
+  color: var(--hl-entity);
+}
+
+.case-study .hljs-attr,
+.case-study .hljs-attribute,
+.case-study .hljs-literal,
+.case-study .hljs-meta,
+.case-study .hljs-number,
+.case-study .hljs-operator,
+.case-study .hljs-variable,
+.case-study .hljs-selector-attr,
+.case-study .hljs-selector-class,
+.case-study .hljs-selector-id {
+  color: var(--hl-constant);
+}
+
+.case-study .hljs-regexp,
+.case-study .hljs-string,
+.case-study .hljs-meta .hljs-string {
+  color: var(--hl-string);
+}
+
+.case-study .hljs-built_in,
+.case-study .hljs-symbol {
+  color: var(--hl-variable);
+}
+
+.case-study .hljs-comment,
+.case-study .hljs-code,
+.case-study .hljs-formula {
+  color: var(--hl-comment);
+}
+
+.case-study .hljs-name,
+.case-study .hljs-quote,
+.case-study .hljs-selector-tag,
+.case-study .hljs-selector-pseudo {
+  color: var(--hl-tag);
+}
+
+.case-study .hljs-subst {
+  color: var(--hl-base);
+}
+
+.case-study .hljs-section {
+  color: var(--hl-section);
+  font-weight: bold;
+}
+
+.case-study .hljs-bullet {
+  color: var(--hl-bullet);
+}
+
+.case-study .hljs-emphasis {
+  color: var(--hl-base);
+  font-style: italic;
+}
+
+.case-study .hljs-strong {
+  color: var(--hl-base);
+  font-weight: bold;
+}
+
+.case-study .hljs-addition {
+  color: var(--hl-addition-fg);
+  background-color: var(--hl-addition-bg);
+}
+
+.case-study .hljs-deletion {
+  color: var(--hl-deletion-fg);
+  background-color: var(--hl-deletion-bg);
 }
 
 .case-study hr {
