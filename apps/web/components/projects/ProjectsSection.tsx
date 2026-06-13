@@ -87,7 +87,11 @@ function ProjectCard({ project }: { project: Project }) {
               "linear-gradient(to top, color-mix(in oklab, var(--accent) 14%, transparent), transparent 60%)",
           }}
         >
-          <p className="line-clamp-3 text-sm text-(--text)/90">
+          <p
+            className={`line-clamp-3 text-sm ${
+              project.slug === "bicadriver" ? "text-black" : "text-(--text)/90"
+            }`}
+          >
             {project.description}
           </p>
         </div>

@@ -95,10 +95,15 @@ export default async function BlogDetailPage({
             <article className="mx-auto max-w-3xl">
               <RevealOnScroll>
                 <div className="mb-8 text-center">
-                  <div className="mb-4 flex items-center justify-center gap-3 text-sm font-medium">
-                    <span className="rounded-full bg-(--accent)/10 px-3 py-1 text-(--accent)">
-                      {post.tag}
-                    </span>
+                  <div className="mb-4 flex flex-wrap items-center justify-center gap-2 text-sm font-medium">
+                    {(post.tags.length ? post.tags : [post.tag]).map((t) => (
+                      <span
+                        key={t}
+                        className="rounded-full bg-(--accent)/10 px-3 py-1 text-(--accent)"
+                      >
+                        {t}
+                      </span>
+                    ))}
                     <span className="text-(--muted)">
                       {post.readTime} min read
                     </span>
@@ -132,7 +137,7 @@ export default async function BlogDetailPage({
               </div>
 
               {post.content ? (
-                <div className="case-study">
+                <div className="case-study blog-prose">
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       rehypePlugins={[

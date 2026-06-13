@@ -3,6 +3,7 @@ export type BlogPost = {
   slug: string;
   title: string;
   tag: string;
+  tags: string[];
   excerpt: string;
   image: string;
   readTime: number;
@@ -40,6 +41,7 @@ export async function getPosts(): Promise<BlogPost[]> {
       slug: item.slug,
       title: item.title,
       tag: item.tags?.[0] || "Tech",
+      tags: item.tags || [],
       excerpt: item.excerpt || "No excerpt available.",
       image:
         item.coverImage || item.image || `/blog/${item.slug}/og`,
@@ -66,6 +68,7 @@ export async function getPostBySlug(
         slug: item.slug,
         title: item.title,
         tag: item.tags?.[0] || "Tech",
+        tags: item.tags || [],
         excerpt: item.excerpt || "",
         image:
           item.coverImage || item.image || `/blog/${item.slug}/og`,

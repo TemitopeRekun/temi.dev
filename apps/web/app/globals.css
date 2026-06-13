@@ -360,6 +360,12 @@ pre {
   margin-bottom: 0.5em;
 }
 
+/* Accent-colored headings for blog post content only (not case studies). */
+.blog-prose h2,
+.blog-prose h3 {
+  color: var(--accent);
+}
+
 .case-study p {
   margin-bottom: 1em;
 }
