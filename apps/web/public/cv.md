@@ -41,25 +41,23 @@ Engineering team for Multifactu, a fiscal-compliance invoicing platform for Span
 ### Full-Stack Developer • BicaDriver Limited • Remote, Lagos, Nigeria
 *Jan 2026 – Present*
 
-Built and launched a production ride-hailing platform — 13-state trip state machine, real-time GPS over namespaced Socket.io, and idempotent Monnify payment splits — serving 1,000+ vehicle owners and 50+ drivers with sub-150ms p95 API response times.
+Built and launched a production ride-hailing platform connecting vehicle owners with professional drivers — serving 1,000+ vehicle owners and 50+ drivers with sub-150ms p95 API response times on unreliable Nigerian mobile networks.
 
-- Modelled trip flow as a 13-state machine with server-enforced transitions, so two clients and the server stay in agreement regardless of connection quality.
-- Implemented three-zone pricing with traffic-aware fare logic and rate snapshotting at trip creation, so fares never drift when settings change mid-trip.
-- Built GPS fare settlement with a three-step fallback (Google Roads → Haversine → estimate) and 1/sec-throttled Redis list accumulation, avoiding Postgres writes on every location tick.
-- Designed failure-first reconnection: 401 errors suppressed during active trips so signal drops never log a driver out mid-ride, with `/rides/current` restoring full trip context on reconnect.
-- Implemented client-side `X-Idempotency-Key` on every mutating request and signature-verified Monnify webhooks with status normalisation — processing ₦2M+ in the first two months with zero duplicate charges.
-- Isolated Firebase push and Resend email to BullMQ queues so third-party slowness never blocks trip lifecycle API responses.
-- Built driver rating enforcement with automated 72-hour/30-day suspensions and full audit logging; OTP verification with 4-digit PIN, 5-attempt lockout, and brute-force protection.
+- Processed ₦2M+ in the first two months with zero duplicate charges — client-generated `X-Idempotency-Key` on every mutation, signature-verified Monnify webhooks, and per-driver sub-accounts that split platform commission and driver earnings automatically at settlement.
+- Modelled the trip lifecycle as a server-enforced 13-state machine so the owner app, driver app, and backend never disagree on trip status, even across reconnects mid-ride.
+- Designed failure-first reconnection: 401s suppressed during active trips so a signal drop never logs a driver out mid-ride, `/rides/current` restoring full trip context, and concurrent refreshes collapsed into one in-flight call to prevent a token-refresh stampede.
+- Cut Postgres write load by accumulating GPS points in a 1/sec-throttled Redis list and settling fares from a three-step fallback (Google Roads → Haversine → estimate), instead of writing on every location tick.
+- Snapshotted three-zone, traffic-aware pricing onto each trip at creation so fares never drift mid-trip, and isolated Firebase push and Resend email onto BullMQ queues so third-party slowness never blocks the trip API.
 
 *Stack: TypeScript • React Native • NestJS • PostgreSQL • Prisma • Socket.io • Redis • BullMQ • Monnify API • Capacitor • FCM • Zustand*
 
 ### Full-Stack Developer • Martínez & Company • Remote, Spain
 *Jun 2024 – Dec 2024*
 
-- Built a GDPR-compliant website for a European grant consultancy using Next.js, TypeScript, Tailwind CSS, and Vercel, delivered on schedule.
-- Integrated PostHog analytics with a custom waitlist funnel, enabling launch visibility and conversion tracking.
-- Developed QR-based lead capture forms connected to WhatsApp and Telegram Bot API integrations.
-- Delivery quality earned a direct referral to ADP Digitek's engineering team.
+- Shipped a GDPR-compliant lead-generation site for a European grant consultancy, with consent-gated analytics.
+- Built a PostHog funnel around a waitlist to track sign-up conversion and drop-off.
+- Wired QR lead-capture forms to WhatsApp and Telegram so field leads reached the team without manual entry.
+- Work earned a direct referral to ADP Digitek's engineering team.
 
 *Stack: React • Next.js • TypeScript • Tailwind CSS • PostHog • WhatsApp API • Telegram Bot API • Vercel*
 
@@ -79,11 +77,13 @@ Built and launched a production ride-hailing platform — 13-state trip state ma
 
 ### temi.dev — Personal SaaS Platform
 *2025 – Present*
-*Next.js • NestJS • PostgreSQL • LangChain • pgvector • OpenAI API • Turborepo*
+*Next.js 15 • NestJS • Turborepo • PostgreSQL • pgvector • Gemini • Prisma*
 
-- Built a full-stack SaaS platform with portfolio presentation, service booking, an AI-generated blog, a lead management dashboard, and admin analytics.
-- Engineered a RAG-powered blog with "Ask this article" contextual chat, AI-generated summaries, and pgvector-backed semantic search.
-- Built an AI lead-scoring system that prioritizes inbound contacts, generates personalized outreach drafts, and tracks conversion.
+- Built the whole platform — portfolio, service booking, an AI blog, a lead dashboard, and admin analytics — as a database-driven product, not a static site.
+- Built semantic search as a plain SQL query: embeddings live beside the relational data, so there's no separate vector database to run or keep in sync.
+- Floored retrieval on similarity so the "Ask this article" assistant answers "I don't know" instead of inventing one.
+- Built AI lead-scoring that ranks inbound contacts and drafts personalized outreach.
+- Treated it like production, not a demo: real auth, rate limiting, error tracking, and a CI gate that blocks on type errors.
 
 temitope.live • github.com/TemitopeRekun/temi.dev
 
@@ -91,10 +91,11 @@ temitope.live • github.com/TemitopeRekun/temi.dev
 *2025*
 *TypeScript • NestJS • PostgreSQL • Prisma • Paystack API • Better Auth*
 
-- Built a fintech platform that enables Nigerian parents to pay school fees in flexible installments with traceable disbursements to schools.
-- Designed a kobo-safe Money value object to eliminate floating-point drift across all financial calculations.
-- Implemented installment plans with a 25% minimum deposit, 2.5% platform fee, and rounding-absorbed final installment so schedules sum exactly.
-- Integrated Paystack split payments with subaccount routing, fee gross-up, idempotent processing, and auditable lifecycle transitions.
+- Built a platform where parents pay school fees in installments and schools receive confirmed, traceable payments.
+- Stored all money as integer minor units (kobo) so balances can't drift from floating-point rounding.
+- Made the payment lifecycle backend-only — the client can't change state — with enrollment and its first payment in one transaction, so a child is never half-enrolled.
+- Froze fees at enrollment and logged every confirmation to an immutable row, so a disputed payment always has an answer.
+- Pre-split each payment into school and platform amounts (25% minimum deposit, 2.5% fee, rounding absorbed by the final installment), with retries idempotent so a resubmit can't double-charge.
 
 github.com/TemitopeRekun/Lopay • github.com/TemitopeRekun/lopay-backend
 

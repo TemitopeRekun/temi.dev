@@ -332,7 +332,7 @@ Paying school fees as a single lump sum is out of reach for many families. Lopay
 
 ## Architecture Thinking
 
-The money model *is* the architecture. I treated every figure as something that has to be reconstructable and defensible months later, which pushed three decisions to the foundation: fees are frozen at enrollment so later changes can't rewrite history, amounts are integers (minor units) so floating-point drift never creeps into a balance, and every payment carries an idempotency key so a retried request can't double-charge. A React 19 + Capacitor frontend talks to a modular NestJS + PostgreSQL backend; Firebase verifies identity once, then the API issues its own JWT for stateless, role-guarded requests.
+The money model *is* the architecture. I treated every figure as something that has to be reconstructable and defensible months later, which pushed three decisions to the foundation: fees are frozen at enrollment so later changes can't rewrite history, amounts are integers (minor units) so floating-point drift never creeps into a balance, and every payment carries an idempotency key so a retried request can't double-charge. A React 19 + Capacitor frontend talks to a modular NestJS + PostgreSQL backend; authentication and sessions run through Better Auth, with role-based guards on every request.
 
 ### Data Model
 Fees are snapshotted onto the enrollment at creation, and the payment row is pre-split into platform and school amounts so settlement is never ambiguous:
@@ -358,6 +358,9 @@ model Payment {
 ### Payment State Machine
 Every payment moves through a backend-controlled lifecycle — **PENDING → ACTIVE → COMPLETED**, or **DEFAULTED** — and the client can never set that state directly. Enrollment and its first payment run inside a single Prisma \`$transaction\`, so a child is never half-enrolled, and a nightly scheduled job sweeps overdue plans and flags them defaulted.
 
+### Settlement
+Money moves through Paystack split payments: each school has its own subaccount that receives the school's share at charge time, while the platform fee — plus the estimated Paystack fee — routes to the main account. Webhooks are signature-verified, and the authoritative fee from \`charge.success\` reconciles against the estimate so the platform's books never drift.
+
 ### Real-Time & Boundaries
 A JWT-authenticated Socket.io gateway pushes payment and enrollment changes to per-user, per-school, and admin rooms instead of polling. Receipts upload to Supabase through backend-signed URLs, so storage keys never touch the client.
 
@@ -372,12 +375,13 @@ It handles real tuition money, so correctness and auditability outrank everythin
 - **Immutable financial history** — fees snapshotted at enrollment and every confirmation written to an audit row, so a dispute always has an answer.
 - **State-machine integrity** — a backend-only payment lifecycle the client can't mutate, with transactional enrollment so records are never half-written.
 - **Multi-tenant isolation** — per-school scoping enforced centrally, so one missing clause can't leak another school's data.
+- **Paystack split settlement** — per-school subaccounts split each payment at charge time, with signature-verified webhooks reconciling the authoritative fee against the estimate.
 
 ## Outcome
 
 Lopay runs as a modular monolith of ten feature modules, with unit and e2e tests over the payment math, a nightly defaulter sweep, structured logging, error tracking, security headers, and rate limiting. The interesting engineering isn't the screens — it's a financial state machine that stays correct under retries, partial failures, and disputes.
 `,
-    techStack: ["React 19", "Capacitor", "NestJS", "PostgreSQL", "Prisma", "Socket.io", "Firebase Auth"],
+    techStack: ["React 19", "Capacitor", "NestJS", "PostgreSQL", "Prisma", "Socket.io", "Paystack", "Better Auth"],
     liveUrl: "",
     repoUrl: "https://github.com/TemitopeRekun/Lopay",
     coverImage: "/images/LopayLogo.jpg",
