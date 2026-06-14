@@ -1,6 +1,7 @@
 import { Container, Section } from "@temi/ui";
 import { AboutHero } from "../../../components/about/AboutHero";
 import { Timeline } from "../../../components/about/Timeline";
+import { HowIBuild } from "../../../components/about/HowIBuild";
 import { PersonalSection } from "../../../components/about/PersonalSection";
 import { DownloadCvButton } from "../../../components/common/DownloadCvButton";
 import { buildMetadata } from "../../../lib/metadata";
@@ -32,9 +33,8 @@ export default function AboutPage() {
               />
             </h2>
             <p className="text-base sm:text-lg text-(--muted) leading-relaxed">
-              I picked up programming the way most people in Lagos do — piecing
-              things together from whatever was available online. Here's what's
-              happened since.
+              That's the arc. Here's how it actually unfolded — each role, and
+              what it taught me about building software people depend on.
             </p>
           </div>
 
@@ -43,6 +43,12 @@ export default function AboutPage() {
           <div className="mt-24 flex justify-center">
             <DownloadCvButton />
           </div>
+        </Container>
+      </Section>
+
+      <Section className="border-t border-(--border)">
+        <Container>
+          <HowIBuild />
         </Container>
       </Section>
 
