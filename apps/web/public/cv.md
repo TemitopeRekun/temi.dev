@@ -1,6 +1,6 @@
 # TEMITOPE OGUNREKUN
 
-**Backend / Full-Stack Developer** — TypeScript • Node.js • NestJS • PostgreSQL  
+**Full-Stack Developer** — TypeScript • React • Next.js • Node.js • NestJS • PostgreSQL  
 Lagos, Nigeria (Remote) • +234 901 785 7885 • olalekanogunrekun@gmail.com  
 www.temitope.live • github.com/TemitopeRekun • linkedin.com/in/temi-dev
 
@@ -8,15 +8,15 @@ www.temitope.live • github.com/TemitopeRekun • linkedin.com/in/temi-dev
 
 ## Profile
 
-Backend-leaning Full-Stack Developer with 4+ years building production systems across fiscal-compliance SaaS, fintech, and real-time platforms for teams in Spain, the UK, and Nigeria. Strong in TypeScript, Node.js, NestJS, and PostgreSQL, with hands-on experience designing payment flows, compliance integrations, state-driven backend systems, and developer-facing platform features. Delivered measurable results across shipped products, including platforms with 300+ monthly active users, a 40% reduction in scheduling overhead, a 35% API response-time improvement, and production-safe financial calculations with sub-cent rounding precision.
+Full-Stack Developer with 4+ years building production web and mobile products end to end — from React, Next.js, and React Native interfaces through to the NestJS and PostgreSQL systems behind them — for teams in Spain, the UK, and Nigeria. Comfortable across the TypeScript stack, with hands-on experience shipping responsive UIs and real-time client apps as well as payment flows, compliance integrations, and state-driven backends. Delivered measurable results across shipped products, including platforms with 300+ monthly active users, a 40% reduction in scheduling overhead, a 35% API response-time improvement, and production-safe financial calculations with sub-cent rounding precision.
 
 ---
 
 ## Core Skills
 
 - **Languages:** TypeScript, JavaScript, Python, SQL
+- **Frontend:** React, Next.js, React Native, Tailwind CSS, SWR, Zustand, Framer Motion, Capacitor
 - **Backend:** Node.js, NestJS, Fastify, Express.js, REST APIs, GraphQL, WebSockets, JWT, RBAC, Better Auth
-- **Frontend:** React, Next.js, React Native, Tailwind CSS, SWR, Framer Motion, Capacitor
 - **Data:** PostgreSQL, Prisma, Redis, MongoDB, Supabase, Kysely, pgvector
 - **Testing & DevOps:** Docker, GitHub Actions, Playwright, Jest, Supertest, Testcontainers, AWS S3/KMS, Vercel, Netlify
 - **Architecture:** Monorepos (Turborepo/pnpm), Multi-Tenant SaaS, Event-Driven Systems, OpenAPI/Swagger, SOAP, RAG Pipelines, Vector Search
@@ -34,7 +34,8 @@ Engineering team for Multifactu, a fiscal-compliance invoicing platform for Span
 - Contributed to the Deterministic Fiscal Engine for Model 303 VAT returns, supporting line-by-line and aggregate calculations with rate-by-rate breakdowns and a 0.02€ tolerance threshold.
 - Implemented Verifactu invoice lifecycle flows for submit, correct, and cancel operations in real-time and deferred modes, including QR verification against AEAT and signed PDF generation.
 - Helped maintain the TicketBAI regional compliance module for Basque territories, including Bizkaia, Gipuzkoa, and Araba.
-- Contributed API endpoints, GraphQL resolvers, OpenAPI documentation, Playwright E2E tests, and Docker-based CI/CD workflows as part of the release cycle.
+- Built Next.js 16 UI for invoice management and submission tracking, wiring GraphQL data into responsive, type-safe React components alongside the API endpoints, resolvers, OpenAPI docs, and Playwright E2E tests behind them.
+- Collaborated through the team's GitHub flow — feature branches, pull requests, and peer code review — with Docker-based CI gating each merge across the monorepo's release cycle.
 
 *Stack: TypeScript • NestJS • Fastify • GraphQL • PostgreSQL • Prisma • Turborepo • Docker • Playwright • AWS S3/KMS • SOAP*
 
@@ -44,6 +45,7 @@ Engineering team for Multifactu, a fiscal-compliance invoicing platform for Span
 Built and launched a production ride-hailing platform connecting vehicle owners with professional drivers — serving 1,000+ vehicle owners and 50+ drivers with sub-150ms p95 API response times on unreliable Nigerian mobile networks.
 
 - Processed ₦2M+ in the first two months with zero duplicate charges — client-generated `X-Idempotency-Key` on every mutation, signature-verified Monnify webhooks, and per-driver sub-accounts that split platform commission and driver earnings automatically at settlement.
+- Built the owner and driver React Native apps (Capacitor + Zustand) with live map-based trip tracking, optimistic UI, and offline-tolerant state that survives mid-trip signal drops.
 - Modelled the trip lifecycle as a server-enforced 13-state machine so the owner app, driver app, and backend never disagree on trip status, even across reconnects mid-ride.
 - Designed failure-first reconnection: 401s suppressed during active trips so a signal drop never logs a driver out mid-ride, `/rides/current` restoring full trip context, and concurrent refreshes collapsed into one in-flight call to prevent a token-refresh stampede.
 - Cut Postgres write load by accumulating GPS points in a 1/sec-throttled Redis list and settling fares from a three-step fallback (Google Roads → Haversine → estimate), instead of writing on every location tick.
