@@ -1,5 +1,6 @@
 import "./globals.css";
 import type { ReactNode } from "react";
+import type { Metadata } from "next";
 import { ThemeProvider } from "../providers/ThemeProvider";
 import { LenisProvider } from "../providers/LenisProvider";
 import { PreloaderWrapper } from "../providers/PreloaderWrapper";
@@ -26,6 +27,12 @@ const fraunces = Fraunces({
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-fraunces",
 });
+
+export const metadata: Metadata = {
+  verification: {
+    google: "zuL_znB3EWJEudjKxbRM1G8Jvab0VPKS-h_rfhanMgk",
+  },
+};
 
 export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
   return (
