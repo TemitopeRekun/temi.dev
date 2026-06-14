@@ -19,8 +19,14 @@ async function bootstrap() {
     new FastifyAdapter(),
   );
 
-  // Register multipart early to handle file uploads
-  await app.register(multipart);
+  // Register multipart early to handle file uploads.
+  // fileSize matches the 5MB cap enforced in the web ImageUpload component;
+  // the @fastify/multipart default is only 1MB, which rejects most cover photos.
+  await app.register(multipart, {
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5MB
+    },
+  });
 
   // Enable CORS
   app.enableCors({
