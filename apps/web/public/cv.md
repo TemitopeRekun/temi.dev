@@ -2,7 +2,7 @@
 
 **Backend / Full-Stack Developer** — TypeScript • Node.js • NestJS • PostgreSQL  
 Lagos, Nigeria (Remote) • +234 901 785 7885 • olalekanogunrekun@gmail.com  
-temitope.live • github.com/TemitopeRekun • linkedin.com/in/temi-dev
+www.temitope.live • github.com/TemitopeRekun • linkedin.com/in/temi-dev
 
 ---
 
@@ -85,7 +85,7 @@ Built and launched a production ride-hailing platform connecting vehicle owners 
 - Built AI lead-scoring that ranks inbound contacts and drafts personalized outreach.
 - Treated it like production, not a demo: real auth, rate limiting, error tracking, and a CI gate that blocks on type errors.
 
-temitope.live • github.com/TemitopeRekun/temi.dev
+www.temitope.live • github.com/TemitopeRekun/temi.dev
 
 ### Lopay — School Fee Installment Platform
 *2025*

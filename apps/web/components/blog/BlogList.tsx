@@ -20,9 +20,11 @@ export function BlogList({ posts }: Props) {
 
   const filteredPosts = posts.filter((p) => {
     const matchesTag = activeTag === "All" || p.tag === activeTag;
+    const query = search.toLowerCase();
     const matchesSearch =
-      p.title.toLowerCase().includes(search.toLowerCase()) ||
-      p.excerpt.toLowerCase().includes(search.toLowerCase());
+      p.title.toLowerCase().includes(query) ||
+      p.excerpt.toLowerCase().includes(query) ||
+      p.tag.toLowerCase().includes(query);
     return matchesTag && matchesSearch;
   });
 
