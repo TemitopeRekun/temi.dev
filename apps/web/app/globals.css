@@ -317,6 +317,15 @@ pre {
   margin-top: 0.75em;
   margin-bottom: 1.25em;
   padding-left: 1.5em;
+  list-style-position: outside;
+}
+
+.case-study-ul {
+  list-style-type: disc;
+}
+
+.case-study-ol {
+  list-style-type: decimal;
 }
 
 .case-study-li {
@@ -417,6 +426,15 @@ pre {
   margin-top: 0.75em;
   margin-bottom: 1.25em;
   padding-left: 1.5em;
+  list-style-position: outside;
+}
+
+.case-study ul {
+  list-style-type: disc;
+}
+
+.case-study ol {
+  list-style-type: decimal;
 }
 
 .case-study li {
