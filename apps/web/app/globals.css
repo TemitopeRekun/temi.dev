@@ -728,6 +728,84 @@ pre {
   background: var(--border);
 }
 
+/* ── Folder tree ── */
+.case-study .folder-tree {
+  margin: 2rem 0;
+  padding: 1.1rem 1.35rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  line-height: 1.5;
+}
+
+.case-study .folder-tree .ft-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.15rem 1rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.case-study .folder-tree .ft-row:first-child {
+  padding-top: 0;
+}
+
+.case-study .folder-tree .ft-row:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.case-study .folder-tree .ft-child {
+  position: relative;
+  padding-left: 2.75rem;
+}
+
+.case-study .folder-tree .ft-child::before {
+  content: "├──";
+  position: absolute;
+  left: 0;
+  top: 0.55rem;
+  color: var(--muted);
+  font-family: var(--font-dm-mono), ui-monospace, monospace;
+  font-size: 0.9rem;
+  letter-spacing: -0.05em;
+}
+
+.case-study .folder-tree .ft-child.ft-last::before {
+  content: "└──";
+}
+
+.case-study .folder-tree .ft-dir,
+.case-study .folder-tree .ft-file {
+  font-family: var(--font-dm-mono), ui-monospace, monospace;
+  font-size: 0.9rem;
+  flex: 0 0 auto;
+}
+
+.case-study .folder-tree .ft-dir {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.case-study .folder-tree .ft-file {
+  color: var(--text);
+}
+
+.case-study .folder-tree .ft-note {
+  flex: 1 1 16rem;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 640px) {
+  .case-study .folder-tree .ft-note {
+    flex-basis: 100%;
+  }
+}
+
 @media (max-width: 640px) {
   .case-study {
     font-size: 1rem;

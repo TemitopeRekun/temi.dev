@@ -147,10 +147,13 @@ export default async function BlogDetailPage({
                           tagNames: [...(defaultSchema.tagNames || []), "div"],
                           attributes: {
                             ...defaultSchema.attributes,
-                            "*": [...(defaultSchema.attributes?.["*"] ?? []), "class"],
+                            // hast stores the `class` attribute under the `className`
+                            // property — allow both names on every tag so styled
+                            // blocks (folder-tree, callout-danger, compare) keep their classes.
+                            "*": [...(defaultSchema.attributes?.["*"] ?? []), "className", "class"],
                             code: ["className", "class"],
                             span: ["className", "class"],
-                            div: ["class"],
+                            div: ["className", "class"],
                           },
                         }],
                         rehypeHighlight,
