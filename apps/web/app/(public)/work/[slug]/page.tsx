@@ -95,6 +95,7 @@ export default async function WorkDetailPage({
                 <h1 className="sr-only">{project.title}</h1>
                 <AnimatedText
                   phrase={project.title}
+                  decorative
                   className="mb-6 text-center text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-(--text)"
                 />
 

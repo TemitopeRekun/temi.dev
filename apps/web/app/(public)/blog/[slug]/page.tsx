@@ -111,6 +111,7 @@ export default async function BlogDetailPage({
                   <h1 className="sr-only">{post.title}</h1>
                   <AnimatedText
                     phrase={post.title}
+                    decorative
                     className="mb-6 text-center text-2xl sm:text-3xl md:text-5xl font-bold leading-tight text-(--text)"
                   />
                   {post.publishedAt && (
