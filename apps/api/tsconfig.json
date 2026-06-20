@@ -2,6 +2,12 @@
   "extends": "../../packages/config/tsconfig/base.json",
   "compilerOptions": {
     "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noFallthroughCasesInSwitch": true,
+    // exactOptionalPropertyTypes left OFF: enabling it produces excessive
+    // errors from class-validator/Prisma optional-property interop.
     "module": "CommonJS",
     "moduleResolution": "Node",
     "outDir": "dist",
@@ -11,5 +17,6 @@
     "typeRoots": ["./src/types", "./node_modules/@types"],
     "types": []
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "**/*.spec.ts", "src/test"]
 }

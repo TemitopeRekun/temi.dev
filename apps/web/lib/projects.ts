@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export type ProjectCategory = string;
 
 export type Project = {
@@ -34,32 +36,85 @@ export type RawProject = {
   order?: number;
 };
 
+const rawProjectSchema = z.object({
+  id: z.string(),
+  slug: z.string().optional(),
+  title: z.string(),
+  year: z.number().optional(),
+  createdAt: z.string().optional(),
+  category: z.string().optional(),
+  techStack: z.array(z.string()).optional(),
+  description: z.string().optional(),
+  body: z.string().nullable().optional(),
+  coverImage: z.string().optional(),
+  liveUrl: z.string().optional(),
+  repoUrl: z.string().optional(),
+  featured: z.boolean().optional(),
+  order: z.number().optional(),
+});
+
+// The API list endpoint returns a cursor-paginated envelope, not a bare array.
+const projectListSchema = z.object({
+  items: z.array(rawProjectSchema),
+  nextCursor: z.string().optional(),
+});
+
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+
+const REVALIDATE = 30;
 
 export async function getProjects(): Promise<Project[]> {
   try {
+    const isDev = process.env.NODE_ENV === "development";
     const res = await fetch(`${API_URL}/api/projects`, {
-      next: { revalidate: 30 },
-      cache: process.env.NODE_ENV === "development" ? "no-store" : "default",
+      ...(isDev ? { cache: "no-store" } : { next: { revalidate: REVALIDATE } }),
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.error(`[projects] getProjects: upstream returned ${res.status}`);
+      return [];
+    }
     const data = await res.json();
-    return data.map(mapProject);
-  } catch {
+    const parsed = projectListSchema.safeParse(data);
+    if (!parsed.success) {
+      console.error(
+        "[projects] getProjects: unexpected payload shape",
+        parsed.error.issues,
+      );
+      return [];
+    }
+    return parsed.data.items.map(mapProject);
+  } catch (err) {
+    console.error("[projects] getProjects: fetch failed", err);
     return [];
   }
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project | null> {
   try {
+    const isDev = process.env.NODE_ENV === "development";
     const res = await fetch(`${API_URL}/api/projects/slug/${slug}`, {
-      next: { revalidate: 30 },
-      cache: process.env.NODE_ENV === "development" ? "no-store" : "default",
+      ...(isDev ? { cache: "no-store" } : { next: { revalidate: REVALIDATE } }),
     });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      if (res.status !== 404) {
+        console.error(
+          `[projects] getProjectBySlug(${slug}): upstream returned ${res.status}`,
+        );
+      }
+      return null;
+    }
     const data = await res.json();
-    return mapProject(data);
-  } catch {
+    const parsed = rawProjectSchema.safeParse(data);
+    if (!parsed.success) {
+      console.error(
+        `[projects] getProjectBySlug(${slug}): unexpected payload shape`,
+        parsed.error.issues,
+      );
+      return null;
+    }
+    return mapProject(parsed.data);
+  } catch (err) {
+    console.error(`[projects] getProjectBySlug(${slug}): fetch failed`, err);
     return null;
   }
 }

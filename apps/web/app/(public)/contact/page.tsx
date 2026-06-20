@@ -5,7 +5,7 @@ import { AnimatedText } from "../../../components/common/AnimatedText";
 import { buildMetadata } from "../../../lib/metadata";
 
 export const metadata = buildMetadata({
-  title: "Contact — Temitope Ogunrekun",
+  title: "Contact",
   description:
     "Currently open to remote mid-level full-stack or backend roles. Get in touch.",
   path: "/contact",

@@ -1,23 +1,25 @@
 import "./instrument";
 import "reflect-metadata";
 import { ValidationPipe } from "@nestjs/common";
-import { NestFactory } from "@nestjs/core";
+import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import {
   FastifyAdapter,
   NestFastifyApplication,
 } from "@nestjs/platform-fastify";
 import helmet from "@fastify/helmet";
 import multipart from "@fastify/multipart";
-import fastifyStatic from "@fastify/static";
-import { join } from "path";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
+import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter";
+import { LoggingInterceptor } from "./common/interceptors/logging.interceptor";
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
     new FastifyAdapter(),
   );
+
+  const isProduction = process.env.NODE_ENV === "production";
 
   // Register multipart early to handle file uploads.
   // fileSize matches the 5MB cap enforced in the web ImageUpload component;
@@ -28,7 +30,8 @@ async function bootstrap() {
     },
   });
 
-  // Enable CORS
+  // Enable CORS. The production allowlist is always honoured; localhost origins
+  // are only accepted outside of production.
   app.enableCors({
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps, curl, or server-to-server)
@@ -42,9 +45,11 @@ async function bootstrap() {
         "https://www.temitope.live",
       ];
 
-      const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
+      const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(
+        origin,
+      );
 
-      if (isLocalhost || allowedOrigins.includes(origin)) {
+      if (allowedOrigins.includes(origin) || (!isProduction && isLocalhost)) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"), false);
@@ -55,33 +60,40 @@ async function bootstrap() {
   });
 
   await app.register(helmet);
-  await app.register(fastifyStatic, {
-    root: join(process.cwd(), "uploads"),
-    prefix: "/uploads/",
-  });
 
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
-      forbidNonWhitelisted: false,
+      forbidNonWhitelisted: true,
       transform: true,
       transformOptions: { enableImplicitConversion: true },
     }),
   );
 
-  const config = new DocumentBuilder()
-    .setTitle("Temi API")
-    .setDescription("API documentation")
-    .setVersion("1.0.0")
-    .addBearerAuth(
-      { type: "http", scheme: "bearer", bearerFormat: "JWT" },
-      "BearerAuth",
-    )
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup("/api/docs", app, document);
+  // Normalized error responses + per-request logging.
+  const httpAdapterHost = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new AllExceptionsFilter(httpAdapterHost));
+  app.useGlobalInterceptors(new LoggingInterceptor());
+
+  // Ensure OnModuleDestroy (Prisma $disconnect) runs on SIGTERM/SIGINT.
+  app.enableShutdownHooks();
+
+  // Swagger is only mounted outside of production.
+  if (!isProduction) {
+    const config = new DocumentBuilder()
+      .setTitle("Temi API")
+      .setDescription("API documentation")
+      .setVersion("1.0.0")
+      .addBearerAuth(
+        { type: "http", scheme: "bearer", bearerFormat: "JWT" },
+        "BearerAuth",
+      )
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup("/api/docs", app, document);
+  }
 
   await app.listen(4000, "0.0.0.0");
 }
 
-bootstrap();
+void bootstrap();

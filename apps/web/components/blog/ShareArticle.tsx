@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Linkedin, Link, Check } from "lucide-react";
+import { BASE_URL } from "../../lib/metadata";
 
 function XIcon({ className }: { className?: string }) {
   return (
@@ -21,11 +22,9 @@ type Props = {
   title: string;
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.temitope.live";
-
 export function ShareArticle({ slug, title }: Props) {
   const [copied, setCopied] = useState(false);
-  const url = `${SITE_URL}/blog/${slug}`;
+  const url = `${BASE_URL}/blog/${slug}`;
 
   const shareTwitter = () => {
     window.open(

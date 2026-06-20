@@ -1,5 +1,5 @@
 import { Transform } from "class-transformer";
-import { IsOptional, IsString } from "class-validator";
+import { IsInt, IsOptional, IsString, Max, Min } from "class-validator";
 
 export class ProjectsQueryDto {
   @IsOptional()
@@ -12,4 +12,15 @@ export class ProjectsQueryDto {
     return undefined;
   })
   tech?: string[];
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(50)
+  @Transform(({ value }) => parseInt(value, 10))
+  take?: number;
+
+  @IsOptional()
+  @IsString()
+  cursor?: string;
 }

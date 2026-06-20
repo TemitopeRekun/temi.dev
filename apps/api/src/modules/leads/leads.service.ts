@@ -1,12 +1,15 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { CreateLeadDto } from "./dto/create-lead.dto";
 import { ResendService } from "../email/resend.service";
 import { LeadsAdminListQueryDto } from "./dto/leads-admin-list-query.dto";
 import { UpdateLeadAdminDto } from "./dto/update-lead-admin.dto";
+import { applyCursorPage } from "../../common/utils/pagination";
 
 @Injectable()
 export class LeadsService {
+  private readonly logger = new Logger(LeadsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly email: ResendService,
@@ -30,16 +33,22 @@ export class LeadsService {
     });
     this.email
       .sendLeadConfirmation(dto.email, dto.name)
-      .catch((err) => console.error("Failed to send confirmation email", err));
+      .catch((err: unknown) =>
+        this.logger.error(
+          "Failed to send confirmation email",
+          err instanceof Error ? err.stack : String(err),
+        ),
+      );
     return lead.id;
   }
 
   async adminList(query: LeadsAdminListQueryDto): Promise<{ items: Array<unknown>; nextCursor?: string }> {
     const take = query.take ?? 20;
     const where = query.status ? { status: query.status } : undefined;
-    const items = await this.prisma.lead.findMany({
+    const rows = await this.prisma.lead.findMany({
       where,
-      orderBy: [{ createdAt: "desc" }],
+      // `id` is the unique tiebreaker that makes the createdAt ordering total.
+      orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       take: take + 1,
       ...(query.cursor ? { cursor: { id: query.cursor }, skip: 1 } : {}),
       select: {
@@ -54,12 +63,7 @@ export class LeadsService {
         createdAt: true,
       },
     });
-    let nextCursor: string | undefined;
-    if (items.length > take) {
-      const next = items.pop();
-      nextCursor = next?.id;
-    }
-    return { items, nextCursor };
+    return applyCursorPage(rows, take);
   }
 
   async adminGetById(id: string): Promise<unknown> {

@@ -12,6 +12,71 @@ import { AdminGuard } from "../auth/guards/admin.guard";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { UploadService } from "./upload.service";
 
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5MB
+
+type DetectedImage = { mimetype: string; ext: string };
+
+/**
+ * Allowlisted image mimetypes mapped to their canonical extension. Both the
+ * declared mimetype AND the file's magic bytes must match an entry here.
+ */
+const ALLOWED_MIME_EXT: Record<string, string> = {
+  "image/png": "png",
+  "image/jpeg": "jpg",
+  "image/webp": "webp",
+  "image/avif": "avif",
+};
+
+/**
+ * Detects the real image type from the buffer's magic bytes. Returns null when
+ * the content does not match a supported image format.
+ */
+function detectImage(buffer: Buffer): DetectedImage | null {
+  // PNG: 89 50 4E 47
+  if (
+    buffer.length >= 4 &&
+    buffer[0] === 0x89 &&
+    buffer[1] === 0x50 &&
+    buffer[2] === 0x4e &&
+    buffer[3] === 0x47
+  ) {
+    return { mimetype: "image/png", ext: "png" };
+  }
+  // JPEG: FF D8 FF
+  if (
+    buffer.length >= 3 &&
+    buffer[0] === 0xff &&
+    buffer[1] === 0xd8 &&
+    buffer[2] === 0xff
+  ) {
+    return { mimetype: "image/jpeg", ext: "jpg" };
+  }
+  // WEBP: "RIFF" .... "WEBP"
+  if (
+    buffer.length >= 12 &&
+    buffer.toString("ascii", 0, 4) === "RIFF" &&
+    buffer.toString("ascii", 8, 12) === "WEBP"
+  ) {
+    return { mimetype: "image/webp", ext: "webp" };
+  }
+  // AVIF / HEIF: ftyp box with a known brand at bytes 8..12
+  if (
+    buffer.length >= 12 &&
+    buffer.toString("ascii", 4, 8) === "ftyp"
+  ) {
+    const brand = buffer.toString("ascii", 8, 12);
+    if (brand === "avif" || brand === "avis") {
+      return { mimetype: "image/avif", ext: "avif" };
+    }
+    if (brand === "heic" || brand === "heix" || brand === "mif1") {
+      // HEIF/HEIC content is served as AVIF-compatible; not in the declared
+      // allowlist, so it will be rejected by the mimetype check below.
+      return { mimetype: "image/heic", ext: "heic" };
+    }
+  }
+  return null;
+}
+
 @ApiTags("Upload")
 @Controller("api/upload")
 export class UploadController {
@@ -30,12 +95,34 @@ export class UploadController {
     }
 
     const buffer = await part.toBuffer();
-    const filename = `${randomUUID()}-${part.filename}`;
+
+    if (buffer.length === 0) {
+      throw new BadRequestException("Empty file");
+    }
+    if (buffer.length > MAX_UPLOAD_BYTES) {
+      throw new BadRequestException("File exceeds the 5MB limit");
+    }
+
+    const detected = detectImage(buffer);
+    if (!detected) {
+      throw new BadRequestException("Unsupported or invalid image file");
+    }
+
+    // Both the declared mimetype and the detected content type must be in the
+    // allowlist and agree with each other.
+    const allowedExt = ALLOWED_MIME_EXT[part.mimetype];
+    if (!allowedExt || !ALLOWED_MIME_EXT[detected.mimetype]) {
+      throw new BadRequestException("Unsupported image type");
+    }
+
+    // Drop the raw client filename entirely; derive a safe one from the
+    // validated content type.
+    const safeFilename = `${randomUUID()}.${detected.ext}`;
 
     const url = await this.uploadService.uploadFile(
       buffer,
-      filename,
-      part.mimetype
+      safeFilename,
+      detected.mimetype,
     );
 
     return { url };

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 type SendEmailInput = {
@@ -11,6 +11,7 @@ type SendEmailInput = {
 
 @Injectable()
 export class ResendService {
+  private readonly logger = new Logger(ResendService.name);
   private readonly apiKey: string;
   private readonly fromDefault: string;
 
@@ -21,7 +22,7 @@ export class ResendService {
 
   async sendEmail(input: SendEmailInput): Promise<void> {
     if (!this.apiKey) {
-      console.error("RESEND_API_KEY is not configured");
+      this.logger.error("RESEND_API_KEY is not configured");
       return;
     }
     const from = input.fromOverride ?? this.fromDefault;
@@ -42,10 +43,15 @@ export class ResendService {
       });
       if (!res.ok) {
         const body = await res.text().catch(() => "");
-        console.error(`Resend error: ${res.status} ${res.statusText} ${body}`);
+        this.logger.error(
+          `Resend error: ${res.status} ${res.statusText} ${body}`,
+        );
       }
     } catch (err) {
-      console.error("Resend request failed", err);
+      this.logger.error(
+        "Resend request failed",
+        err instanceof Error ? err.stack : String(err),
+      );
     }
   }
 

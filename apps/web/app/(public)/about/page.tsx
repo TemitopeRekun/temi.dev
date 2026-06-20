@@ -8,7 +8,7 @@ import { buildMetadata } from "../../../lib/metadata";
 import { TextReveal } from "../../../components/common/TextReveal";
 
 export const metadata = buildMetadata({
-  title: "About — Temitope Ogunrekun",
+  title: "About",
   description:
     "From Lagos to shipping fiscal-compliance software in Spain. A look at my timeline, stack, and how I got here.",
   path: "/about",
@@ -17,6 +17,7 @@ export const metadata = buildMetadata({
 export default function AboutPage() {
   return (
     <main>
+      <h1 className="sr-only">About Temitope Ogunrekun</h1>
       <AboutHero hideLink />
 
       <Section>

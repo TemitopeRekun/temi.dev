@@ -1,5 +1,15 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsOptional, IsString, IsInt, Min } from "class-validator";
+import { IsOptional, IsString, IsInt, IsIn, Min } from "class-validator";
+
+export const LEAD_STATUSES = [
+  "new",
+  "contacted",
+  "qualified",
+  "won",
+  "lost",
+] as const;
+
+export type LeadStatus = (typeof LEAD_STATUSES)[number];
 
 export class LeadsAdminListQueryDto {
   @ApiPropertyOptional({ description: "Cursor id for pagination" })
@@ -13,8 +23,8 @@ export class LeadsAdminListQueryDto {
   @Min(1)
   take?: number;
 
-  @ApiPropertyOptional({ description: "Filter by status" })
+  @ApiPropertyOptional({ description: "Filter by status", enum: LEAD_STATUSES })
   @IsOptional()
-  @IsString()
-  status?: string;
+  @IsIn(LEAD_STATUSES)
+  status?: LeadStatus;
 }

@@ -74,8 +74,8 @@ export class UploadService implements OnModuleInit {
       });
 
     if (error) {
-      this.logger.error("Supabase upload error:", error);
-      throw new InternalServerErrorException(`Upload failed: ${error.message}`);
+      this.logger.error("Supabase upload error:", error.message);
+      throw new InternalServerErrorException("File upload failed");
     }
 
     const { data: publicUrlData } = this.supabase.storage

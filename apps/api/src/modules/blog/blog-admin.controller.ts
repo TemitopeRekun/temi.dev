@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { AdminGuard } from "../auth/guards/admin.guard";
 import { BlogService } from "./blog.service";
 import { CreateBlogPostDto } from "./dto/create-blog-post.dto";
 import { UpdateBlogPostDto } from "./dto/update-blog-post.dto";
+import { BlogAdminListQueryDto } from "./dto/blog-admin-list-query.dto";
 
 @ApiTags("Blog (Admin)")
 @UseGuards(JwtAuthGuard, AdminGuard)
@@ -13,10 +14,12 @@ export class BlogAdminController {
   constructor(private readonly blog: BlogService) {}
 
   @Get("list")
-  @ApiOperation({ summary: "Admin: list all blog posts" })
+  @ApiOperation({ summary: "Admin: list all blog posts (cursor paginated)" })
   @ApiResponse({ status: 200 })
-  async list(): Promise<Array<unknown>> {
-    return this.blog.adminListAll();
+  async list(
+    @Query() query: BlogAdminListQueryDto,
+  ): Promise<{ items: Array<unknown>; nextCursor?: string }> {
+    return this.blog.adminListAll(query);
   }
 
   @Post()

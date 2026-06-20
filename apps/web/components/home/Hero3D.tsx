@@ -1,9 +1,28 @@
 "use client";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Float, Stars, Sparkles, PerspectiveCamera } from "@react-three/drei";
 import { Mesh, Group, MathUtils, Color, CanvasTexture } from "three";
 import { useMemo } from "react";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
+
+/** Read viewport + DPR once on the client to scale scene cost down on small,
+ * low-DPR devices. Returns conservative SSR defaults. */
+function useDeviceProfile() {
+  const [profile, setProfile] = useState({ small: false, lowDpr: false });
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const compute = () =>
+      setProfile({
+        small: window.innerWidth < 768,
+        lowDpr: window.devicePixelRatio < 2,
+      });
+    compute();
+    window.addEventListener("resize", compute);
+    return () => window.removeEventListener("resize", compute);
+  }, []);
+  return profile;
+}
 
 function createGlowTexture() {
   const size = 64;
@@ -24,6 +43,8 @@ import { useTheme } from "next-themes";
 
 type SceneContentProps = {
   scrollProgress: number;
+  reduced: boolean;
+  small: boolean;
 };
 
 const ROYGBIV = [
@@ -84,17 +105,19 @@ function FloatingShape({
   color,
   delay = 0,
   wireframeOpacity = 0.3,
+  reduced = false,
 }: {
   position: [number, number, number];
   scale?: number;
   color: string;
   delay?: number;
   wireframeOpacity?: number;
+  reduced?: boolean;
 }) {
   const meshRef = useRef<Mesh>(null);
 
   useFrame((state) => {
-    if (!meshRef.current) return;
+    if (reduced || !meshRef.current) return;
     const t = state.clock.getElapsedTime();
     meshRef.current.rotation.x = t * 0.2 + delay;
     meshRef.current.rotation.y = t * 0.15 + delay;
@@ -102,9 +125,9 @@ function FloatingShape({
 
   return (
     <Float
-      speed={1.2}
-      rotationIntensity={1}
-      floatIntensity={2}
+      speed={reduced ? 0 : 1.2}
+      rotationIntensity={reduced ? 0 : 1}
+      floatIntensity={reduced ? 0 : 2}
       floatingRange={[-0.2, 0.2]}
     >
       <mesh ref={meshRef} position={position} scale={scale}>
@@ -115,18 +138,22 @@ function FloatingShape({
   );
 }
 
-function SceneContent({ scrollProgress }: SceneContentProps) {
+function SceneContent({ scrollProgress, reduced, small }: SceneContentProps) {
   const groupRef = useRef<Group | null>(null);
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
   const primaryColor = isDark ? "#C8F557" : "#F07C3A";
   const secondaryColor = isDark ? "#ffffff" : "#1a1a1a";
-  const sparkleCount = isDark ? 110 : 120;
+  // Scale particle counts down on small screens to cut GPU/CPU cost.
+  const starCount = small ? 1800 : 5000;
+  const baseSparkles = isDark ? 110 : 120;
+  const sparkleCount = small ? Math.round(baseSparkles / 2) : baseSparkles;
   const sparkleOpacity = isDark ? 0.5 : 0.75;
   const sparkleSize = isDark ? 2 : 2.5;
   const wireframeOpacity = isDark ? 0.3 : 0.6;
 
   useFrame((state, delta) => {
+    if (reduced) return;
     const g = groupRef.current;
     if (!g) return;
 
@@ -153,25 +180,25 @@ function SceneContent({ scrollProgress }: SceneContentProps) {
     <group ref={groupRef}>
       {/* Background Elements */}
       {isDark ? (
-        <Stars radius={80} depth={50} count={5000} factor={8} saturation={0} fade speed={0.6} />
+        <Stars radius={80} depth={50} count={starCount} factor={8} saturation={0} fade speed={reduced ? 0 : 0.6} />
       ) : (
-        <CustomStars count={5000} rainbow />
+        <CustomStars count={starCount} rainbow />
       )}
       <Sparkles
         count={sparkleCount}
         scale={12}
         size={sparkleSize}
-        speed={0.4}
+        speed={reduced ? 0 : 0.4}
         opacity={sparkleOpacity}
         color={primaryColor}
       />
 
       {/* Floating Shapes distributed in 3D space */}
-      <FloatingShape position={[0, 0, 0]} scale={1.5} color={primaryColor} wireframeOpacity={wireframeOpacity} />
-      <FloatingShape position={[-4, 2, -5]} scale={1} color={secondaryColor} delay={1} wireframeOpacity={wireframeOpacity} />
-      <FloatingShape position={[4, -2, -4]} scale={1.2} color={primaryColor} delay={2} wireframeOpacity={wireframeOpacity} />
-      <FloatingShape position={[-3, -3, -2]} scale={0.8} color={secondaryColor} delay={3} wireframeOpacity={wireframeOpacity} />
-      <FloatingShape position={[3, 3, -6]} scale={0.9} color={primaryColor} delay={4} wireframeOpacity={wireframeOpacity} />
+      <FloatingShape position={[0, 0, 0]} scale={1.5} color={primaryColor} wireframeOpacity={wireframeOpacity} reduced={reduced} />
+      <FloatingShape position={[-4, 2, -5]} scale={1} color={secondaryColor} delay={1} wireframeOpacity={wireframeOpacity} reduced={reduced} />
+      <FloatingShape position={[4, -2, -4]} scale={1.2} color={primaryColor} delay={2} wireframeOpacity={wireframeOpacity} reduced={reduced} />
+      <FloatingShape position={[-3, -3, -2]} scale={0.8} color={secondaryColor} delay={3} wireframeOpacity={wireframeOpacity} reduced={reduced} />
+      <FloatingShape position={[3, 3, -6]} scale={0.9} color={primaryColor} delay={4} wireframeOpacity={wireframeOpacity} reduced={reduced} />
     </group>
   );
 }
@@ -181,15 +208,20 @@ type Hero3DProps = {
 };
 
 export default function Hero3D({ scrollProgress }: Hero3DProps) {
+  const reduced = useReducedMotion();
+  const { small, lowDpr } = useDeviceProfile();
   return (
     <div className="absolute inset-0 z-0 pointer-events-none">
       <Canvas
         className="h-full w-full"
-        gl={{ antialias: true, alpha: true }}
-        dpr={[1, 2]}
+        // Reduced-motion users get a single static render (no continuous RAF
+        // loop); everyone else gets the live animation.
+        frameloop={reduced ? "demand" : "always"}
+        gl={{ antialias: !small, alpha: true }}
+        dpr={small || lowDpr ? [1, 1.5] : [1, 2]}
       >
         <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={45} />
-        <SceneContent scrollProgress={scrollProgress} />
+        <SceneContent scrollProgress={scrollProgress} reduced={reduced} small={small} />
       </Canvas>
     </div>
   );

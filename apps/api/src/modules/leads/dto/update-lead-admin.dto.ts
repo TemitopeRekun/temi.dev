@@ -1,10 +1,10 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { IsOptional, IsString, MaxLength } from "class-validator";
+import { IsOptional, IsIn } from "class-validator";
+import { LEAD_STATUSES, LeadStatus } from "./leads-admin-list-query.dto";
 
 export class UpdateLeadAdminDto {
-  @ApiPropertyOptional({ description: "Status label" })
+  @ApiPropertyOptional({ description: "Status label", enum: LEAD_STATUSES })
   @IsOptional()
-  @IsString()
-  @MaxLength(50)
-  status?: string;
+  @IsIn(LEAD_STATUSES)
+  status?: LeadStatus;
 }

@@ -7,9 +7,11 @@ import { MagneticWrapper } from "@temi/ui";
 import { HeroBackground } from "./HeroBackground";
 import { TextReveal } from "../common/TextReveal";
 import { usePreloader } from "../../providers/PreloaderWrapper";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 
 export function Hero() {
   const isLoading = usePreloader();
+  const reducedMotion = useReducedMotion();
   const [scrollProgress, setScrollProgress] = useState(0);
   const sectionRef = useRef<HTMLElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
@@ -30,6 +32,11 @@ export function Hero() {
     let cleanup: (() => void) | null = null;
     let latestProgress = 0;
     let mounted = true;
+
+    // Respect reduced-motion: skip the intro timeline and the pinned
+    // scroll-scrub entirely. Content is already visible by default, so there
+    // is nothing to reveal.
+    if (reducedMotion) return;
 
     const run = async () => {
       await registerGSAP();
@@ -140,7 +147,7 @@ export function Hero() {
       mounted = false;
       if (cleanup) cleanup();
     };
-  }, [isLoading]);
+  }, [isLoading, reducedMotion]);
 
   return (
     <section

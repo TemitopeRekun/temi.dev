@@ -3,6 +3,10 @@ import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { ConfigModule } from "@nestjs/config";
 import { AppController } from "./app.controller";
+import {
+  envValidationOptions,
+  envValidationSchema,
+} from "./config/env.validation";
 import { PrismaModule } from "./prisma/prisma.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { ProjectsModule } from "./modules/projects/projects.module";
@@ -12,10 +16,15 @@ import { UploadModule } from "./modules/upload/upload.module";
 import { AiModule } from "./modules/ai/ai.module";
 import { RagModule } from "./modules/rag/rag.module";
 import { DashboardModule } from "./modules/dashboard/dashboard.module";
+import { HealthModule } from "./modules/health/health.module";
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: envValidationSchema,
+      validationOptions: envValidationOptions,
+    }),
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 10 }]),
     PrismaModule,
     AuthModule,
@@ -26,6 +35,7 @@ import { DashboardModule } from "./modules/dashboard/dashboard.module";
     AiModule,
     RagModule,
     DashboardModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [

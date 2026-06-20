@@ -8,6 +8,7 @@ import { AiService } from "../ai/ai.service";
 import { readFile } from "fs/promises";
 import { resolve } from "path";
 import { Prisma } from "@prisma/client";
+import { toVectorLiteral } from "../../common/utils/vector";
 
 @Injectable()
 export class RagService {
@@ -109,7 +110,7 @@ export class RagService {
     const embedding = await this.ai.generateEmbedding(post.content);
     if (!embedding || embedding.length === 0)
       throw new BadRequestException("Embedding failed");
-    const vecLiteral = `'[${embedding.filter((v) => Number.isFinite(v)).map((v) => v.toFixed(6)).join(", ")}]'::vector`;
+    const vecLiteral = toVectorLiteral(embedding);
     await this.prisma.$executeRaw`
       UPDATE "BlogPost" SET embedding = ${Prisma.raw(vecLiteral)} WHERE id = ${post.id}
     `.catch(() => {
@@ -130,7 +131,7 @@ export class RagService {
     const embedding = await this.ai.generateEmbedding(project.description);
     if (!embedding || embedding.length === 0)
       throw new BadRequestException("Embedding failed");
-    const vecLiteral = `'[${embedding.filter((v) => Number.isFinite(v)).map((v) => v.toFixed(6)).join(", ")}]'::vector`;
+    const vecLiteral = toVectorLiteral(embedding);
     await this.prisma.$executeRaw`
       UPDATE "Project" SET embedding = ${Prisma.raw(vecLiteral)} WHERE id = ${project.id}
     `.catch(() => {

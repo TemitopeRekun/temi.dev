@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
 import { getProjects } from "../lib/projects";
 import { getPosts } from "../lib/blog";
+import { BASE_URL } from "../lib/metadata";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.temitope.live";
+  const base = BASE_URL;
   const now = new Date();
   const [posts, projects] = await Promise.all([getPosts(), getProjects()]);
 

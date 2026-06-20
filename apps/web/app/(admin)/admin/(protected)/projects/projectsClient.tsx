@@ -73,7 +73,9 @@ export default function ProjectsClient({ token }: { token: string }) {
         cache: "no-store",
       });
       if (!res.ok) throw new Error("Failed to fetch projects");
-      return (await res.json()) as Project[];
+      // The list endpoint returns a cursor-paginated { items, nextCursor }.
+      const json = (await res.json()) as { items: Project[] };
+      return json.items;
     },
   });
 

@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NotFoundException,
   BadRequestException,
 } from "@nestjs/common";
@@ -9,21 +10,27 @@ import { BlogListResponseDto } from "./dto/blog-list-response.dto";
 import { BlogDetailDto } from "./dto/blog-detail.dto";
 import { CreateBlogPostDto } from "./dto/create-blog-post.dto";
 import { UpdateBlogPostDto } from "./dto/update-blog-post.dto";
+import { BlogAdminListQueryDto } from "./dto/blog-admin-list-query.dto";
 import { AiService } from "../ai/ai.service";
 import { Prisma } from "@prisma/client";
+import { toVectorLiteral } from "../../common/utils/vector";
+import { applyCursorPage } from "../../common/utils/pagination";
 
 @Injectable()
 export class BlogService {
+  private readonly logger = new Logger(BlogService.name);
+
   constructor(
     private readonly prisma: PrismaService,
-    private readonly ai?: AiService,
+    private readonly ai: AiService,
   ) {}
 
   async list(query: BlogListQueryDto): Promise<BlogListResponseDto> {
     const take = query.take ?? 10;
-    const items = await this.prisma.blogPost.findMany({
+    const rows = await this.prisma.blogPost.findMany({
       where: { published: true },
-      orderBy: [{ publishedAt: "desc" }],
+      // `id` is the unique tiebreaker that makes the cursor ordering total.
+      orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
       take: take + 1,
       ...(query.cursor ? { cursor: { id: query.cursor }, skip: 1 } : {}),
       select: {
@@ -36,12 +43,7 @@ export class BlogService {
         publishedAt: true,
       },
     });
-    let nextCursor: string | undefined;
-    if (items.length > take) {
-      const next = items.pop();
-      nextCursor = next?.id;
-    }
-    return { items, nextCursor };
+    return applyCursorPage(rows, take);
   }
 
   async getBySlug(slug: string): Promise<BlogDetailDto> {
@@ -62,9 +64,19 @@ export class BlogService {
     return post;
   }
 
-  async adminListAll(): Promise<Array<unknown>> {
-    const items = await this.prisma.blogPost.findMany({
-      orderBy: [{ publishedAt: "desc" }, { title: "asc" }],
+  async adminListAll(
+    query: BlogAdminListQueryDto,
+  ): Promise<{ items: Array<unknown>; nextCursor?: string }> {
+    // Previously returned the full (unbounded) table. Now cursor-paginated like
+    // the public list; response shape changed to { items, nextCursor } so the
+    // admin UI can page through large tables.
+    const take = query.take ?? 20;
+    const rows = await this.prisma.blogPost.findMany({
+      // publishedAt is nullable for drafts and title is non-unique, so `id` is
+      // the unique tiebreaker that makes the cursor ordering deterministic.
+      orderBy: [{ publishedAt: "desc" }, { title: "asc" }, { id: "asc" }],
+      take: take + 1,
+      ...(query.cursor ? { cursor: { id: query.cursor }, skip: 1 } : {}),
       select: {
         id: true,
         slug: true,
@@ -76,7 +88,7 @@ export class BlogService {
         publishedAt: true,
       },
     });
-    return items;
+    return applyCursorPage(rows, take);
   }
 
   async adminCreate(dto: CreateBlogPostDto): Promise<{ id: string }> {
@@ -85,27 +97,25 @@ export class BlogService {
       select: { id: true },
     });
     if (existing) throw new BadRequestException("Slug already exists");
-    const created = await this.prisma.blogPost.create({
-      data: {
-        slug: dto.slug,
-        title: dto.title,
-        excerpt: dto.excerpt ?? null,
-        content: dto.content,
-        tags: dto.tags,
-        coverImage: dto.coverImage ?? null,
-        published: dto.published,
-        publishedAt: dto.published ? new Date() : null,
-      },
-      select: { id: true, content: true, published: true },
-    });
-    if (created.published && this.ai) {
-      const emb = await this.ai.generateEmbedding(created.content);
-      if (emb.length > 0) {
-        const vec = `'[${emb.filter((v) => Number.isFinite(v)).map((v) => v.toFixed(6)).join(", ")}]'::vector`;
-        await this.prisma.$executeRaw`
-          UPDATE "BlogPost" SET embedding = ${Prisma.raw(vec)} WHERE id = ${created.id}
-        `;
-      }
+    const created = await this.prisma.$transaction((tx) =>
+      tx.blogPost.create({
+        data: {
+          slug: dto.slug,
+          title: dto.title,
+          excerpt: dto.excerpt ?? null,
+          content: dto.content,
+          tags: dto.tags,
+          coverImage: dto.coverImage ?? null,
+          published: dto.published,
+          publishedAt: dto.published ? new Date() : null,
+        },
+        select: { id: true, content: true, published: true },
+      }),
+    );
+    if (created.published) {
+      // Fire-and-forget: the HTTP response returns immediately while the
+      // embedding is generated/stored in the background.
+      this.embedBlogPostInBackground(created.id, created.content);
     }
     return { id: created.id };
   }
@@ -120,32 +130,25 @@ export class BlogService {
     });
     if (!prev) throw new NotFoundException("Post not found");
     const published = dto.published ?? prev.published;
-    const updated = await this.prisma.blogPost.update({
-      where: { id },
-      data: {
-        title: dto.title ?? undefined,
-        excerpt: dto.excerpt ?? undefined,
-        content: dto.content ?? undefined,
-        tags: dto.tags ?? undefined,
-        coverImage: dto.coverImage ?? undefined,
-        published: published,
-        publishedAt: published ? new Date() : null,
-      },
-      select: { id: true, content: true, published: true },
-    });
+    const updated = await this.prisma.$transaction((tx) =>
+      tx.blogPost.update({
+        where: { id },
+        data: {
+          title: dto.title ?? undefined,
+          excerpt: dto.excerpt ?? undefined,
+          content: dto.content ?? undefined,
+          tags: dto.tags ?? undefined,
+          coverImage: dto.coverImage ?? undefined,
+          published: published,
+          publishedAt: published ? new Date() : null,
+        },
+        select: { id: true, content: true, published: true },
+      }),
+    );
     const contentChanged =
       dto.content !== undefined && dto.content !== prev.content;
-    if (
-      this.ai &&
-      (contentChanged || (dto.published !== undefined && dto.published))
-    ) {
-      const emb = await this.ai.generateEmbedding(updated.content);
-      if (emb.length > 0) {
-        const vec = `'[${emb.filter((v) => Number.isFinite(v)).map((v) => v.toFixed(6)).join(", ")}]'::vector`;
-        await this.prisma.$executeRaw`
-          UPDATE "BlogPost" SET embedding = ${Prisma.raw(vec)} WHERE id = ${updated.id}
-        `;
-      }
+    if (contentChanged || (dto.published !== undefined && dto.published)) {
+      this.embedBlogPostInBackground(updated.id, updated.content);
     }
     return { id };
   }
@@ -161,4 +164,37 @@ export class BlogService {
     return { id };
   }
 
+  /**
+   * Generates and stores a blog post embedding off the request path. Never
+   * throws (errors are logged), retries once, so no unhandled rejection.
+   */
+  private embedBlogPostInBackground(id: string, content: string): void {
+    void this.embedWithRetry(id, content, 1).catch((err: unknown) => {
+      this.logger.error(
+        `Background embedding failed for BlogPost ${id}`,
+        err instanceof Error ? err.stack : String(err),
+      );
+    });
+  }
+
+  private async embedWithRetry(
+    id: string,
+    content: string,
+    retries: number,
+  ): Promise<void> {
+    try {
+      const emb = await this.ai.generateEmbedding(content);
+      if (emb.length === 0) return;
+      const vec = toVectorLiteral(emb);
+      await this.prisma.$executeRaw`
+        UPDATE "BlogPost" SET embedding = ${Prisma.raw(vec)} WHERE id = ${id}
+      `;
+    } catch (err) {
+      if (retries > 0) {
+        await this.embedWithRetry(id, content, retries - 1);
+        return;
+      }
+      throw err;
+    }
+  }
 }

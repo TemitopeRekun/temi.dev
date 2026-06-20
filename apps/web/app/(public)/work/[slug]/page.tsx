@@ -7,7 +7,7 @@ import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { AnimatedText } from "../../../../components/common/AnimatedText";
 import { getProjects, getProjectBySlug } from "../../../../lib/projects";
-import { buildMetadata } from "../../../../lib/metadata";
+import { buildMetadata, BASE_URL } from "../../../../lib/metadata";
 
 type Params = { slug: string };
 
@@ -24,7 +24,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
   return buildMetadata({
-    title: project ? `${project.title} — Work` : "Work Detail",
+    title: project ? project.title : "Work Detail",
     description: project ? project.description : "Project details.",
     path: project ? `/work/${project.slug}` : "/work",
     image: project ? `/work/${project.slug}/og` : undefined,
@@ -44,7 +44,7 @@ export default async function WorkDetailPage({
     notFound();
   }
 
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.temitope.live";
+  const base = BASE_URL;
 
   const creativeWorkSchema = {
     "@context": "https://schema.org",

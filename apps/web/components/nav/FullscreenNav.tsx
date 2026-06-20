@@ -6,6 +6,7 @@ import { NavLink } from "./NavLink";
 import { NavCurve } from "./NavCurve";
 import { MagneticWrapper } from "@temi/ui";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
+import { useReducedMotion } from "../../hooks/useReducedMotion";
 
 const NAV_ITEMS = [
   { title: "Home", href: "/" },
@@ -22,23 +23,27 @@ const SOCIALS = [
   { label: "Twitter", href: "https://x.com/sire_Temi" },
 ];
 
-const menuSlide = {
+const menuSlideFor = (duration: number) => ({
   initial: { x: "calc(100% + 100px)" },
   enter: {
     x: "0",
-    transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] as const },
+    transition: { duration, ease: [0.76, 0, 0.24, 1] as const },
   },
   exit: {
     x: "calc(100% + 100px)",
-    transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1] as const },
+    transition: { duration, ease: [0.76, 0, 0.24, 1] as const },
   },
-};
+});
 
 export function FullscreenNav() {
   const pathname = usePathname();
+  const reducedMotion = useReducedMotion();
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndicator, setSelectedIndicator] = useState(pathname);
   const trapRef = useFocusTrap(isOpen);
+  // Collapse animation durations to ~instant for reduced-motion users.
+  const menuSlide = menuSlideFor(reducedMotion ? 0 : 0.8);
+  const fast = reducedMotion ? 0 : undefined;
   const [hash, setHash] = useState("");
   const [atTop, setAtTop] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -113,17 +118,17 @@ export function FullscreenNav() {
             initial={{ opacity: 0, y: -8, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.9 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: fast ?? 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="fixed right-8 top-1/2 -translate-y-1/2 z-200 w-14 h-14 md:w-20 md:h-20 rounded-full bg-(--text) flex flex-col items-center justify-center gap-[6px] mix-blend-difference"
           >
             <motion.span
               animate={isOpen ? { rotate: 45, y: 5 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1] }}
+              transition={{ duration: fast ?? 0.55, ease: [0.76, 0, 0.24, 1] }}
               className="w-[22px] h-[1.5px] md:w-[28px] md:h-[2px] bg-(--bg) block"
             />
             <motion.span
               animate={isOpen ? { rotate: -45, y: -4 } : { rotate: 0, y: 0 }}
-              transition={{ duration: 0.55, ease: [0.76, 0, 0.24, 1] }}
+              transition={{ duration: fast ?? 0.55, ease: [0.76, 0, 0.24, 1] }}
               className="w-[22px] h-[1.5px] md:w-[28px] md:h-[2px] bg-(--bg) block"
             />
           </motion.button>
@@ -194,7 +199,7 @@ export function FullscreenNav() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.4 }}
+            transition={{ duration: fast ?? 0.4 }}
             onClick={() => setIsOpen(false)}
             className="fixed inset-0 z-140 bg-black/20 backdrop-blur-[2px]"
           />

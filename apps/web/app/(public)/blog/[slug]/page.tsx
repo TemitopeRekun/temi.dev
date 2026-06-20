@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Route } from "next";
+import { notFound } from "next/navigation";
 import { Container, RevealOnScroll, Section } from "@temi/ui";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -9,7 +10,7 @@ import rehypeHighlight from "rehype-highlight";
 import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import { AnimatedText } from "../../../../components/common/AnimatedText";
 import { getPosts, getPostBySlug } from "../../../../lib/blog";
-import { buildMetadata } from "../../../../lib/metadata";
+import { buildMetadata, BASE_URL } from "../../../../lib/metadata";
 import { AskArticle } from "../../../../components/blog/AskArticle";
 import { ShareArticle } from "../../../../components/blog/ShareArticle";
 
@@ -28,7 +29,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   return buildMetadata({
-    title: post ? `${post.title} — Blog` : "Blog Post",
+    title: post ? post.title : "Blog Post",
     description: post ? post.excerpt : "Blog post",
     path: post ? `/blog/${post.slug}` : "/blog",
     image: post ? `/blog/${post.slug}/og` : undefined,
@@ -44,24 +45,34 @@ export default async function BlogDetailPage({
   const { slug } = await params;
   const post = await getPostBySlug(slug);
 
-  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.temitope.live";
+  if (!post) {
+    notFound();
+  }
 
-  const blogPostingSchema = post
-    ? {
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        headline: post.title,
-        description: post.excerpt,
-        image: post.image,
-        url: `${base}/blog/${slug}`,
-        datePublished: post.publishedAt ?? undefined,
-        keywords: post.tag,
-        timeRequired: `PT${post.readTime}M`,
-        mainEntityOfPage: { "@type": "WebPage", "@id": `${base}/blog/${slug}` },
-        author: { "@type": "Person", name: "Temitope Ogunrekun", url: base },
-        publisher: { "@type": "Person", name: "Temitope Ogunrekun", url: base },
-      }
-    : null;
+  const base = BASE_URL;
+
+  const blogPostingSchema = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    image: post.image,
+    url: `${base}/blog/${slug}`,
+    datePublished: post.publishedAt ?? undefined,
+    dateModified: post.updatedAt ?? post.publishedAt ?? undefined,
+    keywords: post.tag,
+    timeRequired: `PT${post.readTime}M`,
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${base}/blog/${slug}` },
+    author: { "@type": "Person", name: "Temitope Ogunrekun", url: base },
+    publisher: {
+      "@type": "Organization",
+      name: "Temitope Ogunrekun",
+      logo: {
+        "@type": "ImageObject",
+        url: `${base}/opengraph-image`,
+      },
+    },
+  };
 
   const breadcrumbSchema = {
     "@context": "https://schema.org",
@@ -69,19 +80,17 @@ export default async function BlogDetailPage({
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Home", item: base },
       { "@type": "ListItem", position: 2, name: "Blog", item: `${base}/blog` },
-      ...(post ? [{ "@type": "ListItem", position: 3, name: post.title, item: `${base}/blog/${slug}` }] : []),
+      { "@type": "ListItem", position: 3, name: post.title, item: `${base}/blog/${slug}` },
     ],
   };
 
   return (
     <main>
-      {blogPostingSchema && (
-        <script
-          type="application/ld+json"
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingSchema) }}
-        />
-      )}
+      <script
+        type="application/ld+json"
+        suppressHydrationWarning
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostingSchema) }}
+      />
       <script
         type="application/ld+json"
         suppressHydrationWarning
@@ -89,10 +98,7 @@ export default async function BlogDetailPage({
       />
       <Section>
         <Container>
-          {!post ? (
-            <div className="text-(--muted)">Post not found.</div>
-          ) : (
-            <article className="mx-auto max-w-3xl">
+          <article className="mx-auto max-w-3xl">
               <RevealOnScroll>
                 <div className="mb-8 text-center">
                   <div className="mb-4 flex flex-wrap items-center justify-center gap-2 text-sm font-medium">
@@ -194,8 +200,7 @@ export default async function BlogDetailPage({
                   Back to Articles
                 </Link>
               </div>
-            </article>
-          )}
+          </article>
         </Container>
       </Section>
     </main>

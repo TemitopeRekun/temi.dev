@@ -220,8 +220,8 @@ export default function LeadsClient({ token }: { token: string }) {
                       <option value="new">New</option>
                       <option value="contacted">Contacted</option>
                       <option value="qualified">Qualified</option>
-                      <option value="closed">Closed</option>
-                      <option value="spam">Spam</option>
+                      <option value="won">Won</option>
+                      <option value="lost">Lost</option>
                     </select>
                   </div>
                 </div>

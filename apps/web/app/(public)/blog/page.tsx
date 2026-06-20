@@ -5,7 +5,7 @@ import { buildMetadata } from "../../../lib/metadata";
 import LoadingPublic from "../loading";
 
 export const metadata = buildMetadata({
-  title: "Blog — Temitope Ogunrekun",
+  title: "Blog",
   description: "Thoughts on AI, web, backend systems, and product engineering.",
   path: "/blog",
   type: "website",

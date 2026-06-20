@@ -5,7 +5,7 @@ import { buildMetadata } from "../../../lib/metadata";
 import { getProjects } from "../../../lib/projects";
 
 export const metadata = buildMetadata({
-  title: "Work — Case Studies",
+  title: "Work",
   description:
     "Selected systems I've built across fintech, mobility, AI infrastructure, and full-stack engineering.",
   path: "/work",

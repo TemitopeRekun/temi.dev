@@ -3,7 +3,7 @@ import { AnimatedText } from "../../../components/common/AnimatedText";
 import { buildMetadata } from "../../../lib/metadata";
 
 export const metadata = buildMetadata({
-  title: "Stack — Temitope Ogunrekun",
+  title: "Stack",
   description:
     "The tools I actually use to build things. TypeScript, Next.js, NestJS, PostgreSQL, Docker, and more — with context from real projects.",
   path: "/stack",

@@ -2,8 +2,6 @@ import "./globals.css";
 import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { ThemeProvider } from "../providers/ThemeProvider";
-import { LenisProvider } from "../providers/LenisProvider";
-import { PreloaderWrapper } from "../providers/PreloaderWrapper";
 import { QueryProvider } from "../providers/QueryProvider";
 import { DM_Mono, Fraunces, Syne } from "next/font/google";
 
@@ -29,6 +27,10 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
+  title: {
+    default: "Temitope Ogunrekun — Full-Stack Engineer",
+    template: "%s — Temitope Ogunrekun",
+  },
   verification: {
     google: "zuL_znB3EWJEudjKxbRM1G8Jvab0VPKS-h_rfhanMgk",
   },
@@ -47,11 +49,7 @@ export default function RootLayout(props: Readonly<{ children: ReactNode }>) {
           Skip to main content
         </a>
         <ThemeProvider>
-          <LenisProvider>
-            <QueryProvider>
-              <PreloaderWrapper>{props.children}</PreloaderWrapper>
-            </QueryProvider>
-          </LenisProvider>
+          <QueryProvider>{props.children}</QueryProvider>
         </ThemeProvider>
       </body>
     </html>

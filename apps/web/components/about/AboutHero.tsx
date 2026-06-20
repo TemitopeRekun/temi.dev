@@ -12,6 +12,8 @@ import { motion, useScroll, useTransform } from "framer-motion";
 export function AboutHero({ hideLink = false }: { hideLink?: boolean }) {
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const clipRef = useRef<HTMLHeadingElement | null>(null);
+  // Visible/clip heading is rendered as <h2>: the page's single <h1> is the
+  // Hero (homepage) or the route-level heading (about page).
   const contentRef = useRef<HTMLDivElement | null>(null);
 
   // Parallax effect for the button
@@ -97,12 +99,12 @@ export function AboutHero({ hideLink = false }: { hideLink?: boolean }) {
               <TextReveal text="Who I Am" type="chars" />
             </div>
             <div className="relative mt-6">
-              <h1 className="font-(--font-syne) text-[clamp(2rem,8vw,6rem)] tracking-[-0.02em] text-(--text)/10" style={{ lineHeight: 1 }}>
+              <h2 className="font-(--font-syne) text-[clamp(2rem,8vw,6rem)] tracking-[-0.02em] text-(--text)/10" style={{ lineHeight: 1 }}>
                 Temitope
                 <br />
                 Ogunrekun
-              </h1>
-              <h1
+              </h2>
+              <h2
                 ref={clipRef}
                 className="pointer-events-none absolute inset-0 font-(--font-syne) text-[clamp(2rem,8vw,6rem)] tracking-[-0.02em] text-(--text)"
                 style={{ lineHeight: 1 }}
@@ -111,7 +113,7 @@ export function AboutHero({ hideLink = false }: { hideLink?: boolean }) {
                 Temitope
                 <br />
                 Ogunrekun
-              </h1>
+              </h2>
             </div>
           </div>
 

@@ -1,15 +1,16 @@
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { apiBaseUrl } from "../../../../lib/api";
 
 type LoginBody = {
   email: string;
   password: string;
 };
 
-function apiBaseUrl(): string {
-  const env = process.env.NEXT_PUBLIC_API_BASE_URL;
-  return (env && env.trim().length > 0 ? env : "http://localhost:4000") as string;
-}
+const authResponseSchema = z.object({
+  accessToken: z.string().min(1),
+});
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   let body: LoginBody;
@@ -39,8 +40,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const status = res?.status ?? 502;
     return NextResponse.json({ error: "Login failed" }, { status });
   }
-  const data = (await res.json()) as { accessToken: string };
-  if (!data?.accessToken) {
+
+  const parsed = authResponseSchema.safeParse(await res.json().catch(() => null));
+  if (!parsed.success) {
     return NextResponse.json(
       { error: "Invalid auth response" },
       { status: 500 },
@@ -51,7 +53,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   const isProd = process.env.NODE_ENV === "production";
   c.set({
     name: "admin_jwt",
-    value: data.accessToken,
+    value: parsed.data.accessToken,
     httpOnly: true,
     secure: isProd,
     sameSite: "lax",

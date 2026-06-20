@@ -5,8 +5,13 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  // DATABASE_URL is the pooled (pgbouncer) Supabase connection used at runtime.
+  // For Supabase, append `?pgbouncer=true&connection_limit=1` so Prisma plays
+  // nicely with transaction-mode pooling and doesn't exhaust pool slots.
   url      = env("DATABASE_URL")
-  // directUrl = env("DIRECT_URL")
+  // DIRECT_URL bypasses the pooler for migrations / introspection (operations
+  // that prepared statements + pgbouncer cannot run through the pool).
+  directUrl = env("DIRECT_URL")
   // shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
@@ -34,6 +39,8 @@ model Project {
   embedding   Unsupported("vector(768)")?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([featured, order])
 }
 
 model BlogPost {
@@ -49,6 +56,8 @@ model BlogPost {
   embedding   Unsupported("vector(768)")?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+
+  @@index([published, publishedAt])
 }
 
 model Lead {
@@ -61,6 +70,8 @@ model Lead {
   score     Int      @default(0)
   status    String   @default("new")
   createdAt DateTime @default(now())
+
+  @@index([status, createdAt])
 }
 
 model Setting {

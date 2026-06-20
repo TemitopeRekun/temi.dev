@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { prefersReducedMotion } from "../hooks/useReducedMotion";
 
 type Props = {
   children: ReactNode;
@@ -15,6 +16,10 @@ export function LenisProvider({ children }: Props) {
   const pathname = usePathname();
 
   useEffect(() => {
+    // Reduced-motion: don't hijack scroll. Fall back to native scrolling and
+    // skip Lenis entirely.
+    if (prefersReducedMotion()) return;
+
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -46,7 +51,12 @@ export function LenisProvider({ children }: Props) {
 
   // Jump to top instantly on every route change so the new page starts at 0
   useEffect(() => {
-    lenisRef.current?.scrollTo(0, { immediate: true });
+    if (lenisRef.current) {
+      lenisRef.current.scrollTo(0, { immediate: true });
+    } else if (typeof window !== "undefined") {
+      // Lenis disabled (reduced motion): reset native scroll position.
+      window.scrollTo(0, 0);
+    }
   }, [pathname]);
 
   return <>{children}</>;

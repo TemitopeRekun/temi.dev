@@ -1,5 +1,5 @@
 "use client";
-import { useActionState, useEffect } from "react";
+import { useActionState } from "react";
 import { StaggerReveal } from "@temi/ui";
 
 export type LeadState = { ok: true } | { ok: false; error: string } | null;
@@ -13,10 +13,6 @@ export function ContactForm({ action }: Props) {
     action,
     null,
   );
-  useEffect(() => {
-    const t = setTimeout(() => {}, 50);
-    return () => clearTimeout(t);
-  }, []);
 
   return (
     <div>

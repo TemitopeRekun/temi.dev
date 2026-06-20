@@ -11,12 +11,13 @@
     "allowJs": false,
     "incremental": true,
     "jsx": "preserve",
+    "types": ["vitest/globals", "@testing-library/jest-dom"],
     "plugins": [
       {
         "name": "next"
       }
     ]
   },
-  "include": ["app", "components", "lib", "types", "next-env.d.ts", ".next/types/**/*.ts"],
+  "include": ["app", "components", "lib", "actions", "hooks", "types", "test", "next-env.d.ts", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }

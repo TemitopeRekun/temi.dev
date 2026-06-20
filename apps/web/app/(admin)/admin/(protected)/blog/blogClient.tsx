@@ -62,7 +62,9 @@ export default function BlogClient({ token }: { token: string }) {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) throw new Error("Failed to fetch posts");
-      return (await res.json()) as BlogSummary[];
+      // The list endpoint returns a cursor-paginated { items, nextCursor }.
+      const json = (await res.json()) as { items: BlogSummary[] };
+      return json.items;
     },
   });
 

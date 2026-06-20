@@ -3,6 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { ProjectsService } from "./projects.service";
 import { ProjectsQueryDto } from "./dto/projects-query.dto";
 import { ProjectDto } from "./dto/project.dto";
+import { ProjectsListResponseDto } from "./dto/projects-list-response.dto";
 
 @ApiTags("Projects")
 @Controller("api/projects")
@@ -10,9 +11,11 @@ export class ProjectsController {
   constructor(private readonly projects: ProjectsService) {}
 
   @Get()
-  @ApiOperation({ summary: "List projects (filter by tech)" })
-  @ApiResponse({ status: 200, type: ProjectDto, isArray: true })
-  async list(@Query() query: ProjectsQueryDto): Promise<ProjectDto[]> {
+  @ApiOperation({ summary: "List projects (cursor paginated, filter by tech)" })
+  @ApiResponse({ status: 200, type: ProjectsListResponseDto })
+  async list(
+    @Query() query: ProjectsQueryDto,
+  ): Promise<ProjectsListResponseDto> {
     return this.projects.list(query);
   }
 

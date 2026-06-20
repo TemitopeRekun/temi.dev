@@ -7,12 +7,13 @@ import { HomeStackIntro } from "../../components/home/HomeStackIntro";
 import { Testimonials } from "../../components/home/Testimonials";
 import { HomeBlog } from "../../components/home/HomeBlog";
 import { GlobalBackground } from "../../components/common/GlobalBackground";
-import { buildMetadata } from "../../lib/metadata";
+import { buildMetadata, BASE_URL } from "../../lib/metadata";
 import { getPosts } from "../../lib/blog";
 import { getProjects } from "../../lib/projects";
 
 export const metadata = buildMetadata({
   title: "Temitope Ogunrekun — Full-Stack Engineer",
+  titleAbsolute: true,
   description:
     "Full-stack engineer from Lagos. TypeScript, Next.js, NestJS, PostgreSQL. Open to remote mid-level roles.",
   path: "/",
@@ -32,7 +33,7 @@ export default async function HomePage() {
             "@context": "https://schema.org",
             "@type": "Person",
             name: "Temitope Ogunrekun",
-            url: (process.env.NEXT_PUBLIC_SITE_URL ?? "https://www.temitope.live") + "/",
+            url: `${BASE_URL}/`,
             jobTitle: "Full-Stack Engineer",
             sameAs: [
               "https://github.com/TemitopeRekun",
