@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect, createContext, useContext } from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
 import { Preloader } from "../components/common/Preloader";
 
@@ -11,19 +12,22 @@ export function usePreloader() {
 }
 
 export function PreloaderWrapper({ children }: { children: React.ReactNode }) {
-  const [loading, setLoading] = useState(true);
+  const pathname = usePathname();
+  // The intro overlay is only for the homepage — never block blog posts,
+  // the admin panel, or any other route with it.
+  const isHome = pathname === "/";
+  const [loading, setLoading] = useState(isHome);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    // Check if preloader has been seen in this session
-    const hasSeenPreloader = sessionStorage.getItem("preloader-seen");
-    if (hasSeenPreloader) {
+    if (!isHome) {
       setLoading(false);
-    } else {
-      // If not seen, keep loading true
-      setLoading(true);
+      return;
     }
-  }, []);
+    // On the homepage, show it once per session.
+    const hasSeenPreloader = sessionStorage.getItem("preloader-seen");
+    setLoading(!hasSeenPreloader);
+  }, [isHome]);
 
   const handleComplete = () => {
     sessionStorage.setItem("preloader-seen", "1");
@@ -33,7 +37,9 @@ export function PreloaderWrapper({ children }: { children: React.ReactNode }) {
   return (
     <PreloaderContext.Provider value={loading}>
       <AnimatePresence mode="wait">
-        {loading && <Preloader key="preloader" onComplete={handleComplete} />}
+        {loading && isHome && (
+          <Preloader key="preloader" onComplete={handleComplete} />
+        )}
       </AnimatePresence>
       {children}
     </PreloaderContext.Provider>
