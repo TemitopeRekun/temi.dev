@@ -9,7 +9,9 @@ import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class UploadService implements OnModuleInit {
-  private supabase: SupabaseClient;
+  // Null when Supabase credentials are absent — uploads then fail with a clear
+  // error instead of crashing app boot (createClient throws on an empty URL).
+  private supabase: SupabaseClient | null = null;
   private bucket: string;
   private readonly logger = new Logger(UploadService.name);
 
@@ -20,9 +22,10 @@ export class UploadService implements OnModuleInit {
 
     if (!supabaseUrl || !supabaseKey) {
       this.logger.warn("Supabase credentials missing. File uploads will fail.");
+      return;
     }
 
-    this.supabase = createClient(supabaseUrl || "", supabaseKey || "", {
+    this.supabase = createClient(supabaseUrl, supabaseKey, {
       auth: {
         persistSession: false,
       },
@@ -66,6 +69,10 @@ export class UploadService implements OnModuleInit {
     filename: string,
     mimetype: string,
   ): Promise<string> {
+    if (!this.supabase) {
+      this.logger.error("Upload attempted without Supabase configuration");
+      throw new InternalServerErrorException("File upload is not configured");
+    }
     const { error } = await this.supabase.storage
       .from(this.bucket)
       .upload(filename, fileBuffer, {

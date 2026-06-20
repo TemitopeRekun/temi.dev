@@ -71,7 +71,8 @@ describe("App (e2e)", () => {
   });
 
   afterAll(async () => {
-    await app.close();
+    // Guard against a failed beforeAll leaving `app` undefined.
+    await app?.close();
   });
 
   it("GET /health returns 200 ok", async () => {
