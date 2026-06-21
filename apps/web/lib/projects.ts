@@ -18,40 +18,29 @@ export type Project = {
   order: number;
 };
 
-// Raw shape returned by the API before mapping to `Project`.
-export type RawProject = {
-  id: string;
-  slug?: string;
-  title: string;
-  year?: number;
-  createdAt?: string;
-  category?: string;
-  techStack?: string[];
-  description?: string;
-  body?: string | null;
-  coverImage?: string;
-  liveUrl?: string;
-  repoUrl?: string;
-  featured?: boolean;
-  order?: number;
-};
-
+// Nullable DB columns (coverImage, liveUrl, repoUrl, body, ...) come back as
+// JSON `null`, so optional string fields use `.nullish()` (string|null|undefined)
+// — `.optional()` alone rejects null and would fail the whole list parse.
 const rawProjectSchema = z.object({
   id: z.string(),
-  slug: z.string().optional(),
+  slug: z.string().nullish(),
   title: z.string(),
-  year: z.number().optional(),
-  createdAt: z.string().optional(),
-  category: z.string().optional(),
-  techStack: z.array(z.string()).optional(),
-  description: z.string().optional(),
-  body: z.string().nullable().optional(),
-  coverImage: z.string().optional(),
-  liveUrl: z.string().optional(),
-  repoUrl: z.string().optional(),
-  featured: z.boolean().optional(),
-  order: z.number().optional(),
+  year: z.number().nullish(),
+  createdAt: z.string().nullish(),
+  category: z.string().nullish(),
+  techStack: z.array(z.string()).nullish(),
+  description: z.string().nullish(),
+  body: z.string().nullish(),
+  coverImage: z.string().nullish(),
+  liveUrl: z.string().nullish(),
+  repoUrl: z.string().nullish(),
+  featured: z.boolean().nullish(),
+  order: z.number().nullish(),
 });
+
+// Raw shape returned by the API before mapping to `Project`, derived from the
+// schema so it always matches what safeParse accepts (incl. nullable columns).
+export type RawProject = z.infer<typeof rawProjectSchema>;
 
 // The API list endpoint returns a cursor-paginated envelope, not a bare array.
 const projectListSchema = z.object({

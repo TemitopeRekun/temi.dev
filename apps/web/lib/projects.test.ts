@@ -52,6 +52,38 @@ describe("projects", () => {
       });
     });
 
+    it("parses items whose nullable fields (coverImage/liveUrl/repoUrl) are null", async () => {
+      // Regression: the API returns JSON null for empty nullable columns; the
+      // schema must accept null or the whole list silently parses to [].
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: async () => ({
+            items: [
+              {
+                id: "p1",
+                slug: "crm",
+                title: "CRM",
+                description: "A CRM",
+                coverImage: null,
+                liveUrl: null,
+                repoUrl: null,
+                body: null,
+              },
+            ],
+            nextCursor: undefined,
+          }),
+        }),
+      );
+
+      const projects = await getProjects();
+
+      expect(projects).toHaveLength(1);
+      expect(projects[0]).toMatchObject({ id: "p1", image: "", liveUrl: "", repoUrl: "" });
+    });
+
     it("returns [] and logs on a non-ok response", async () => {
       // Arrange
       const spy = vi.spyOn(console, "error");

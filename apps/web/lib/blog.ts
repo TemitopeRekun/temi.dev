@@ -14,32 +14,24 @@ export type BlogPost = {
   updatedAt?: string;
 };
 
-// Raw shape returned by the API before mapping to `BlogPost`.
-export type RawBlogItem = {
-  id?: string;
-  slug: string;
-  title: string;
-  tags?: string[];
-  excerpt?: string;
-  coverImage?: string;
-  image?: string;
-  content?: string;
-  publishedAt?: string;
-  updatedAt?: string;
-};
-
+// Nullable DB columns (excerpt, coverImage, publishedAt, ...) come back as JSON
+// `null`, so optional string fields use `.nullish()` (string|null|undefined) —
+// `.optional()` alone rejects null and would fail the whole list parse.
 const rawBlogItemSchema = z.object({
-  id: z.string().optional(),
+  id: z.string().nullish(),
   slug: z.string(),
   title: z.string(),
-  tags: z.array(z.string()).optional(),
-  excerpt: z.string().optional(),
-  coverImage: z.string().optional(),
-  image: z.string().optional(),
-  content: z.string().optional(),
-  publishedAt: z.string().optional(),
-  updatedAt: z.string().optional(),
+  tags: z.array(z.string()).nullish(),
+  excerpt: z.string().nullish(),
+  coverImage: z.string().nullish(),
+  image: z.string().nullish(),
+  content: z.string().nullish(),
+  publishedAt: z.string().nullish(),
+  updatedAt: z.string().nullish(),
 });
+
+// Derived from the schema so the type always matches what safeParse accepts.
+export type RawBlogItem = z.infer<typeof rawBlogItemSchema>;
 
 const blogListSchema = z.object({
   items: z.array(rawBlogItemSchema),
@@ -48,14 +40,14 @@ const blogListSchema = z.object({
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
 
 /** Estimate reading time at ~200 words per minute, minimum 1 minute. */
-export function estimateReadTime(content?: string): number {
+export function estimateReadTime(content?: string | null): number {
   const wordCount = content ? content.trim().split(/\s+/).filter(Boolean).length : 0;
   return Math.max(1, Math.round(wordCount / 200));
 }
 
 function mapBlogItem(item: RawBlogItem): BlogPost {
   return {
-    id: item.id,
+    id: item.id ?? undefined,
     slug: item.slug,
     title: item.title,
     tag: item.tags?.[0] || "Tech",
@@ -63,9 +55,9 @@ function mapBlogItem(item: RawBlogItem): BlogPost {
     excerpt: item.excerpt || "No excerpt available.",
     image: item.coverImage || item.image || `/blog/${item.slug}/og`,
     readTime: estimateReadTime(item.content),
-    content: item.content,
-    publishedAt: item.publishedAt,
-    updatedAt: item.updatedAt,
+    content: item.content ?? undefined,
+    publishedAt: item.publishedAt ?? undefined,
+    updatedAt: item.updatedAt ?? undefined,
   };
 }
 
