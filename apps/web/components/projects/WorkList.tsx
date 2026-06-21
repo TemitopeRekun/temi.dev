@@ -33,7 +33,9 @@ export function WorkList({ initialProjects }: { initialProjects?: Project[] }) {
         process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
       const res = await fetch(`${baseUrl}/api/projects`);
       if (!res.ok) return [];
-      return await res.json();
+      const data = await res.json();
+      // The list endpoint returns { items, nextCursor }; tolerate a bare array too.
+      return Array.isArray(data) ? data : (data.items ?? []);
     },
     initialData: initialProjects,
     staleTime: 60 * 1000,
