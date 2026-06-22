@@ -32,7 +32,11 @@ export async function generateMetadata({
     title: post ? post.title : "Blog Post",
     description: post ? post.excerpt : "Blog post",
     path: post ? `/blog/${post.slug}` : "/blog",
-    image: post ? `/blog/${post.slug}/og` : undefined,
+    // Prefer the post's real cover image for social previews. `post.image`
+    // already falls back to the generated `/blog/${slug}/og` route when a post
+    // has no coverImage (see mapBlogItem in lib/blog.ts), so posts without a
+    // cover still get the branded generated image.
+    image: post ? post.image : undefined,
     type: "article",
   });
 }

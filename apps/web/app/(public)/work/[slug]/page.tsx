@@ -28,7 +28,10 @@ export async function generateMetadata({
     title: project ? project.title : "Work Detail",
     description: project ? project.description : "Project details.",
     path: project ? `/work/${project.slug}` : "/work",
-    image: project ? `/work/${project.slug}/og` : undefined,
+    // Prefer the project's real cover image for social previews, falling back
+    // to the generated `/work/${slug}/og` route when it has no coverImage
+    // (mapProject in lib/projects.ts leaves `image` as "" in that case).
+    image: project ? project.image || `/work/${project.slug}/og` : undefined,
     type: "article",
   });
 }
