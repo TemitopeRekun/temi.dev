@@ -58,7 +58,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     secure: isProd,
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 60 * 24 * 7,
+    // Match the API's JWT expiry (12h) so the cookie does not outlive the token
+    // and leave a stale, unverifiable credential in the browser.
+    maxAge: 60 * 60 * 12,
   });
 
   return NextResponse.json({ ok: true });

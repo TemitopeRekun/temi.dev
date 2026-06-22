@@ -24,6 +24,7 @@ const PROJECT_SELECT = {
   coverImage: true,
   featured: true,
   order: true,
+  updatedAt: true,
 } as const;
 
 @Injectable()

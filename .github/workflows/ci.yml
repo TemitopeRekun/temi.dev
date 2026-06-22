@@ -31,6 +31,13 @@ jobs:
       - name: Typecheck
         run: pnpm typecheck
 
+      # Surface known vulnerabilities in production dependencies. Non-blocking:
+      # transitive advisories we cannot immediately fix should inform, not wedge
+      # the pipeline. Review the output and bump deps as fixes land.
+      - name: Dependency audit (production)
+        run: pnpm audit --prod --audit-level high
+        continue-on-error: true
+
   test:
     runs-on: ubuntu-latest
     steps:
@@ -50,7 +57,7 @@ jobs:
         run: pnpm --filter api prisma:generate
 
       - name: Unit & integration tests (coverage-gated)
-        run: pnpm test
+        run: pnpm test:cov
 
       - name: E2E tests (API)
         run: pnpm --filter api test:e2e

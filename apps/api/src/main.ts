@@ -9,7 +9,9 @@ import {
 import helmet from "@fastify/helmet";
 import multipart from "@fastify/multipart";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
+import { MAX_UPLOAD_BYTES } from "@temi/types";
 import { AppModule } from "./app.module";
+import { isOriginAllowed } from "./config/cors";
 import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter";
 import { LoggingInterceptor } from "./common/interceptors/logging.interceptor";
 
@@ -19,37 +21,22 @@ async function bootstrap(): Promise<void> {
     new FastifyAdapter(),
   );
 
-  const isProduction = process.env.NODE_ENV === "production";
-
-  // Register multipart early to handle file uploads.
-  // fileSize matches the 5MB cap enforced in the web ImageUpload component;
-  // the @fastify/multipart default is only 1MB, which rejects most cover photos.
+  // Register multipart early to handle file uploads. The shared MAX_UPLOAD_BYTES
+  // (from @temi/types) is the single source of truth for the cap across the API
+  // and the web ImageUpload component; the @fastify/multipart default is only
+  // 1MB, which rejects most cover photos.
   await app.register(multipart, {
     limits: {
-      fileSize: 5 * 1024 * 1024, // 5MB
+      fileSize: MAX_UPLOAD_BYTES,
     },
   });
 
-  // Enable CORS. The production allowlist is always honoured; localhost origins
-  // are only accepted outside of production.
+  // Enable CORS using the shared, env-driven allowlist (CORS_ORIGINS). Requests
+  // with no Origin header (curl, mobile apps, server-to-server) are allowed;
+  // browser origins must pass the allowlist (localhost only outside production).
   app.enableCors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, or server-to-server)
-      if (!origin) {
-        callback(null, true);
-        return;
-      }
-
-      const allowedOrigins = [
-        "https://temitope.live",
-        "https://www.temitope.live",
-      ];
-
-      const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(
-        origin,
-      );
-
-      if (allowedOrigins.includes(origin) || (!isProduction && isLocalhost)) {
+      if (!origin || isOriginAllowed(origin)) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"), false);
@@ -79,7 +66,7 @@ async function bootstrap(): Promise<void> {
   app.enableShutdownHooks();
 
   // Swagger is only mounted outside of production.
-  if (!isProduction) {
+  if (process.env.NODE_ENV !== "production") {
     const config = new DocumentBuilder()
       .setTitle("Temi API")
       .setDescription("API documentation")

@@ -16,6 +16,7 @@ export type Project = {
   repoUrl: string;
   featured: boolean;
   order: number;
+  updatedAt?: string;
 };
 
 // Nullable DB columns (coverImage, liveUrl, repoUrl, body, ...) come back as
@@ -27,6 +28,7 @@ const rawProjectSchema = z.object({
   title: z.string(),
   year: z.number().nullish(),
   createdAt: z.string().nullish(),
+  updatedAt: z.string().nullish(),
   category: z.string().nullish(),
   techStack: z.array(z.string()).nullish(),
   description: z.string().nullish(),
@@ -56,7 +58,9 @@ export async function getProjects(): Promise<Project[]> {
   try {
     const isDev = process.env.NODE_ENV === "development";
     const res = await fetch(`${API_URL}/api/projects`, {
-      ...(isDev ? { cache: "no-store" } : { next: { revalidate: REVALIDATE } }),
+      ...(isDev
+        ? { cache: "no-store" }
+        : { next: { revalidate: REVALIDATE, tags: ["projects"] } }),
     });
     if (!res.ok) {
       console.error(`[projects] getProjects: upstream returned ${res.status}`);
@@ -82,7 +86,9 @@ export async function getProjectBySlug(slug: string): Promise<Project | null> {
   try {
     const isDev = process.env.NODE_ENV === "development";
     const res = await fetch(`${API_URL}/api/projects/slug/${slug}`, {
-      ...(isDev ? { cache: "no-store" } : { next: { revalidate: REVALIDATE } }),
+      ...(isDev
+        ? { cache: "no-store" }
+        : { next: { revalidate: REVALIDATE, tags: ["projects"] } }),
     });
     if (!res.ok) {
       if (res.status !== 404) {
@@ -127,5 +133,6 @@ function mapProject(data: RawProject): Project {
     repoUrl: data.repoUrl || "",
     featured: data.featured || false,
     order: data.order || 0,
+    updatedAt: data.updatedAt ?? data.createdAt ?? undefined,
   };
 }

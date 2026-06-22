@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watch",
-    "test:cov": "jest --coverage --passWithNoTests",
+    "test:cov": "jest --coverage",
     "test:e2e": "jest --config ./test/jest-e2e.json --passWithNoTests",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
@@ -19,10 +19,13 @@
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "backfill:embeddings": "nest build && node dist/scripts/backfill-embeddings.js",
+    "openapi:export": "nest build && node dist/scripts/export-openapi.js",
     "push:projects": "ts-node --transpile-only src/scripts/push-projects.ts",
     "push:blog": "ts-node --transpile-only src/scripts/push-blog.ts"
   },
   "dependencies": {
+    "@temi/ai": "workspace:*",
+    "@temi/types": "workspace:*",
     "@fastify/cors": "^11.2.0",
     "@fastify/helmet": "^13.0.2",
     "@fastify/multipart": "^9.4.0",

@@ -3,11 +3,13 @@ export default tseslint.config(
   ...tseslint.configs.recommended,
   {
     ignores: [
-      "dist/**",
-      ".next/**",
-      "coverage/**",
-      "node_modules/**",
-      "apps/**/next-env.d.ts",
+      // Build artifacts and generated output are never lint targets. Use a
+      // `**/` prefix so the ignore matches whether ESLint runs from the repo
+      // root or from a package subdirectory (e.g. `eslint .` inside packages/*).
+      "**/dist/**",
+      "**/.next/**",
+      "**/coverage/**",
+      "**/node_modules/**",
       "**/next-env.d.ts",
     ],
   },

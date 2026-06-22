@@ -6,6 +6,23 @@ import { LeadsAdminListQueryDto } from "./dto/leads-admin-list-query.dto";
 import { UpdateLeadAdminDto } from "./dto/update-lead-admin.dto";
 import { applyCursorPage } from "../../common/utils/pagination";
 
+/**
+ * Lead-scoring weights. A lead's score is the sum of the signals it matches,
+ * giving the admin a quick triage hint (higher = warmer). Tweak the weights
+ * here rather than editing the arithmetic in `create`.
+ */
+const LEAD_SCORE_WEIGHTS = {
+  /** Provided a company name (indicates a business inquiry). */
+  hasCompany: 10,
+  /** Wrote a substantial message (> this many chars). */
+  longMessage: 10,
+  /** Requested the high-intent "AI automation" service. */
+  aiAutomationService: 20,
+} as const;
+
+/** Minimum message length (chars) that counts as a "long" message. */
+const LONG_MESSAGE_MIN_LENGTH = 100;
+
 @Injectable()
 export class LeadsService {
   private readonly logger = new Logger(LeadsService.name);
@@ -17,9 +34,13 @@ export class LeadsService {
 
   async create(dto: CreateLeadDto): Promise<string> {
     const score =
-      (dto.company ? 10 : 0) +
-      (dto.message && dto.message.length > 100 ? 10 : 0) +
-      (dto.service && dto.service.toLowerCase() === "ai automation" ? 20 : 0);
+      (dto.company ? LEAD_SCORE_WEIGHTS.hasCompany : 0) +
+      (dto.message && dto.message.length > LONG_MESSAGE_MIN_LENGTH
+        ? LEAD_SCORE_WEIGHTS.longMessage
+        : 0) +
+      (dto.service && dto.service.toLowerCase() === "ai automation"
+        ? LEAD_SCORE_WEIGHTS.aiAutomationService
+        : 0);
     const lead = await this.prisma.lead.create({
       data: {
         name: dto.name,

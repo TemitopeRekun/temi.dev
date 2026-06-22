@@ -13,6 +13,10 @@ package-lock.json
 **/dist/
 **/build/
 **/out/
+
+# Generated OpenAPI spec (produced on demand via `pnpm --filter api openapi:export`)
+apps/api/openapi.json
+
 **/.next/
 **/.next.cache/
 **/storybook-static/

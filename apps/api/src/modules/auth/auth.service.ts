@@ -107,7 +107,9 @@ export class AuthService {
     if (!valid) {
       throw new UnauthorizedException("Current password is incorrect");
     }
-    const newHash = await hash(dto.newPassword, 10);
+    // bcrypt work factor 12 (~2^12 rounds): a deliberate per-hash cost that
+    // slows offline brute-forcing of a leaked hash. Bump as hardware improves.
+    const newHash = await hash(dto.newPassword, 12);
     await this.prisma.setting.upsert({
       where: { key: ADMIN_HASH_KEY },
       update: { value: newHash },

@@ -17,6 +17,18 @@ export function ContactForm({ action }: Props) {
   return (
     <div>
       <form action={formAction} className="space-y-4">
+        {/* Honeypot: hidden from real users; bots that auto-fill it are dropped
+            server-side. Not announced to assistive tech. */}
+        <div aria-hidden="true" className="hidden">
+          <label htmlFor="contact-website">Leave this field empty</label>
+          <input
+            id="contact-website"
+            name="website"
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+          />
+        </div>
         <StaggerReveal>
           <div>
             <label htmlFor="contact-name" className="mb-1 block text-sm text-(--muted)">Name</label>

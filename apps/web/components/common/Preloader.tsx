@@ -88,13 +88,6 @@ export function Preloader({ onComplete }: { onComplete: () => void }) {
             <span className="w-2.5 h-2.5 rounded-full bg-(--accent) block" />
             {words[index]}
           </motion.p>
-          <button
-            type="button"
-            onClick={onComplete}
-            className="absolute bottom-8 right-8 z-20 rounded-full border border-(--border) bg-(--surface)/70 px-4 py-2 text-xs font-medium uppercase tracking-[0.2em] text-(--text) backdrop-blur-sm transition-colors hover:bg-(--surface) focus:outline-none focus-visible:ring-2 focus-visible:ring-(--accent)"
-          >
-            Skip intro
-          </button>
           <svg
             className="absolute top-0 left-0 w-full pointer-events-none"
             style={{ height: `${dim.h + 300}px` }}

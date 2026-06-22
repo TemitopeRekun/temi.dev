@@ -3,14 +3,18 @@ import Link from "next/link";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Heading } from "../../../../components/ui/Heading";
+import { verifyAdminJwt } from "../../../../lib/auth";
 import type { Route } from "next";
 
 export default async function AdminProtectedLayout(
   props: Readonly<{ children: ReactNode }>,
 ) {
   const c = await cookies();
-  const token = c.get("admin_jwt")?.value ?? null;
-  if (!token) {
+  const token = c.get("admin_jwt")?.value ?? "";
+  // Verify the JWT signature + expiry (fail-closed), not mere cookie presence,
+  // so a forged or expired cookie never renders the admin shell.
+  const valid = await verifyAdminJwt(token);
+  if (!valid) {
     redirect("/admin/login");
   }
   return (

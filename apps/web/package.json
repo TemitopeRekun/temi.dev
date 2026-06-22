@@ -11,7 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest",
-    "test:cov": "vitest run --coverage --passWithNoTests"
+    "test:cov": "vitest run --coverage"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

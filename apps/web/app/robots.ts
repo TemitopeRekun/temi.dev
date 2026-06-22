@@ -20,7 +20,6 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "CCBot", allow: "/" },
     ],
     sitemap: `${base}/sitemap.xml`,
-    host: base,
   };
 }
 

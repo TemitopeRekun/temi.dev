@@ -12,4 +12,7 @@ export class ProjectDto {
   coverImage?: string | null;
   featured!: boolean;
   order!: number;
+  // Last-modified timestamp, surfaced so the sitemap can emit accurate
+  // <lastmod> values instead of the request time.
+  updatedAt!: Date;
 }

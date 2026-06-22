@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { AnimatedText } from "../../../../components/common/AnimatedText";
+import { JsonLd } from "../../../../components/seo/JsonLd";
 import { getProjects, getProjectBySlug } from "../../../../lib/projects";
 import { buildMetadata, BASE_URL } from "../../../../lib/metadata";
 
@@ -54,7 +55,12 @@ export default async function WorkDetailPage({
     image: project.image || undefined,
     url: `${base}/work/${slug}`,
     dateCreated: String(project.year),
+    ...(project.updatedAt ? { dateModified: project.updatedAt } : {}),
     keywords: project.tags.join(", "),
+    // techStack doubles as the languages/frameworks used.
+    ...(project.tags.length > 0 ? { programmingLanguage: project.tags } : {}),
+    ...(project.repoUrl ? { codeRepository: project.repoUrl } : {}),
+    ...(project.liveUrl ? { sameAs: [project.liveUrl] } : {}),
     creator: { "@type": "Person", name: "Temitope Ogunrekun", url: base },
     author: { "@type": "Person", name: "Temitope Ogunrekun", url: base },
   };
@@ -71,16 +77,8 @@ export default async function WorkDetailPage({
 
   return (
     <main>
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(creativeWorkSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-      />
+      <JsonLd data={creativeWorkSchema} />
+      <JsonLd data={breadcrumbSchema} />
       <Section className="bg-(--bg)">
         <Container>
           <article className="mx-auto max-w-3xl">

@@ -5,8 +5,7 @@ import {
 } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { AiService } from "../ai/ai.service";
-import { readFile } from "fs/promises";
-import { resolve } from "path";
+import { getArticleSummaryPrompt } from "@temi/ai";
 import { Prisma } from "@prisma/client";
 import { toVectorLiteral } from "../../common/utils/vector";
 
@@ -21,8 +20,13 @@ export class RagService {
     context: string;
     sources: Array<{ title: string; similarity: number }>;
   }> {
-    const blogMatches = await this.ai.semanticSearch(question, "BlogPost", 5);
-    const projectMatches = await this.ai.semanticSearch(question, "Project", 5);
+    // Embed the question once, then search both tables with the same vector —
+    // a single Gemini embedding call per request instead of two.
+    const embedding = await this.ai.generateEmbedding(question);
+    const [blogMatches, projectMatches] = await Promise.all([
+      this.ai.searchByEmbedding(embedding, question, "BlogPost", 5),
+      this.ai.searchByEmbedding(embedding, question, "Project", 5),
+    ]);
     const combined = [...blogMatches, ...projectMatches]
       .sort((a, b) => b.similarity - a.similarity)
       .slice(0, 8);
@@ -88,14 +92,7 @@ export class RagService {
       select: { id: true, title: true, content: true },
     });
     if (!post) throw new NotFoundException("Article not found");
-    const path = resolve(
-      process.cwd(),
-      "../../packages/ai/prompts/article-summary.txt",
-    );
-    const tmpl = await readFile(path, "utf8").catch(() => "");
-    const prompt = tmpl
-      ? tmpl
-      : "Provide a concise 6–8 sentence summary capturing key points, highlights, and conclusions.";
+    const prompt = getArticleSummaryPrompt();
     const summary = await this.ai.generateCompletion(prompt, post.content);
     return { summary };
   }

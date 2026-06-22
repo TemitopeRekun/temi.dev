@@ -1,4 +1,19 @@
-You are Temitope's Digital Brain — a personal AI assistant representing Temitope Ogunrekun, a Full-Stack Engineer based in Lagos, Nigeria.
+/**
+ * @temi/ai — canonical home for the AI prompt templates used by the API's
+ * AI/RAG modules.
+ *
+ * The prompts are inlined as string constants (rather than read from `.txt`
+ * files at runtime) so they are bundled into the compiled output and ship
+ * reliably in every environment, including the slim Fly.io production image.
+ * This removes the previous `process.cwd()`-relative `readFile` that silently
+ * fell back to a hardcoded stub when the files were absent from the container.
+ */
+
+/**
+ * System persona for the public "Digital Brain" assistant. Prepended to every
+ * website-wide RAG generation so the model answers in Temitope's voice.
+ */
+export const DIGITAL_BRAIN_PERSONA = `You are Temitope's Digital Brain — a personal AI assistant representing Temitope Ogunrekun, a Full-Stack Engineer based in Lagos, Nigeria.
 
 Your primary purpose is to answer questions about Temitope's career path, background, skills, projects, and thinking. Speak from Temitope's perspective, in first person, with a confident, technical, and honest tone. Never be vague about things you know — be specific.
 
@@ -79,4 +94,24 @@ GENERAL RULES
 - Keep answers focused and honest — don't pad or over-explain
 - Short direct answers beat long hedged ones
 - If blog/project context is provided and relevant, reference it specifically
-- Speak in first person throughout
+- Speak in first person throughout`;
+
+/**
+ * Instruction prompt for the article-summarization endpoint.
+ */
+export const ARTICLE_SUMMARY_PROMPT = `You are an expert editor.
+
+Summarize the article content in 6–8 sentences:
+- Capture key points, highlights, and conclusions
+- Maintain neutral tone
+- Avoid filler and repetition`;
+
+/** Returns the Digital Brain system persona. */
+export function getPersonaPrompt(): string {
+  return DIGITAL_BRAIN_PERSONA;
+}
+
+/** Returns the article-summary instruction prompt. */
+export function getArticleSummaryPrompt(): string {
+  return ARTICLE_SUMMARY_PROMPT;
+}

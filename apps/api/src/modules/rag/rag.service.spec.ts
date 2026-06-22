@@ -7,12 +7,17 @@ import { AiService } from "../ai/ai.service";
 describe("RagService", () => {
   let service: RagService;
   let prisma: { blogPost: { findUnique: jest.Mock } };
-  let ai: { semanticSearch: jest.Mock; generateDigitalBrainResponse: jest.Mock };
+  let ai: {
+    generateEmbedding: jest.Mock;
+    searchByEmbedding: jest.Mock;
+    generateDigitalBrainResponse: jest.Mock;
+  };
 
   beforeEach(async () => {
     prisma = { blogPost: { findUnique: jest.fn() } };
     ai = {
-      semanticSearch: jest.fn().mockResolvedValue([]),
+      generateEmbedding: jest.fn().mockResolvedValue([0.1, 0.2]),
+      searchByEmbedding: jest.fn().mockResolvedValue([]),
       generateDigitalBrainResponse: jest.fn().mockResolvedValue("answer"),
     };
 
@@ -60,7 +65,7 @@ describe("RagService", () => {
       content: "c",
       similarity: 0.5 + i / 10,
     }));
-    ai.semanticSearch
+    ai.searchByEmbedding
       .mockResolvedValueOnce(blog)
       .mockResolvedValueOnce(project);
 
@@ -70,8 +75,21 @@ describe("RagService", () => {
     expect(result.sources[0]?.similarity).toBeGreaterThanOrEqual(
       result.sources[1]?.similarity ?? 0,
     );
-    expect(ai.semanticSearch).toHaveBeenCalledWith("hello", "BlogPost", 5);
-    expect(ai.semanticSearch).toHaveBeenCalledWith("hello", "Project", 5);
+    // SCA-2: the question is embedded exactly once, then both tables are
+    // searched with that single vector.
+    expect(ai.generateEmbedding).toHaveBeenCalledTimes(1);
+    expect(ai.searchByEmbedding).toHaveBeenCalledWith(
+      [0.1, 0.2],
+      "hello",
+      "BlogPost",
+      5,
+    );
+    expect(ai.searchByEmbedding).toHaveBeenCalledWith(
+      [0.1, 0.2],
+      "hello",
+      "Project",
+      5,
+    );
   });
 
   it("askArticle returns answer and the post title as the source", async () => {

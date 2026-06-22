@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Button } from "@temi/ui";
+import { ALLOWED_IMAGE_MIME, MAX_UPLOAD_BYTES, MAX_UPLOAD_MB } from "@temi/types";
 import { uploadFile } from "@/lib/upload";
 
 interface ImageUploadProps {
@@ -21,15 +22,16 @@ export function ImageUpload({ value, onChange, token, className, label = "Cover 
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
-      setError("Please upload an image file");
+    // Validate file type against the shared allowlist (server re-validates by
+    // magic bytes, so this is a fast pre-check only).
+    if (!ALLOWED_IMAGE_MIME.includes(file.type)) {
+      setError("Please upload a PNG, JPEG, WebP, or AVIF image");
       return;
     }
 
-    // Validate file size (e.g., 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      setError("Image must be smaller than 5MB");
+    // Validate file size against the shared cap before the upload round-trip.
+    if (file.size > MAX_UPLOAD_BYTES) {
+      setError(`Image must be smaller than ${MAX_UPLOAD_MB}MB`);
       return;
     }
 
@@ -81,7 +83,7 @@ export function ImageUpload({ value, onChange, token, className, label = "Cover 
           type="file"
           ref={fileInputRef}
           onChange={handleFileChange}
-          accept="image/*"
+          accept={ALLOWED_IMAGE_MIME.join(",")}
           className="hidden"
           id="image-upload-input"
         />

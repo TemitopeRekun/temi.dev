@@ -25,12 +25,15 @@ const config: Config = {
     "!**/*.spec.ts",
   ],
   coverageDirectory: "../coverage",
+  // Enforced when run with --coverage (the CI `test:cov` path). Current
+  // coverage sits at ~99% lines / ~87% branches, so these are real floors with
+  // headroom, not aspirational targets.
   coverageThreshold: {
     global: {
       branches: 80,
-      functions: 80,
-      lines: 80,
-      statements: 80,
+      functions: 90,
+      lines: 90,
+      statements: 90,
     },
   },
 };

@@ -65,7 +65,9 @@ export async function getPosts(): Promise<BlogPost[]> {
   try {
     const isDev = process.env.NODE_ENV !== "production";
     const res = await fetch(`${API_URL}/api/blog?take=50`, {
-      ...(isDev ? { cache: "no-store" } : { next: { revalidate: 60 } }),
+      ...(isDev
+        ? { cache: "no-store" }
+        : { next: { revalidate: 60, tags: ["posts"] } }),
     });
     if (!res.ok) {
       console.error(`[blog] getPosts: upstream returned ${res.status}`);
@@ -90,7 +92,9 @@ export async function getPostBySlug(
   try {
     const isDev = process.env.NODE_ENV !== "production";
     const res = await fetch(`${API_URL}/api/blog/${slug}`, {
-      ...(isDev ? { cache: "no-store" } : { next: { revalidate: 60 } }),
+      ...(isDev
+        ? { cache: "no-store" }
+        : { next: { revalidate: 60, tags: ["posts"] } }),
     });
     if (!res.ok) {
       if (res.status !== 404) {

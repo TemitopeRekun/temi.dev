@@ -2,8 +2,7 @@ import { Injectable, BadRequestException, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PrismaService } from "../../prisma/prisma.service";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { readFile } from "fs/promises";
-import { resolve } from "path";
+import { getPersonaPrompt } from "@temi/ai";
 import { toVectorLiteral } from "../../common/utils/vector";
 
 type TableName = "BlogPost" | "Project";
@@ -26,7 +25,6 @@ export class AiService {
   private readonly similarityFloor: number;
   private readonly generationModel: string;
   private readonly genAI: GoogleGenerativeAI | null;
-  private persona: string | null = null;
 
   constructor(
     private readonly config: ConfigService,
@@ -50,21 +48,6 @@ export class AiService {
     this.genAI = this.apiKey ? new GoogleGenerativeAI(this.apiKey) : null;
   }
 
-  private async getPersona(): Promise<string> {
-    if (this.persona) return this.persona;
-    try {
-      const path = resolve(
-        process.cwd(),
-        "../../packages/ai/prompts/digital-brain-persona.txt",
-      );
-      this.persona = await readFile(path, "utf8");
-    } catch {
-      this.persona =
-        "You are Temitope's Digital Brain, an AI assistant representing Temitope Ogunrekun, a Full-Stack Engineer based in Lagos, Nigeria.";
-    }
-    return this.persona;
-  }
-
   async generateEmbedding(text: string): Promise<number[]> {
     if (!this.apiKey) throw new BadRequestException("GEMINI_API_KEY missing");
     // The SDK (v0.24.1) can't request a reduced output dimensionality, so we
@@ -72,10 +55,15 @@ export class AiService {
     // the vector(N) column. Errors are logged (not silently swallowed) and we
     // return [] so callers fall back gracefully.
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.embeddingModel}:embedContent?key=${this.apiKey}`;
+      // Send the API key via header (not the URL query string) so it never
+      // lands in request logs, proxies, or error traces.
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${this.embeddingModel}:embedContent`;
       const res = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": this.apiKey,
+        },
         body: JSON.stringify({
           model: `models/${this.embeddingModel}`,
           content: { parts: [{ text }] },
@@ -124,15 +112,12 @@ ${prompt}
     question: string,
     context: string,
   ): Promise<string> {
-    const fullPrompt = await this.buildDigitalBrainPrompt(question, context);
+    const fullPrompt = this.buildDigitalBrainPrompt(question, context);
     return this.callGemini(fullPrompt);
   }
 
-  private async buildDigitalBrainPrompt(
-    question: string,
-    context: string,
-  ): Promise<string> {
-    const persona = await this.getPersona();
+  private buildDigitalBrainPrompt(question: string, context: string): string {
+    const persona = getPersonaPrompt();
     return `${persona}
 
 ${INJECTION_GUARD}
@@ -202,10 +187,14 @@ ${question}
     question: string,
     context: string,
   ): AsyncGenerator<string> {
-    const fullPrompt = await this.buildDigitalBrainPrompt(question, context);
+    const fullPrompt = this.buildDigitalBrainPrompt(question, context);
     yield* this.callGeminiStream(fullPrompt);
   }
 
+  /**
+   * Convenience wrapper for single-table searches: embeds the query once, then
+   * delegates to searchByEmbedding.
+   */
   async semanticSearch(
     query: string,
     tableName: TableName,
@@ -214,6 +203,23 @@ ${question}
     Array<{ id: string; title: string; content: string; similarity: number }>
   > {
     const embedding = await this.generateEmbedding(query);
+    return this.searchByEmbedding(embedding, query, tableName, limit);
+  }
+
+  /**
+   * Runs the cosine-similarity vector search from a precomputed embedding so a
+   * multi-table RAG request can embed the question a single time (one Gemini
+   * call instead of one per table). `query` is retained for the keyword
+   * fallback used when pgvector is unavailable.
+   */
+  async searchByEmbedding(
+    embedding: number[],
+    query: string,
+    tableName: TableName,
+    limit = 5,
+  ): Promise<
+    Array<{ id: string; title: string; content: string; similarity: number }>
+  > {
     if (embedding.length === 0) return [];
     const table = tableName === "BlogPost" ? `"BlogPost"` : `"Project"`;
     const columnContent = tableName === "BlogPost" ? "content" : "description";

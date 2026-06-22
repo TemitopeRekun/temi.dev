@@ -21,4 +21,6 @@ primary_region = "lhr"
     timeout = "5s"
     grace_period = "10s"
     method = "GET"
-    path = "/"
+    # DB-aware readiness probe: returns 503 when Postgres is unreachable, so Fly
+    # stops routing traffic to an instance that cannot serve requests.
+    path = "/health"

@@ -2,12 +2,12 @@
   "name": "@temi/types",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -b",
     "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
     "test": "echo \"no tests\""
   },
   "devDependencies": {

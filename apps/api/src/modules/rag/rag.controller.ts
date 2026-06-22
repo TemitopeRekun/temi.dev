@@ -2,14 +2,7 @@ import { Body, Controller, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
 import type { FastifyReply, FastifyRequest } from "fastify";
-
-const ALLOWED_ORIGINS = ["https://temitope.live", "https://www.temitope.live"];
-
-function resolveCorsOrigin(origin: string | undefined): string {
-  if (!origin) return "*";
-  const isLocalhost = /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
-  return isLocalhost || ALLOWED_ORIGINS.includes(origin) ? origin : "";
-}
+import { corsOriginForSse } from "../../config/cors";
 import { RagService } from "./rag.service";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { AskArticleDto } from "./dto/ask-article.dto";
@@ -19,7 +12,9 @@ import { EmbedArticleDto } from "./dto/embed-article.dto";
 import { EmbedProjectDto } from "./dto/embed-project.dto";
 
 @ApiTags("RAG")
-@Throttle({ default: { limit: 5, ttl: 60_000 } })
+// Public AI endpoints call the paid Gemini API, so they are throttled tighter
+// than the global default (3 requests / 60s per IP).
+@Throttle({ default: { limit: 3, ttl: 60_000 } })
 @Controller("api/rag")
 export class RagController {
   constructor(private readonly rag: RagService) {}
@@ -46,7 +41,7 @@ export class RagController {
     @Res({ passthrough: false }) reply: FastifyReply,
   ): Promise<void> {
     const raw = reply.raw;
-    const corsOrigin = resolveCorsOrigin(req.headers.origin);
+    const corsOrigin = corsOriginForSse(req.headers.origin);
     raw.writeHead(200, {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
@@ -76,7 +71,7 @@ export class RagController {
     @Res({ passthrough: false }) reply: FastifyReply,
   ): Promise<void> {
     const raw = reply.raw;
-    const corsOrigin = resolveCorsOrigin(req.headers.origin);
+    const corsOrigin = corsOriginForSse(req.headers.origin);
     raw.writeHead(200, {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",

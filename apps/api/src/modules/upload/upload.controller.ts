@@ -8,24 +8,20 @@ import {
 } from "@nestjs/common";
 import { FastifyRequest } from "fastify";
 import { randomUUID } from "crypto";
+import {
+  ALLOWED_IMAGE_MIME_EXT,
+  MAX_UPLOAD_BYTES,
+  MAX_UPLOAD_MB,
+} from "@temi/types";
 import { AdminGuard } from "../auth/guards/admin.guard";
 import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 import { UploadService } from "./upload.service";
 
-const MAX_UPLOAD_BYTES = 5 * 1024 * 1024; // 5MB
-
 type DetectedImage = { mimetype: string; ext: string };
 
-/**
- * Allowlisted image mimetypes mapped to their canonical extension. Both the
- * declared mimetype AND the file's magic bytes must match an entry here.
- */
-const ALLOWED_MIME_EXT: Record<string, string> = {
-  "image/png": "png",
-  "image/jpeg": "jpg",
-  "image/webp": "webp",
-  "image/avif": "avif",
-};
+// Allowlisted image mimetype → canonical extension map is shared with the web
+// app via @temi/types so both tiers agree on what is accepted. Both the
+// declared mimetype AND the file's magic bytes must match an entry here.
 
 /**
  * Detects the real image type from the buffer's magic bytes. Returns null when
@@ -100,7 +96,7 @@ export class UploadController {
       throw new BadRequestException("Empty file");
     }
     if (buffer.length > MAX_UPLOAD_BYTES) {
-      throw new BadRequestException("File exceeds the 5MB limit");
+      throw new BadRequestException(`File exceeds the ${MAX_UPLOAD_MB}MB limit`);
     }
 
     const detected = detectImage(buffer);
@@ -110,8 +106,8 @@ export class UploadController {
 
     // Both the declared mimetype and the detected content type must be in the
     // allowlist and agree with each other.
-    const allowedExt = ALLOWED_MIME_EXT[part.mimetype];
-    if (!allowedExt || !ALLOWED_MIME_EXT[detected.mimetype]) {
+    const allowedExt = ALLOWED_IMAGE_MIME_EXT[part.mimetype];
+    if (!allowedExt || !ALLOWED_IMAGE_MIME_EXT[detected.mimetype]) {
       throw new BadRequestException("Unsupported image type");
     }
 

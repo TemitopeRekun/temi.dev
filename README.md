@@ -100,7 +100,7 @@ A robust **NestJS 11** API served on **Fastify** with JWT authentication, Prisma
 - `@fastify/helmet` — HTTP security headers
 - `@fastify/multipart` — multipart file upload support
 - `@supabase/supabase-js` — cloud file storage
-- `@google/generative-ai` — Gemini AI integration (chat + `text-embedding-005`)
+- `@google/generative-ai` — Gemini AI integration (chat + `gemini-embedding-001`, 768-dim)
 - `pgvector` — PostgreSQL vector embeddings powering RAG search
 - `Resend` — transactional email
 - `@sentry/nestjs` — error monitoring
@@ -163,21 +163,29 @@ pnpm install
 **`apps/api/.env`** (based on `.env.example`):
 
 ```env
+# Pooled connection at runtime; DIRECT_URL is the non-pooled URL for migrations.
 DATABASE_URL=your_postgresql_connection_string
+DIRECT_URL=your_direct_postgresql_connection_string
+
+# CORS — comma-separated browser-origin allowlist (defaults to the canonical
+# domains when unset). Required in production if you serve a different origin.
+CORS_ORIGINS=https://temitope.live,https://www.temitope.live
 
 # Email (Resend)
 RESEND_API_KEY=your_resend_api_key
-EMAIL_FROM="Temitope <hello@temi.dev>"
+EMAIL_FROM="Temitope <hello@temitope.live>"
 
 # Auth
 JWT_SECRET=your_jwt_secret
-ADMIN_EMAIL=admin@temi.dev
+ADMIN_EMAIL=admin@temitope.live
 ADMIN_PASSWORD_HASH=your_bcrypt_password_hash
 
-# AI (Gemini)
+# AI (Gemini) — the embedding model/dim must match the vector(N) Prisma column.
 GEMINI_API_KEY=your_gemini_api_key
 GEMINI_MODEL=gemini-2.5-flash
-GEMINI_EMBEDDING_MODEL=text-embedding-005
+GEMINI_EMBEDDING_MODEL=gemini-embedding-001
+GEMINI_EMBEDDING_DIM=768
+RAG_SIMILARITY_FLOOR=0.5
 
 # Supabase Storage
 SUPABASE_URL=your_supabase_project_url
@@ -222,12 +230,19 @@ pnpm build
 
 ## Deployment
 
-| App | Platform |
-|---|---|
-| `web` | Vercel (recommended) |
-| `api` | Railway / Render / any Node.js host |
-| Database | Supabase / Neon / PlanetScale |
-| File Storage | Supabase Storage |
+| App | Platform | How it deploys |
+|---|---|---|
+| `web` | **Vercel** | Auto-deploys on push to `main` (production). |
+| `api` | **Fly.io** (`temi-api`, region `lhr`) | GitHub Actions `deploy.yml` builds `apps/api/Dockerfile` and runs `flyctl deploy`. |
+| Database | **Supabase** Postgres (pooled `DATABASE_URL` + direct `DIRECT_URL`) | Managed; `pgvector` enabled via Prisma migrations. |
+| File Storage | **Supabase Storage** | Bucket from `SUPABASE_BUCKET`. |
+
+> The API image builds the shared `@temi/types` and `@temi/ai` packages before
+> `nest build` (see `apps/api/Dockerfile`); the AI prompts ship inside the image
+> via `@temi/ai`, so no runtime filesystem lookup is needed.
+>
+> Production requires `CORS_ORIGINS` to include the web origin and
+> `NEXT_PUBLIC_SITE_URL`/`NEXT_PUBLIC_API_BASE_URL` to be set at build time.
 
 ---
 
@@ -235,7 +250,7 @@ pnpm build
 
 **Temitope Ogunrekun** — Full-Stack Engineer
 
-- Portfolio: [temi.dev](https://temi.dev)
+- Portfolio: [temitope.live](https://www.temitope.live)
 - GitHub: [@TemitopeRekun](https://github.com/TemitopeRekun)
 - LinkedIn: [temitope-ogunrekun](https://www.linkedin.com/in/temitope-ogunrekun-092736229/)
 - X: [@_sireTemi](https://x.com/_sireTemi)

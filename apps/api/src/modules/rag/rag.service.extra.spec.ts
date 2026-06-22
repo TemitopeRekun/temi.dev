@@ -22,7 +22,7 @@ describe("RagService (streaming, summarize, embed)", () => {
     $executeRaw: jest.Mock;
   };
   let ai: {
-    semanticSearch: jest.Mock;
+    searchByEmbedding: jest.Mock;
     generateEmbedding: jest.Mock;
     generateCompletion: jest.Mock;
     generateDigitalBrainResponseStream: jest.Mock;
@@ -35,7 +35,7 @@ describe("RagService (streaming, summarize, embed)", () => {
       $executeRaw: jest.fn().mockResolvedValue(1),
     };
     ai = {
-      semanticSearch: jest.fn().mockResolvedValue([]),
+      searchByEmbedding: jest.fn().mockResolvedValue([]),
       generateEmbedding: jest.fn().mockResolvedValue([0.1, 0.2]),
       generateCompletion: jest.fn().mockResolvedValue("summary text"),
       generateDigitalBrainResponseStream: jest.fn(() =>
@@ -93,7 +93,9 @@ describe("RagService (streaming, summarize, embed)", () => {
         "a",
         "b",
       ]);
-      expect(ai.semanticSearch).toHaveBeenCalledTimes(2);
+      // SCA-2: one embedding call, two table searches reusing the vector.
+      expect(ai.generateEmbedding).toHaveBeenCalledTimes(1);
+      expect(ai.searchByEmbedding).toHaveBeenCalledTimes(2);
     });
   });
 

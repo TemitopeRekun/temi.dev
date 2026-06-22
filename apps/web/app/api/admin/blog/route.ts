@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { forwardToApi } from "../../../../lib/api";
+import { revalidateContent, CONTENT_TAG } from "../../../../lib/revalidate";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
   let body: unknown;
@@ -8,5 +9,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
-  return forwardToApi({ method: "POST", path: "/api/admin/blog", body });
+  const res = await forwardToApi({
+    method: "POST",
+    path: "/api/admin/blog",
+    body,
+  });
+  if (res.ok) revalidateContent(CONTENT_TAG.posts);
+  return res;
 }

@@ -1,40 +1,16 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import { verifyAdminJwt } from "@/lib/auth";
 
 /**
  * Defense-in-depth auth gate for the admin area. The NestJS API remains the
- * authoritative trust boundary — this middleware simply blocks obviously
- * unauthenticated requests early.
+ * authoritative trust boundary — this middleware blocks unauthenticated
+ * requests early and fails closed (see lib/auth.ts: a missing JWT_SECRET in
+ * production denies access rather than degrading to a presence check).
  *
  * - Pages under /admin (except /admin/login) redirect to /admin/login.
  * - Requests under /api/admin/* receive a 401 JSON response.
- * - When JWT_SECRET is set, the cookie signature + expiry are verified with
- *   HS256. When it is not set, we fall back to a presence check (dev only).
  */
-
-let warnedAboutMissingSecret = false;
-
-async function isTokenValid(token: string): Promise<boolean> {
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    if (!warnedAboutMissingSecret) {
-      warnedAboutMissingSecret = true;
-      console.warn(
-        "[middleware] JWT_SECRET is not set — falling back to cookie-presence check only. Do not rely on this in production.",
-      );
-    }
-    return token.length > 0;
-  }
-  try {
-    await jwtVerify(token, new TextEncoder().encode(secret), {
-      algorithms: ["HS256"],
-    });
-    return true;
-  } catch {
-    return false;
-  }
-}
 
 export async function middleware(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl;
@@ -47,7 +23,7 @@ export async function middleware(req: NextRequest): Promise<NextResponse> {
   }
 
   const token = req.cookies.get("admin_jwt")?.value ?? "";
-  const valid = token.length > 0 && (await isTokenValid(token));
+  const valid = await verifyAdminJwt(token);
 
   if (valid) {
     return NextResponse.next();
