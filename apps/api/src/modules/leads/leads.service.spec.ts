@@ -16,7 +16,10 @@ describe("LeadsService", () => {
       delete: jest.Mock;
     };
   };
-  let email: { sendLeadConfirmation: jest.Mock };
+  let email: {
+    sendLeadConfirmation: jest.Mock;
+    sendLeadNotification: jest.Mock;
+  };
 
   beforeEach(async () => {
     prisma = {
@@ -28,7 +31,10 @@ describe("LeadsService", () => {
         delete: jest.fn(),
       },
     };
-    email = { sendLeadConfirmation: jest.fn().mockResolvedValue(undefined) };
+    email = {
+      sendLeadConfirmation: jest.fn().mockResolvedValue(undefined),
+      sendLeadNotification: jest.fn().mockResolvedValue(undefined),
+    };
 
     const moduleRef = await Test.createTestingModule({
       providers: [
@@ -59,6 +65,15 @@ describe("LeadsService", () => {
       expect(email.sendLeadConfirmation).toHaveBeenCalledWith(
         "jane@example.com",
         "Jane",
+      );
+      expect(email.sendLeadNotification).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: "Jane",
+          email: "jane@example.com",
+          company: "Acme",
+          service: "AI Automation",
+          score: 40,
+        }),
       );
     });
 

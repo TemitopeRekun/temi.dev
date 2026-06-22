@@ -1,11 +1,12 @@
 import { ConfigService } from "@nestjs/config";
 import { ResendService } from "./resend.service";
 
-function makeService(apiKey: string): ResendService {
+function makeService(apiKey: string, notifyTo = "owner@temi.dev"): ResendService {
   const config = {
     get: (key: string): string | undefined => {
       if (key === "RESEND_API_KEY") return apiKey;
       if (key === "EMAIL_FROM") return "Temitope <hello@temi.dev>";
+      if (key === "LEAD_NOTIFY_EMAIL") return notifyTo;
       return undefined;
     },
   } as unknown as ConfigService;
@@ -80,5 +81,40 @@ describe("ResendService", () => {
     ) as { to: string[]; html: string };
     expect(body.to).toEqual(["jane@example.com"]);
     expect(body.html).toContain("Jane");
+  });
+
+  it("sendLeadNotification sends to the owner with the lead as reply-to", async () => {
+    fetchMock.mockResolvedValue({ ok: true });
+    const service = makeService("re_test_key");
+    await service.sendLeadNotification({
+      name: "Jane",
+      email: "jane@example.com",
+      company: "Acme",
+      message: "I need help with automation",
+      service: "AI Automation",
+      score: 40,
+    });
+    const body = JSON.parse(
+      (fetchMock.mock.calls[0][1] as { body: string }).body,
+    ) as { to: string[]; reply_to: string; html: string };
+    expect(body.to).toEqual(["owner@temi.dev"]);
+    expect(body.reply_to).toBe("jane@example.com");
+    expect(body.html).toContain("Acme");
+    expect(body.html).toContain("Jane");
+  });
+
+  it("sendLeadNotification skips and logs when no notify address is set", async () => {
+    const service = makeService("re_test_key", "");
+    const errSpy = jest
+      .spyOn(service["logger"], "error")
+      .mockImplementation(() => undefined);
+    await service.sendLeadNotification({
+      name: "Jane",
+      email: "jane@example.com",
+      message: "hi",
+      score: 0,
+    });
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(errSpy).toHaveBeenCalled();
   });
 });

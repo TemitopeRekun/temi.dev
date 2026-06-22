@@ -52,11 +52,28 @@ export class LeadsService {
       },
       select: { id: true },
     });
+    // Fire-and-forget so the HTTP response isn't blocked on Resend: the lead is
+    // already persisted, and email failures are logged, not surfaced to callers.
     this.email
       .sendLeadConfirmation(dto.email, dto.name)
       .catch((err: unknown) =>
         this.logger.error(
           "Failed to send confirmation email",
+          err instanceof Error ? err.stack : String(err),
+        ),
+      );
+    this.email
+      .sendLeadNotification({
+        name: dto.name,
+        email: dto.email,
+        company: dto.company ?? null,
+        message: dto.message,
+        service: dto.service ?? null,
+        score,
+      })
+      .catch((err: unknown) =>
+        this.logger.error(
+          "Failed to send lead notification email",
           err instanceof Error ? err.stack : String(err),
         ),
       );

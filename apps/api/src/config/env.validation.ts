@@ -46,6 +46,8 @@ export const envValidationSchema = Joi.object({
   // --- Email (optional) ---
   RESEND_API_KEY: Joi.string().allow("").optional(),
   EMAIL_FROM: Joi.string().optional(),
+  // Recipient for new-lead alerts. Falls back to ADMIN_EMAIL when unset.
+  LEAD_NOTIFY_EMAIL: Joi.string().email().allow("").optional(),
 
   // --- Storage (optional) ---
   SUPABASE_URL: Joi.string().allow("").optional(),
