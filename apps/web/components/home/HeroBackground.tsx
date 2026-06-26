@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import type { RefObject } from "react";
 import dynamic from "next/dynamic";
-import { registerGSAP, gsap } from "../../lib/gsap";
 
 function GradientFallback() {
   return (
@@ -21,65 +20,22 @@ function GradientFallback() {
   );
 }
 
-const Scene = dynamic<{ scrollProgress: number }>(() => import("./Hero3D"), {
-  ssr: false,
-  loading: () => <GradientFallback />,
-});
+const Scene = dynamic<{ scrollProgressRef: RefObject<number> }>(
+  () => import("./Hero3D"),
+  {
+    ssr: false,
+    loading: () => <GradientFallback />,
+  },
+);
 
 type HeroBackgroundProps = {
-  scrollProgress?: number;
+  scrollProgressRef: RefObject<number>;
 };
 
-export function HeroBackground({ scrollProgress = 0 }: HeroBackgroundProps) {
-  const [videoReady, setVideoReady] = useState(false);
-  const [videoEnabled, setVideoEnabled] = useState(true);
-  const [videoError, setVideoError] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const videoSrc = process.env.NEXT_PUBLIC_HERO_VIDEO_URL ?? "/hero.mp4";
-
-  useEffect(() => {
-    if (!videoEnabled || !videoReady) return;
-
-    let cleanup: (() => void) | null = null;
-    const run = async () => {
-      await registerGSAP();
-      const video = videoRef.current;
-      if (!video) return;
-
-      const initScrollScrub = () => {
-        const ctx = gsap.context(() => {
-          gsap.to(video, {
-            currentTime: video.duration,
-            ease: "none",
-            scrollTrigger: {
-              trigger: "section[aria-label='Hero']",
-              start: "top top",
-              end: "+=240%",
-              scrub: 1.15,
-            },
-          });
-        });
-        cleanup = () => ctx.revert();
-      };
-
-      if (video.readyState >= 1) {
-        initScrollScrub();
-        return;
-      }
-
-      const onLoadedMetadata = () => initScrollScrub();
-      video.addEventListener("loadedmetadata", onLoadedMetadata);
-      cleanup = () => {
-        video.removeEventListener("loadedmetadata", onLoadedMetadata);
-      };
-    };
-    void run();
-    return () => cleanup?.();
-  }, [videoEnabled, videoReady]);
-
+export function HeroBackground({ scrollProgressRef }: HeroBackgroundProps) {
   return (
     <div aria-hidden className="absolute inset-0 overflow-hidden">
-      {/* Base Gradient Layer */}
+      {/* Base Gradient Layer (shows through the transparent 3D canvas) */}
       <div
         className="absolute inset-0 z-[-2]"
         style={{
@@ -89,40 +45,10 @@ export function HeroBackground({ scrollProgress = 0 }: HeroBackgroundProps) {
         }}
       />
 
-      {/* Video Layer (Optional) */}
-      {videoEnabled ? (
-        <video
-          ref={videoRef}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          src={videoSrc}
-          onCanPlayThrough={() => setVideoReady(true)}
-          onError={() => {
-            setVideoReady(false);
-            setVideoEnabled(false);
-            setVideoError(true);
-          }}
-          className={[
-            "absolute inset-0 h-full w-full object-cover transition-opacity duration-1200 z-[-1]",
-            videoReady ? "opacity-30 sm:opacity-35" : "opacity-0",
-          ].join(" ")}
-        />
-      ) : null}
-
       {/* 3D Scene Layer - The "Interactive Video" */}
       <div className="absolute inset-0 z-0">
-        <Scene scrollProgress={scrollProgress} />
+        <Scene scrollProgressRef={scrollProgressRef} />
       </div>
-
-      {/* Fallback Message for Video (Only if explicitly errored and scene might be loading) */}
-      {videoError && (
-        <div className="absolute inset-x-0 bottom-10 mx-auto w-fit rounded-full border border-(--border) bg-(--surface)/80 px-4 py-2 text-[0.68rem] uppercase tracking-[0.22em] text-(--muted) backdrop-blur-md z-10 hidden">
-          Add /public/hero.mp4 (Optional)
-        </div>
-      )}
 
       {/* Cinematic Overlays */}
       <div className="hero-contrast-veil absolute inset-0 z-1 pointer-events-none" />

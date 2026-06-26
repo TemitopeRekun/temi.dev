@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { gsap, registerGSAP } from "../../lib/gsap";
 import type { Route } from "next";
 import { MagneticWrapper } from "@temi/ui";
@@ -12,7 +12,10 @@ import { useReducedMotion } from "../../hooks/useReducedMotion";
 export function Hero() {
   const isLoading = usePreloader();
   const reducedMotion = useReducedMotion();
-  const [scrollProgress, setScrollProgress] = useState(0);
+  // Scroll progress is consumed only by the R3F scene inside useFrame, so we
+  // keep it in a ref. Writing a ref on each ScrollTrigger update avoids
+  // re-rendering the whole hero subtree (~100×) across the pinned scroll.
+  const scrollProgressRef = useRef(0);
   const sectionRef = useRef<HTMLElement | null>(null);
   const contentRef = useRef<HTMLDivElement | null>(null);
   const overlineRef = useRef<HTMLDivElement | null>(null);
@@ -30,7 +33,6 @@ export function Hero() {
 
   useEffect(() => {
     let cleanup: (() => void) | null = null;
-    let latestProgress = 0;
     let mounted = true;
 
     // Respect reduced-motion: skip the intro timeline and the pinned
@@ -112,13 +114,13 @@ export function Hero() {
             start: "top top",
             end: "+=150%",
             pin: true,
-            scrub: 1,
+            // Lenis already smooths the scroll position; a large scrub stacks a
+            // second inertia layer and makes the scrub feel detached from the
+            // wheel. Keep it light.
+            scrub: 0.4,
             anticipatePin: 1,
             onUpdate: (self) => {
-              const nextProgress = Number(self.progress.toFixed(3));
-              if (Math.abs(nextProgress - latestProgress) < 0.01) return;
-              latestProgress = nextProgress;
-              setScrollProgress(nextProgress);
+              scrollProgressRef.current = self.progress;
             },
           },
         });
@@ -155,7 +157,7 @@ export function Hero() {
       className="relative isolate min-h-dvh flex items-center justify-center text-(--text)"
       aria-label="Hero"
     >
-      <HeroBackground scrollProgress={scrollProgress} />
+      <HeroBackground scrollProgressRef={scrollProgressRef} />
 
       <div
         ref={contentRef}

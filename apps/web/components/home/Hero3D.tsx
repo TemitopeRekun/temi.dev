@@ -1,5 +1,6 @@
 "use client";
 import { Canvas, useFrame } from "@react-three/fiber";
+import type { RefObject } from "react";
 import { useEffect, useRef, useState } from "react";
 import { Float, Stars, Sparkles, PerspectiveCamera } from "@react-three/drei";
 import { Mesh, Group, MathUtils, Color, CanvasTexture } from "three";
@@ -42,7 +43,7 @@ function createGlowTexture() {
 import { useTheme } from "next-themes";
 
 type SceneContentProps = {
-  scrollProgress: number;
+  scrollProgressRef: RefObject<number>;
   reduced: boolean;
   small: boolean;
 };
@@ -138,7 +139,7 @@ function FloatingShape({
   );
 }
 
-function SceneContent({ scrollProgress, reduced, small }: SceneContentProps) {
+function SceneContent({ scrollProgressRef, reduced, small }: SceneContentProps) {
   const groupRef = useRef<Group | null>(null);
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
@@ -157,8 +158,8 @@ function SceneContent({ scrollProgress, reduced, small }: SceneContentProps) {
     const g = groupRef.current;
     if (!g) return;
 
-    // Smooth scroll interaction
-    const progression = Math.max(0, Math.min(1, scrollProgress));
+    // Smooth scroll interaction (read from a ref so scroll never re-renders React)
+    const progression = Math.max(0, Math.min(1, scrollProgressRef.current));
 
     // Parallax based on mouse
     const mx = state.pointer.x;
@@ -204,10 +205,10 @@ function SceneContent({ scrollProgress, reduced, small }: SceneContentProps) {
 }
 
 type Hero3DProps = {
-  scrollProgress: number;
+  scrollProgressRef: RefObject<number>;
 };
 
-export default function Hero3D({ scrollProgress }: Hero3DProps) {
+export default function Hero3D({ scrollProgressRef }: Hero3DProps) {
   const reduced = useReducedMotion();
   const { small, lowDpr } = useDeviceProfile();
   return (
@@ -221,7 +222,7 @@ export default function Hero3D({ scrollProgress }: Hero3DProps) {
         dpr={small || lowDpr ? [1, 1.5] : [1, 2]}
       >
         <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={45} />
-        <SceneContent scrollProgress={scrollProgress} reduced={reduced} small={small} />
+        <SceneContent scrollProgressRef={scrollProgressRef} reduced={reduced} small={small} />
       </Canvas>
     </div>
   );

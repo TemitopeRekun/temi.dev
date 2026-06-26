@@ -49,7 +49,7 @@ export function AboutHero({ hideLink = false }: { hideLink?: boolean }) {
             trigger: wrap,
             start: "top center",
             end: "bottom center",
-            scrub: 1,
+            scrub: 0.5,
             // markers: true,
           },
         });
