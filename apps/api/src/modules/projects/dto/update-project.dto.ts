@@ -5,15 +5,21 @@ import {
   IsInt,
   IsOptional,
   IsString,
+  Matches,
   MaxLength,
   Min,
 } from "class-validator";
+import { SLUG_PATTERN } from "../../../common/utils/slug";
 
 export class UpdateProjectDto {
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: "bicadriver" })
   @IsOptional()
   @IsString()
   @MaxLength(100)
+  @Matches(SLUG_PATTERN, {
+    message:
+      "slug must be lowercase alphanumerics separated by single hyphens (e.g. my-project)",
+  })
   slug?: string;
 
   @ApiPropertyOptional()

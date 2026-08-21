@@ -21,7 +21,8 @@
     "backfill:embeddings": "nest build && node dist/scripts/backfill-embeddings.js",
     "openapi:export": "nest build && node dist/scripts/export-openapi.js",
     "push:projects": "ts-node --transpile-only src/scripts/push-projects.ts",
-    "push:blog": "ts-node --transpile-only src/scripts/push-blog.ts"
+    "push:blog": "ts-node --transpile-only src/scripts/push-blog.ts",
+    "fix:slugs": "ts-node --transpile-only src/scripts/fix-slugs.ts"
   },
   "dependencies": {
     "@temi/ai": "workspace:*",
