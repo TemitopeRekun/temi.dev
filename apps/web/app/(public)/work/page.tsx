@@ -19,8 +19,8 @@ export default async function WorkPage() {
       <Section className="bg-(--bg)">
         <Container>
           <RevealOnScroll>
-            <h1 className="sr-only">Work</h1>
             <AnimatedText
+              as="h1"
               phrase="Work"
               className="mb-6 text-3xl font-semibold text-(--text)"
             />

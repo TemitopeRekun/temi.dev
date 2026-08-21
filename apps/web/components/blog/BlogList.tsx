@@ -34,6 +34,7 @@ export function BlogList({ posts }: Props) {
         <div className="mb-12 flex flex-col justify-between gap-8 md:flex-row md:items-end">
           <div className="max-w-md">
             <AnimatedText
+              as="h2"
               phrase="Latest Articles"
               className="mb-4 text-2xl sm:text-3xl font-bold text-(--text)"
             />

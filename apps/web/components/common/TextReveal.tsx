@@ -25,7 +25,18 @@ export function TextReveal({
   const container = useRef(null);
   const isInView = useInView(container, { once: true, margin: "-10%" });
 
-  if (!enabled) return <span className={className}>{text}</span>;
+  // The ref must be attached in this branch too. useInView's effect deps are
+  // [root, ref, margin, once, amount] — all stable — so it runs once on mount
+  // and bails permanently when ref.current is null. Rendering an unref'd span
+  // here meant no IntersectionObserver was ever created, and when `enabled`
+  // later flipped, isInView stayed false, leaving the text parked at y:"100%"
+  // inside an overflow-hidden mask — permanently invisible.
+  if (!enabled)
+    return (
+      <span ref={container} className={className}>
+        {text}
+      </span>
+    );
 
   const slideUp = {
     initial: {
@@ -53,8 +64,17 @@ export function TextReveal({
         className={`flex flex-wrap gap-x-[0.25em] ${className}`}
       >
         <span className="sr-only">{text}</span>
+        {/*
+          The split layer is aria-hidden so assistive tech reads the sr-only
+          copy above once, rather than announcing the phrase and then spelling
+          it out through the per-word/per-character spans.
+        */}
         {words.map((word, i) => (
-          <span key={i} className="inline-flex overflow-hidden relative">
+          <span
+            key={i}
+            aria-hidden="true"
+            className="inline-flex overflow-hidden relative"
+          >
             <motion.span
               variants={slideUp}
               custom={i}
@@ -79,7 +99,11 @@ export function TextReveal({
     <span ref={container} className={`inline-block ${className}`}>
       <span className="sr-only">{text}</span>
       {words.map((word, i) => (
-        <span key={i} className="inline-block whitespace-nowrap mr-[0.25em]">
+        <span
+          key={i}
+          aria-hidden="true"
+          className="inline-block whitespace-nowrap mr-[0.25em]"
+        >
           {word.split("").map((char, j) => {
             const currentDelayIndex = charIndex++;
             return (

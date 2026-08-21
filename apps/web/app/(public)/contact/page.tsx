@@ -2,7 +2,7 @@ import { Container, RevealOnScroll, Section } from "@temi/ui";
 import { ContactForm } from "../../../components/contact/ContactForm";
 import { createLeadAction } from "../../../actions/create-lead";
 import { AnimatedText } from "../../../components/common/AnimatedText";
-import { buildMetadata } from "../../../lib/metadata";
+import { buildMetadata, CONTACT_EMAIL } from "../../../lib/metadata";
 
 export const metadata = buildMetadata({
   title: "Contact",
@@ -19,8 +19,8 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 md:gap-12">
             <RevealOnScroll>
               <div>
-                <h1 className="sr-only">Let’s connect</h1>
                 <AnimatedText
+                  as="h1"
                   phrase="Let’s connect"
                   className="text-3xl font-semibold text-(--text)"
                 />
@@ -30,7 +30,12 @@ export default function ContactPage() {
                   like to hear from you. I reply within a day or two.
                 </p>
                 <div className="mt-6 space-y-2 text-sm">
-                  <div className="text-(--text)">hello@temi.dev</div>
+                  <a
+                    href={`mailto:${CONTACT_EMAIL}`}
+                    className="block w-fit text-(--text) underline-offset-4 hover:underline"
+                  >
+                    {CONTACT_EMAIL}
+                  </a>
                   <div className="flex items-center gap-4">
                     <a
                       href="https://github.com/TemitopeRekun"

@@ -71,6 +71,24 @@ describe("metadata", () => {
       });
     });
 
+    it("carries the RSS alternate alongside the canonical", () => {
+      // Next merges `alternates` as one field, so a page setting only
+      // `{ canonical }` would replace the root layout's `{ types }` and silently
+      // drop the feed <link> from every page.
+      const meta = buildMetadata({
+        title: "Blog",
+        description: "desc",
+        path: "/blog",
+      });
+
+      expect(meta.alternates?.canonical).toBe(`${BASE_URL}/blog`);
+      expect(meta.alternates?.types).toEqual({
+        "application/rss+xml": [
+          { url: "/feed.xml", title: `${SITE_NAME} — Blog` },
+        ],
+      });
+    });
+
     it("respects titleAbsolute and defaults canonical to BASE_URL when no path", () => {
       // Act
       const meta = buildMetadata({

@@ -49,6 +49,10 @@ export default async function BlogDetailPage({
   const { slug } = await params;
   const post = await getPostBySlug(slug);
 
+  // Legacy non-conforming slugs are redirected in middleware, before rendering
+  // starts — a redirect thrown from here lands after the shell has flushed and
+  // degrades to a <meta refresh> at HTTP 200, which is a much weaker signal
+  // than the 308 middleware can still send.
   if (!post) {
     notFound();
   }
@@ -118,10 +122,9 @@ export default async function BlogDetailPage({
                       {post.readTime} min read
                     </span>
                   </div>
-                  <h1 className="sr-only">{post.title}</h1>
                   <AnimatedText
+                    as="h1"
                     phrase={post.title}
-                    decorative
                     className="mb-6 text-center text-2xl sm:text-3xl md:text-5xl font-bold leading-tight text-(--text)"
                   />
                   {post.publishedAt && (

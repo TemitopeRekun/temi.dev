@@ -8,6 +8,7 @@ import Image from "next/image";
 import { Github, Linkedin } from "lucide-react";
 import { ContactForm, type LeadState } from "./ContactForm";
 import { useFocusTrap } from "../../hooks/useFocusTrap";
+import { CONTACT_EMAIL } from "../../lib/metadata";
 
 function XIcon() {
   return (
@@ -204,9 +205,9 @@ export function Footer({ action }: Props) {
             <RoundedButton
               accentColor="rgba(255,255,255,0.12)"
               className="border-white/20 text-white px-5 py-2.5 text-xs sm:px-6 sm:py-3 sm:text-sm"
-              href="mailto:hello@temi.dev"
+              href={`mailto:${CONTACT_EMAIL}`}
             >
-              hello@temi.dev
+              {CONTACT_EMAIL}
             </RoundedButton>
           </div>
         </div>

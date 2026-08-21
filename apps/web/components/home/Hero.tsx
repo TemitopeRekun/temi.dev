@@ -177,6 +177,14 @@ export function Hero() {
           ref={headlineRef}
           className="font-(family-name:--font-fraunces) text-[min(11vw,4.5rem)] sm:text-[min(10vw,6.5rem)] leading-[0.9] tracking-[-0.01em] hero-text-contrast flex flex-wrap justify-center gap-x-0 gap-y-0 sm:gap-x-1"
         >
+          {/*
+            These keys are load-bearing — do not remove them. They remount
+            TextReveal when the preloader finishes, which is what gets its
+            IntersectionObserver attached to the animated markup. Without the
+            remount the observer is never created and the headline stays parked
+            at y:"100%" inside its overflow-hidden mask, i.e. invisible. See the
+            matching note in TextReveal's `!enabled` branch.
+          */}
           <span
             ref={headlinePart1Ref}
             className="inline-block"

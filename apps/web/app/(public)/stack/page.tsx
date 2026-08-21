@@ -172,8 +172,8 @@ export default function StackPage() {
       <Section className="bg-(--bg)">
         <Container>
           <RevealOnScroll>
-            <h1 className="sr-only">My Stack</h1>
             <AnimatedText
+              as="h1"
               phrase="My Stack"
               className="mb-6 text-3xl font-semibold text-(--text)"
             />

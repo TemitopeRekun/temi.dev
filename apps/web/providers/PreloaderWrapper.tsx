@@ -2,7 +2,10 @@
 import { useState, useEffect, useCallback, createContext, useContext } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence } from "framer-motion";
-import { Preloader } from "../components/common/Preloader";
+import {
+  Preloader,
+  PRELOADER_SAFETY_MS,
+} from "../components/common/Preloader";
 import { prefersReducedMotion } from "../hooks/useReducedMotion";
 
 // Create context with default false (assuming loaded if context missing)
@@ -40,10 +43,11 @@ export function PreloaderWrapper({ children }: { children: React.ReactNode }) {
     setLoading(false);
   }, []);
 
-  // Safety valve: never let the intro block content for more than 5 seconds.
+  // Safety valve: never let the intro block content longer than its own budget
+  // (see SAFETY_MS in Preloader) if a timer is dropped or throttled.
   useEffect(() => {
     if (!loading || !isHome) return;
-    const t = setTimeout(handleComplete, 5000);
+    const t = setTimeout(handleComplete, PRELOADER_SAFETY_MS);
     return () => clearTimeout(t);
   }, [loading, isHome, handleComplete]);
 

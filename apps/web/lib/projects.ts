@@ -52,7 +52,18 @@ const projectListSchema = z.object({
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
 
-const REVALIDATE = 30;
+/**
+ * Kept in step with lib/blog.ts, and for the same reason.
+ *
+ * Edits made through the admin UI go via the Next proxy routes, which call
+ * `revalidateContent(CONTENT_TAG.projects)` and take effect at once. But
+ * `pnpm --filter api push:projects` posts straight to the NestJS API
+ * (`API_BASE_URL`), skipping those proxy routes entirely — so nothing
+ * invalidates the tag and this window is the only thing that surfaces a pushed
+ * change. Doubling 30s to 60s halves the idle upstream polling without pushing
+ * that blind spot out to minutes.
+ */
+const REVALIDATE = 60;
 
 export async function getProjects(): Promise<Project[]> {
   try {

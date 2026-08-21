@@ -44,6 +44,8 @@ export default async function WorkDetailPage({
   const { slug } = await params;
   const project = await getProjectBySlug(slug);
 
+  // See the equivalent note in blog/[slug]: legacy slug redirects happen in
+  // middleware, before the shell flushes, so they can return a real 308.
   if (!project) {
     notFound();
   }
@@ -93,10 +95,9 @@ export default async function WorkDetailPage({
                   </span>
                   <span className="text-(--muted)">{project.year}</span>
                 </div>
-                <h1 className="sr-only">{project.title}</h1>
                 <AnimatedText
+                  as="h1"
                   phrase={project.title}
-                  decorative
                   className="mb-6 text-center text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold leading-[1.1] tracking-tight text-(--text)"
                 />
 

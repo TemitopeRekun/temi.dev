@@ -61,14 +61,19 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   typedRoutes: true,
   transpilePackages: ["@temi/ui"],
-  optimizePackageImports: [
-    "@temi/ui",
-    "lucide-react",
-    "date-fns",
-    "gsap",
-    "framer-motion",
-    "@radix-ui/react-icons",
-  ],
+  // Must live under `experimental`: at the top level Next logs
+  // "Unrecognized key(s) in object: 'optimizePackageImports'" on every boot and
+  // ignores it, so this had never actually been applied.
+  experimental: {
+    optimizePackageImports: [
+      "@temi/ui",
+      "lucide-react",
+      "date-fns",
+      "gsap",
+      "framer-motion",
+      "@radix-ui/react-icons",
+    ],
+  },
   images: {
     remotePatterns: [
       {

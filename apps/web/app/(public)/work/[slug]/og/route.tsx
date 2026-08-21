@@ -1,10 +1,17 @@
 import { ImageResponse } from "next/og";
-import { getProjectBySlug } from "../../../../../lib/projects";
+import { getProjectBySlug, getProjects } from "../../../../../lib/projects";
 
 // Plain Route Handler (not the `opengraph-image` metadata convention) because
 // dynamic metadata-image conventions 404 when nested inside a route group on
 // Next 15.5.x. This is referenced explicitly from generateMetadata + cards.
 const size = { width: 1200, height: 630 };
+
+// Prerender a card per project instead of rendering one on every crawl and
+// social unfurl. Slugs not in this list still render on demand.
+export async function generateStaticParams() {
+  const projects = await getProjects();
+  return projects.map((p) => ({ slug: p.slug }));
+}
 
 function truncate(text: string, max: number) {
   return text.length > max ? text.slice(0, max - 1) + "…" : text;

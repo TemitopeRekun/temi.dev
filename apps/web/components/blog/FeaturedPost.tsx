@@ -12,7 +12,7 @@ type Props = {
 
 export function FeaturedPost({ post }: Props) {
   return (
-    <Section className="pb-12 pt-24 md:pb-20 md:pt-40">
+    <Section className="pb-12 pt-12 md:pb-20 md:pt-16">
       <Container>
         <RevealOnScroll>
           <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-2 lg:gap-24">
@@ -34,6 +34,7 @@ export function FeaturedPost({ post }: Props) {
                 <span className="text-(--muted)">{post.readTime} min read</span>
               </div>
               <AnimatedText
+                as="h2"
                 phrase={post.title}
                 className="text-2xl font-bold leading-tight text-(--text) md:text-4xl lg:text-4xl"
               />

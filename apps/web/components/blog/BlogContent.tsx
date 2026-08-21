@@ -15,9 +15,10 @@ export async function BlogContent() {
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full border border-(--border)/30 bg-(--surface)/80 text-2xl">
             ✨
           </div>
-          <h1 className="text-2xl font-semibold text-(--text)">
+          {/* h2, not h1: the blog page itself now owns the page heading. */}
+          <h2 className="text-2xl font-semibold text-(--text)">
             We're cooking something delightful
-          </h1>
+          </h2>
           <p className="mt-2 max-w-md text-(--muted)">
             Fresh posts are on the way - stay tuned for new ideas, insights, and
             experiments. 🍳📚

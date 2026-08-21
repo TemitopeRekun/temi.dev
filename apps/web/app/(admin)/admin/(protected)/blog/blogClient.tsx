@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
+import { isValidSlug, slugify, slugifyWhileTyping } from "@/lib/slug";
 
 type BlogSummary = {
   id: string;
@@ -44,6 +45,9 @@ export default function BlogClient({ token }: { token: string }) {
   const [editingPost, setEditingPost] = useState<BlogSummary | null>(null);
   const [activeTab, setActiveTab] = useState<"edit" | "preview">("edit");
   const publishToastRef = useRef(false);
+  // While false, the slug tracks the title. Editing the slug by hand latches
+  // this so a later title tweak cannot silently change the post's URL.
+  const [slugEdited, setSlugEdited] = useState(false);
 
   const [formData, setFormData] = useState<CreateBlogPostDto>({
     slug: "",
@@ -141,10 +145,14 @@ export default function BlogClient({ token }: { token: string }) {
       coverImage: "",
     });
     setEditingPost(null);
+    setSlugEdited(false);
   };
 
   const handleEdit = async (post: BlogSummary) => {
     setEditingPost(post);
+    // An existing post's slug is fixed (the update DTO omits it), so never let
+    // title edits drive it.
+    setSlugEdited(true);
     setFormData({
       slug: post.slug,
       title: post.title,
@@ -189,7 +197,9 @@ export default function BlogClient({ token }: { token: string }) {
         },
       });
     } else {
-      createMutation.mutate(formData);
+      // Submitting without ever blurring the slug field would otherwise let a
+      // trailing hyphen through to the API.
+      createMutation.mutate({ ...formData, slug: slugify(formData.slug) });
     }
   };
 
@@ -223,9 +233,16 @@ export default function BlogClient({ token }: { token: string }) {
                   type="text"
                   required
                   value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const title = e.target.value;
+                    setFormData((prev) => ({
+                      ...prev,
+                      title,
+                      // Keep the slug in step with the title until the author
+                      // takes it over by hand.
+                      ...(slugEdited ? {} : { slug: slugify(title) }),
+                    }));
+                  }}
                   className="w-full rounded-md border border-(--border)/20 bg-transparent px-3 py-2"
                 />
               </div>
@@ -236,11 +253,40 @@ export default function BlogClient({ token }: { token: string }) {
                     type="text"
                     required
                     value={formData.slug}
-                    onChange={(e) =>
-                      setFormData({ ...formData, slug: e.target.value })
+                    onChange={(e) => {
+                      setSlugEdited(true);
+                      setFormData((prev) => ({
+                        ...prev,
+                        slug: slugifyWhileTyping(e.target.value),
+                      }));
+                    }}
+                    onBlur={() =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        slug: slugify(prev.slug),
+                      }))
                     }
+                    aria-describedby="slug-help"
                     className="w-full rounded-md border border-(--border)/20 bg-transparent px-3 py-2"
                   />
+                  <p id="slug-help" className="mt-1 text-xs text-(--muted)">
+                    {formData.slug ? (
+                      <>
+                        Will publish at{" "}
+                        <code className="text-(--text)">
+                          /blog/{formData.slug}
+                        </code>
+                      </>
+                    ) : (
+                      "Lowercase words separated by hyphens. Derived from the title until you edit it."
+                    )}
+                  </p>
+                  {formData.slug && !isValidSlug(formData.slug) && (
+                    <p className="mt-1 text-xs text-red-500">
+                      The API will reject this slug. Use lowercase letters,
+                      numbers and single hyphens.
+                    </p>
+                  )}
                 </div>
               )}
               <div>

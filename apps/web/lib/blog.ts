@@ -39,6 +39,17 @@ const blogListSchema = z.object({
 
 const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
 
+/**
+ * Deliberately shorter than the projects window, and deliberately not raised.
+ *
+ * Admin writes revalidate the `posts` tag on demand, but `pnpm --filter api
+ * push:blog` updates live posts straight through Prisma — outside any Next
+ * request scope, so it cannot invalidate a tag. This window is the only thing
+ * that surfaces a script-pushed edit, and lengthening it would silently slow the
+ * authoring loop.
+ */
+const REVALIDATE = 60;
+
 /** Estimate reading time at ~200 words per minute, minimum 1 minute. */
 export function estimateReadTime(content?: string | null): number {
   const wordCount = content ? content.trim().split(/\s+/).filter(Boolean).length : 0;
@@ -67,7 +78,7 @@ export async function getPosts(): Promise<BlogPost[]> {
     const res = await fetch(`${API_URL}/api/blog?take=50`, {
       ...(isDev
         ? { cache: "no-store" }
-        : { next: { revalidate: 60, tags: ["posts"] } }),
+        : { next: { revalidate: REVALIDATE, tags: ["posts"] } }),
     });
     if (!res.ok) {
       console.error(`[blog] getPosts: upstream returned ${res.status}`);
@@ -94,7 +105,7 @@ export async function getPostBySlug(
     const res = await fetch(`${API_URL}/api/blog/${slug}`, {
       ...(isDev
         ? { cache: "no-store" }
-        : { next: { revalidate: 60, tags: ["posts"] } }),
+        : { next: { revalidate: REVALIDATE, tags: ["posts"] } }),
     });
     if (!res.ok) {
       if (res.status !== 404) {

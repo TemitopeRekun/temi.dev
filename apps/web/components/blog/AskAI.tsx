@@ -1,12 +1,15 @@
 "use client";
 
 import { useState, useRef } from "react";
+import dynamic from "next/dynamic";
 import { Container, Section, RevealOnScroll } from "@temi/ui";
 import { Sparkles, Send, Loader2 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeHighlight from "rehype-highlight";
 import { AnimatedText } from "../common/AnimatedText";
+
+// Keeps react-markdown + highlight.js out of this page's initial bundle; see
+// MarkdownAnswer for why. Warmed on submit so the chunk arrives with the answer.
+const loadMarkdownAnswer = () => import("./MarkdownAnswer");
+const MarkdownAnswer = dynamic(loadMarkdownAnswer, { ssr: false });
 
 export function AskAI() {
   const [question, setQuestion] = useState("");
@@ -22,6 +25,10 @@ export function AskAI() {
     setLoading(true);
     setError(null);
     setAnswer("");
+
+    // Fetch the markdown renderer chunk in parallel with the answer request,
+    // so it is cached by the time the first token arrives.
+    void loadMarkdownAnswer();
 
     const base =
       process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
@@ -137,12 +144,7 @@ export function AskAI() {
                   className="prose prose-invert prose-sm max-w-none text-(--text) leading-6 prose-p:my-5 prose-li:my-3 prose-ul:my-5 prose-ol:my-5 prose-blockquote:my-5 prose-pre:my-5 prose-pre:rounded-xl prose-pre:border prose-pre:border-(--border)/30 prose-pre:bg-(--surface2) prose-pre:p-4 prose-code:rounded prose-code:bg-(--surface2)/80 prose-code:px-1.5 prose-code:py-0.5 prose-code:font-mono"
                   style={{ fontFamily: "Arial, sans-serif" }}
                 >
-                  <ReactMarkdown
-                    remarkPlugins={[remarkGfm]}
-                    rehypePlugins={[rehypeHighlight]}
-                  >
-                    {answer}
-                  </ReactMarkdown>
+                  <MarkdownAnswer>{answer}</MarkdownAnswer>
                 </div>
               </div>
             )}
