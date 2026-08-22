@@ -1,7 +1,7 @@
 import { readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { STATIC_ROUTES } from "./sitemap";
+import { STATIC_ROUTES, newest, parseDate } from "./sitemap";
 
 /**
  * Guards against the failure this list already had once: a public page shipped,
@@ -69,5 +69,39 @@ describe("sitemap STATIC_ROUTES", () => {
   it("keeps the homepage at the highest priority", () => {
     const home = STATIC_ROUTES.find((r) => r.path === "/");
     expect(home?.priority).toBe(1);
+  });
+});
+
+describe("sitemap lastmod helpers", () => {
+  it("parses ISO timestamps and rejects junk", () => {
+    expect(parseDate("2026-03-11T22:56:31.875Z")?.toISOString()).toBe(
+      "2026-03-11T22:56:31.875Z",
+    );
+    expect(parseDate(undefined)).toBeUndefined();
+    expect(parseDate(null)).toBeUndefined();
+    expect(parseDate("")).toBeUndefined();
+    expect(parseDate("not a date")).toBeUndefined();
+  });
+
+  it("picks the most recent date and ignores gaps", () => {
+    const a = new Date("2026-01-01T00:00:00.000Z");
+    const b = new Date("2026-06-01T00:00:00.000Z");
+    expect(newest([a, undefined, b])?.toISOString()).toBe(b.toISOString());
+    expect(newest([undefined, undefined])).toBeUndefined();
+    expect(newest([])).toBeUndefined();
+  });
+
+  it("only derives lastmod for content-driven routes", () => {
+    // The hand-written pages must not report a runtime timestamp: this route
+    // revalidates every 60s, so `new Date()` made them claim to change on
+    // every fetch.
+    const derived = STATIC_ROUTES.filter((r) => r.derivesLastModified).map(
+      (r) => r.path,
+    );
+    const bare = STATIC_ROUTES.filter((r) => !r.derivesLastModified).map(
+      (r) => r.path,
+    );
+    expect(derived.sort()).toEqual(["/", "/blog", "/work"]);
+    expect(bare.sort()).toEqual(["/about", "/contact", "/stack"]);
   });
 });

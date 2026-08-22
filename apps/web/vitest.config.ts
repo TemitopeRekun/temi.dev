@@ -13,6 +13,16 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     globals: true,
+    /*
+     * The default 5s is too tight for the jsdom + userEvent suites. They pass
+     * comfortably in isolation but time out when `turbo run lint typecheck test`
+     * runs concurrently and jsdom environment setup gets starved of CPU — a
+     * false failure that says nothing about the code under test. CI runs the
+     * lint/typecheck and test jobs separately so it never hit this, which is
+     * exactly what makes it an easy flake to miss.
+     */
+    testTimeout: 20000,
+    hookTimeout: 20000,
     setupFiles: ["./test/setup.ts"],
     css: false,
     coverage: {

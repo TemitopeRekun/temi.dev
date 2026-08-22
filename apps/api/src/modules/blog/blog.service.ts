@@ -41,6 +41,7 @@ export class BlogService {
         tags: true,
         coverImage: true,
         publishedAt: true,
+        updatedAt: true,
       },
     });
     return applyCursorPage(rows, take);
@@ -58,6 +59,7 @@ export class BlogService {
         tags: true,
         coverImage: true,
         publishedAt: true,
+        updatedAt: true,
       },
     });
     if (!post) throw new NotFoundException("Post not found");
@@ -86,6 +88,7 @@ export class BlogService {
         coverImage: true,
         published: true,
         publishedAt: true,
+        updatedAt: true,
       },
     });
     return applyCursorPage(rows, take);
